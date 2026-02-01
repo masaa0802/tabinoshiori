@@ -1,4 +1,18 @@
 import Link from 'next/link';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "利用規約",
+  description: "旅のしおりの利用規約。サービスのご利用条件について説明しています。",
+  openGraph: {
+    title: "利用規約 | 旅のしおり",
+    description: "旅のしおりの利用規約。サービスのご利用条件について説明しています。",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 const TermsPage = () => {
   return (

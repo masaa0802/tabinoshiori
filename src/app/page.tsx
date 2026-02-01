@@ -5,16 +5,36 @@ const page: React.FC = () => {
     <div className="min-h-screen">
       {/* ヒーローセクション */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* 動的背景グラデーション */}
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 via-teal-500 to-blue-500">
-          <div className="absolute inset-0 bg-gradient-to-t from-green-900/20 to-transparent"></div>
-        </div>
-
-        {/* 浮遊する背景要素 */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-white/5 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute top-3/4 right-1/3 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-          <div className="absolute bottom-1/4 left-1/2 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
+        {/* 背景画像スライドショー */}
+        <div className="absolute inset-0">
+          <div
+            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 animate-slideshow-1"
+            style={{
+              backgroundImage: "url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=2000')",
+            }}
+          />
+          <div
+            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 animate-slideshow-2"
+            style={{
+              backgroundImage: "url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2000')",
+            }}
+          />
+          <div
+            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 animate-slideshow-3"
+            style={{
+              backgroundImage: "url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2000')",
+            }}
+          />
+          <div
+            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 animate-slideshow-4"
+            style={{
+              backgroundImage: "url('https://images.unsplash.com/photo-1503220317375-aaad61436b1b?q=80&w=2000')",
+            }}
+          />
+          {/* 暗いオーバーレイで文字を読みやすく */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60"></div>
+          {/* カラーオーバーレイで雰囲気を演出 */}
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-teal-500/20 to-blue-500/30"></div>
         </div>
 
         {/* メインコンテンツ */}

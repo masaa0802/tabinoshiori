@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useMutation } from "@apollo/client";
-import { useJsApiLoader } from "@react-google-maps/api";
 import { INSERT_ACTIVITIES } from "@/graphql/mutates";
+import { useGoogleMaps } from "@/components/GoogleMapsProvider";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -9,6 +9,8 @@ interface AddActivityModalProps {
   itinerary_id: number;
   defaultDate?: string;
   onActivityAdded?: () => void;
+  startDate?: string;
+  endDate?: string;
 }
 
 const typeOptions = [
@@ -20,10 +22,11 @@ const typeOptions = [
   { label: "エリア", value: "area" },
 ];
 
-const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, itinerary_id, defaultDate, onActivityAdded }) => {
+const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, itinerary_id, defaultDate, onActivityAdded, startDate, endDate }) => {
   const [date, setDate] = useState(defaultDate || "");
   const [time, setTime] = useState("");
   const [location, setLocation] = useState("");
+  const [placeName, setPlaceName] = useState("");
   const [notes, setNotes] = useState("");
   const [type, setType] = useState(typeOptions[0].value);
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
@@ -37,11 +40,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
   const placesService = useRef<google.maps.places.PlacesService | null>(null);
 
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
-    libraries: ['places']
-  });
+  const { isLoaded } = useGoogleMaps();
 
   useEffect(() => {
     // Google Maps APIが利用可能になったら初期化
@@ -59,6 +58,40 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
       setDate(defaultDate);
     }
   }, [defaultDate]);
+
+  // 旅行期間の日付リストを生成
+  const generateDateOptions = () => {
+    if (!startDate || !endDate) return [];
+
+    const dates: { value: string; label: string; dayNumber: number }[] = [];
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    const currentDate = new Date(start);
+    let dayNumber = 1;
+
+    while (currentDate <= end) {
+      const dateStr = currentDate.toISOString().split('T')[0];
+      const formattedDate = new Intl.DateTimeFormat('ja-JP', {
+        month: 'long',
+        day: 'numeric',
+        weekday: 'short'
+      }).format(currentDate);
+
+      dates.push({
+        value: dateStr,
+        label: `${dayNumber}日目 - ${formattedDate}`,
+        dayNumber: dayNumber
+      });
+
+      currentDate.setDate(currentDate.getDate() + 1);
+      dayNumber++;
+    }
+
+    return dates;
+  };
+
+  const dateOptions = generateDateOptions();
 
   const handleLocationChange = (value: string) => {
     setLocation(value);
@@ -156,10 +189,16 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
       placesService.current.getDetails(
         {
           placeId: suggestion.place_id,
-          fields: ['photos', 'name', 'formatted_address', 'geometry']
+          fields: ['photos', 'name', 'formatted_address', 'geometry'],
+          language: 'ja'
         },
         (place, status) => {
           if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
+            // 場所の名前を保存（住所を除く）
+            if (place.name) {
+              setPlaceName(place.name);
+            }
+
             // 緯度・経度を取得
             if (place.geometry && place.geometry.location) {
               setLat(place.geometry.location.lat());
@@ -169,6 +208,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
             if (place.photos && place.photos.length > 0) {
               // 最初の写真のURLを取得（幅400pxで）
               const photoUrl = place.photos[0].getUrl({ maxWidth: 400 });
+              console.log('Photo URL obtained:', photoUrl);
               setPhotoUrl(photoUrl);
             }
           }
@@ -180,13 +220,30 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await insertActivity({
+      // placeNameがあれば使用、なければlocationを使用
+      const activityName = placeName || location;
+
+      console.log('Submitting activity with data:', {
+        itinerary_id,
+        date,
+        time,
+        location,
+        name: activityName,
+        notes,
+        type,
+        photo_url: photoUrl,
+        lat,
+        lng,
+        place_id: placeId,
+      });
+
+      const result = await insertActivity({
         variables: {
           itinerary_id,
           date,
           time,
           location,
-          name: location,
+          name: activityName,
           notes,
           type,
           photo_url: photoUrl,
@@ -195,9 +252,13 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
           place_id: placeId,
         },
       });
+
+      console.log('Activity insertion result:', result);
+
       // フォームをリセット
       setTime("");
       setLocation("");
+      setPlaceName("");
       setNotes("");
       setType(typeOptions[0].value);
       setSuggestions([]);
@@ -212,7 +273,8 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
       }
       onClose();
     } catch (e) {
-      console.error(e);
+      console.error('Error inserting activity:', e);
+      alert('アクティビティの追加に失敗しました: ' + (e instanceof Error ? e.message : String(e)));
     }
   };
 
@@ -241,13 +303,29 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">日付</label>
-            <input
-              type="date"
-              className="w-full border rounded px-3 py-2"
-              value={date}
-              onChange={e => setDate(e.target.value)}
-              required
-            />
+            {dateOptions.length > 0 ? (
+              <select
+                className="w-full border rounded px-3 py-2"
+                value={date}
+                onChange={e => setDate(e.target.value)}
+                required
+              >
+                <option value="">日付を選択してください</option>
+                {dateOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="date"
+                className="w-full border rounded px-3 py-2"
+                value={date}
+                onChange={e => setDate(e.target.value)}
+                required
+              />
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">時間</label>

@@ -1,0 +1,58 @@
+- name: allowed-queries
+  definition:
+    queries:
+      - name: itineraries_by_pk
+        query: |
+          query itineraries_by_pk ($id: Int!) {
+            itineraries_by_pk(id: $id) {
+              created_by
+              destination
+              end_date
+              group_id
+              id
+              location_type
+              start_date
+              title
+              travel_purpose
+              updated_at
+            }
+          }
+      - name: groups_by_pk
+        query: |
+          query groups_by_pk ($id: uuid!) {
+            groups_by_pk(id: $id) {
+              created_at
+              id
+              name
+              updated_at
+            }
+          }
+      - name: itineraries
+        query: |
+          query itineraries {
+            itineraries {
+              created_by
+              destination
+              end_date
+              group_id
+              id
+              location_type
+              start_date
+              title
+              travel_purpose
+              updated_at
+            }
+          }
+      - name: activities
+        query: |
+          query activities {
+            activities {
+              id
+              itinerary_id
+              location
+              name
+              notes
+              time
+              type
+            }
+          }

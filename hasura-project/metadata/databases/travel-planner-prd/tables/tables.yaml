@@ -1,0 +1,6 @@
+- "!include public_activities.yaml"
+- "!include public_budgets.yaml"
+- "!include public_groups.yaml"
+- "!include public_group_members.yaml"
+- "!include public_itineraries.yaml"
+- "!include public_users.yaml"

@@ -1,0 +1,11 @@
+table:
+  name: activities
+  schema: public
+array_relationships:
+  - name: budgets
+    using:
+      foreign_key_constraint_on:
+        column: activity_id
+        table:
+          name: budgets
+          schema: public

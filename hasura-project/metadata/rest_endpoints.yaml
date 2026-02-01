@@ -1,0 +1,36 @@
+- comment: ""
+  definition:
+    query:
+      collection_name: allowed-queries
+      query_name: activities
+  methods:
+    - GET
+  name: activities
+  url: activities
+- comment: ""
+  definition:
+    query:
+      collection_name: allowed-queries
+      query_name: groups_by_pk
+  methods:
+    - GET
+  name: groups_by_pk
+  url: groups/:id
+- comment: ""
+  definition:
+    query:
+      collection_name: allowed-queries
+      query_name: itineraries
+  methods:
+    - GET
+  name: itineraries
+  url: itineraries
+- comment: ""
+  definition:
+    query:
+      collection_name: allowed-queries
+      query_name: itineraries_by_pk
+  methods:
+    - GET
+  name: itineraries_by_pk
+  url: itineraries/:id

@@ -159,3 +159,32 @@
   animation: slide-up 1s ease-out forwards;
   opacity: 0;
 }
+
+/* 背景画像スライドショーアニメーション（20秒で4枚） */
+@keyframes slideshow {
+  0% { opacity: 1; }
+  20% { opacity: 1; }
+  25% { opacity: 0; }
+  95% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.animate-slideshow-1 {
+  animation: slideshow 20s infinite;
+  animation-delay: 0s;
+}
+
+.animate-slideshow-2 {
+  animation: slideshow 20s infinite;
+  animation-delay: 5s;
+}
+
+.animate-slideshow-3 {
+  animation: slideshow 20s infinite;
+  animation-delay: 10s;
+}
+
+.animate-slideshow-4 {
+  animation: slideshow 20s infinite;
+  animation-delay: 15s;
+}

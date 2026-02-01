@@ -1,0 +1,7 @@
+version: 3
+endpoint: https://travel-planner.hasura.app
+admin_secret: cMv0MBpz27N2gf3eUEXdewaBqo1WK4t0yCZhEgXVyNHHXMiEdPONcCqAV9RrMKHb
+metadata_directory: metadata
+actions:
+  kind: synchronous
+  handler_webhook_baseurl: http://localhost:3000

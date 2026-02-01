@@ -90,14 +90,58 @@ Next.jsアプリをデプロイする最も簡単な方法は、Next.jsの作者
 
 詳しくは[Next.jsデプロイメントドキュメント](https://nextjs.org/docs/app/building-your-application/deploying)をご覧ください。
 
-## 環境変数の設定
+## データベース設定
 
-以下の環境変数が必要です：
+このプロジェクトではHasura GraphQL EngineとPostgreSQLを使用しています。
+
+### 必要な環境変数
+
+`.env`ファイルを作成し、以下の環境変数を設定してください：
 
 ```env
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-NEXT_PUBLIC_API_URL=your_api_url
+# Database Configuration
+DATABASE_URL="postgresql://masaaki:Tatakomaki4649@localhost:5432/mydb?schema=public"
+
+# Hasura Configuration
+NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT="http://localhost:8080/v1/graphql"
+NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET="travelplanner9032"
+
+# API Keys
+OPENAI_API_KEY="your-openai-api-key"
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="your-google-maps-api-key"
 ```
+
+### ローカル開発環境のセットアップ
+
+1. **PostgreSQLとHasuraの起動**
+   ```bash
+   # Docker Composeを使用する場合
+   docker-compose up -d postgres graphql-engine data-connector-agent
+
+   # 手動でセットアップする場合はDATABASE_SETUP.mdを参照
+   ```
+
+2. **マイグレーションの適用**
+   ```bash
+   cd hasura-project
+   hasura migrate apply --endpoint http://localhost:8080 --admin-secret travelplanner9032
+   ```
+
+3. **メタデータの適用**
+   ```bash
+   hasura metadata apply --endpoint http://localhost:8080 --admin-secret travelplanner9032
+   ```
+
+4. **Hasuraコンソールへのアクセス**
+   ```bash
+   # CLIを使用（推奨）
+   hasura console --endpoint http://localhost:8080 --admin-secret travelplanner9032
+
+   # またはブラウザで直接アクセス
+   # http://localhost:8080/console
+   ```
+
+詳細なデータベース設定については、[DATABASE_SETUP.md](./DATABASE_SETUP.md)を参照してください。
 
 ## ライセンス
 

@@ -1,6 +1,6 @@
 services:
   web:
-    image: node:18
+    image: node:20
     restart: always
     volumes:
       - .:/opt/web
@@ -15,8 +15,12 @@ services:
     restart: always
     volumes:
       - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: mydb
+      POSTGRES_USER: masaaki
+      POSTGRES_PASSWORD: Tatakomaki4649
   graphql-engine:
     image: hasura/graphql-engine:v2.46.0
     ports:
@@ -24,9 +28,9 @@ services:
     restart: always
     environment:
       ## postgres database to store Hasura metadata
-      HASURA_GRAPHQL_METADATA_DATABASE_URL: "${DATABASE_URL}"
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: "${HASURA_DATABASE_URL}"
       ## this env var can be used to add the above postgres database to Hasura as a data source. this can be removed/updated based on your needs
-      PG_DATABASE_URL: "${DATABASE_URL}"
+      PG_DATABASE_URL: "${HASURA_DATABASE_URL}"
       ## enable the console served by server
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
       ## enable debugging mode. It is recommended to disable this in production
@@ -38,6 +42,8 @@ services:
       HASURA_GRAPHQL_ADMIN_SECRET: "${NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET}"
       HASURA_GRAPHQL_METADATA_DEFAULTS: '{"backend_configs":{"dataconnector":{"athena":{"uri":"http://data-connector-agent:8081/api/v1/athena"},"mariadb":{"uri":"http://data-connector-agent:8081/api/v1/mariadb"},"mysql8":{"uri":"http://data-connector-agent:8081/api/v1/mysql"},"oracle":{"uri":"http://data-connector-agent:8081/api/v1/oracle"},"snowflake":{"uri":"http://data-connector-agent:8081/api/v1/snowflake"}}}}'
     depends_on:
+      postgres:
+        condition: service_started
       data-connector-agent:
         condition: service_healthy
   data-connector-agent:

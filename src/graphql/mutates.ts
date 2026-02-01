@@ -2,12 +2,12 @@ import { gql } from "@apollo/client";
 
 export const INSERT_ACTIVITIES = gql`
   mutation InsertActivities(
-    $itinerary_id: Int
-    $name: String
+    $itinerary_id: Int!
+    $name: String!
     $location: String
     $notes: String
     $type: String
-    $date: date
+    $date: date!
     $time: time
     $photo_url: String
     $lat: numeric
@@ -175,6 +175,85 @@ export const DELETE_ACTIVITY = gql`
   mutation DeleteActivity($id: Int!) {
     delete_activities_by_pk(id: $id) {
       id
+    }
+  }
+`;
+export const INSERT_GROUP = gql`
+  mutation InsertGroup(
+    $name: String!
+    $token: String!
+  ) {
+    insert_groups(
+      objects: {
+        name: $name
+        token: $token
+      }
+    ) {
+      affected_rows
+      returning {
+        id
+        name
+        token
+        created_at
+        updated_at
+      }
+    }
+  }
+`;
+
+export const INSERT_ITINERARY = gql`
+  mutation InsertItinerary(
+    $group_id: uuid!
+    $title: String!
+    $destination: String
+    $start_date: date!
+    $end_date: date!
+    $travel_purpose: String
+    $location_type: String!
+    $created_by: Int
+  ) {
+    insert_itineraries(
+      objects: {
+        group_id: $group_id
+        title: $title
+        destination: $destination
+        start_date: $start_date
+        end_date: $end_date
+        travel_purpose: $travel_purpose
+        location_type: $location_type
+        created_by: $created_by
+      }
+    ) {
+      affected_rows
+      returning {
+        id
+        group_id
+        title
+        destination
+        start_date
+        end_date
+        travel_purpose
+        location_type
+        created_by
+        updated_at
+        total_budget
+      }
+    }
+  }
+`;
+
+export const UPDATE_ITINERARY_TOTAL_BUDGET = gql`
+  mutation UpdateItineraryTotalBudget(
+    $id: Int!
+    $total_budget: numeric!
+  ) {
+    update_itineraries_by_pk(
+      pk_columns: { id: $id }
+      _set: { total_budget: $total_budget }
+    ) {
+      id
+      total_budget
+      updated_at
     }
   }
 `;

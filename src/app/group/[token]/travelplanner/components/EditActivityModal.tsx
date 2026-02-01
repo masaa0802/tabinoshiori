@@ -35,6 +35,7 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [location, setLocation] = useState("");
+  const [placeName, setPlaceName] = useState("");
   const [notes, setNotes] = useState("");
   const [type, setType] = useState(typeOptions[0].value);
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
@@ -71,6 +72,7 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
       setDate(activityDate.toISOString().split('T')[0]);
       setTime(activity.time.substring(0, 5)); // HH:MM:SS から HH:MM を取得
       setLocation(activity.location);
+      setPlaceName(activity.name);
       setNotes(activity.notes || "");
       setType(activity.type);
       setPhotoUrl(activity.photo_url || "");
@@ -176,10 +178,16 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
       placesService.current.getDetails(
         {
           placeId: suggestion.place_id,
-          fields: ['photos', 'name', 'formatted_address', 'geometry']
+          fields: ['photos', 'name', 'formatted_address', 'geometry'],
+          language: 'ja'
         },
         (place, status) => {
           if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
+            // 場所の名前を保存（住所を除く）
+            if (place.name) {
+              setPlaceName(place.name);
+            }
+
             // 緯度・経度を取得
             if (place.geometry && place.geometry.location) {
               setLat(place.geometry.location.lat());
@@ -189,7 +197,10 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
             if (place.photos && place.photos.length > 0) {
               // 最初の写真のURLを取得（幅400pxで）
               const photoUrl = place.photos[0].getUrl({ maxWidth: 400 });
-              setPhotoUrl(photoUrl);
+              // Google Maps画像は403エラーが発生するため保存しない
+              if (!photoUrl.includes('maps.googleapis.com')) {
+                setPhotoUrl(photoUrl);
+              }
             }
           }
         }
@@ -202,10 +213,13 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
     if (!activity) return;
 
     try {
+      // placeNameがあれば使用、なければlocationを使用
+      const activityName = placeName || location;
+
       await updateActivity({
         variables: {
           id: activity.id,
-          name: location,
+          name: activityName,
           location,
           notes,
           type,
