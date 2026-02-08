@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import MapContent from "../map/components/MapContent";
 import BudgetContent from "../budget/components/BudgetContent";
+import InformationContent from "../information/components/InformationContent";
 import { GET_ITINERARIES, GET_ITINERARY_BY_ID, GET_ACTIVITIES } from "@/graphql/queries";
 import { DELETE_ACTIVITY, INSERT_ITINERARY, INSERT_GROUP } from "@/graphql/mutates";
 import { GoogleMapsProvider } from "@/components/GoogleMapsProvider";
@@ -654,6 +655,16 @@ export default function TravelPlanner() {
               >
                 予算
               </button>
+              <button
+                className={`flex-shrink-0 px-3 py-2 sm:px-4 sm:py-3 font-bold text-sm sm:text-base ${
+                  activeTab === "information"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500"
+                }`}
+                onClick={() => setActiveTab("information")}
+              >
+                情報
+              </button>
             </div>
           </div>
         </div>
@@ -849,6 +860,14 @@ export default function TravelPlanner() {
               }}
               selectedDay={selectedDay}
             />
+          ) : activeTab === "information" ? (
+            <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden">
+              <InformationContent
+                itinerary_id={travelPlan.id}
+                startDate={travelPlan.start_date}
+                endDate={travelPlan.end_date}
+              />
+            </div>
           ) : (
             <>
               {/* メインエリア：日程詳細 */}

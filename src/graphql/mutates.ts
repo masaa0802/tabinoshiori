@@ -257,3 +257,129 @@ export const UPDATE_ITINERARY_TOTAL_BUDGET = gql`
     }
   }
 `;
+
+export const INSERT_TRAVEL_DOCUMENT = gql`
+  mutation InsertTravelDocument(
+    $itinerary_id: Int!
+    $title: String!
+    $category: String!
+    $date: timestamp
+    $reservation_number: String
+    $notes: String
+    $files: [document_files_insert_input!]!
+  ) {
+    insert_travel_documents_one(
+      object: {
+        itinerary_id: $itinerary_id
+        title: $title
+        category: $category
+        date: $date
+        reservation_number: $reservation_number
+        notes: $notes
+        document_files: { data: $files }
+      }
+    ) {
+      id
+      title
+      category
+      date
+      reservation_number
+      notes
+      created_at
+      document_files {
+        id
+        file_url
+        file_type
+        file_name
+        file_size
+        mime_type
+        cloudinary_public_id
+      }
+    }
+  }
+`;
+
+export const UPDATE_TRAVEL_DOCUMENT = gql`
+  mutation UpdateTravelDocument(
+    $id: Int!
+    $title: String
+    $category: String
+    $date: timestamp
+    $reservation_number: String
+    $notes: String
+  ) {
+    update_travel_documents_by_pk(
+      pk_columns: { id: $id }
+      _set: {
+        title: $title
+        category: $category
+        date: $date
+        reservation_number: $reservation_number
+        notes: $notes
+        updated_at: "now()"
+      }
+    ) {
+      id
+      title
+      category
+      date
+      reservation_number
+      notes
+      updated_at
+    }
+  }
+`;
+
+export const DELETE_TRAVEL_DOCUMENT = gql`
+  mutation DeleteTravelDocument($id: Int!) {
+    delete_travel_documents_by_pk(id: $id) {
+      id
+      document_files {
+        cloudinary_public_id
+      }
+    }
+  }
+`;
+
+export const INSERT_DOCUMENT_FILE = gql`
+  mutation InsertDocumentFile(
+    $document_id: Int!
+    $file_url: String!
+    $file_type: String!
+    $file_name: String!
+    $file_size: Int
+    $mime_type: String
+    $cloudinary_public_id: String
+    $display_order: Int
+  ) {
+    insert_document_files_one(
+      object: {
+        document_id: $document_id
+        file_url: $file_url
+        file_type: $file_type
+        file_name: $file_name
+        file_size: $file_size
+        mime_type: $mime_type
+        cloudinary_public_id: $cloudinary_public_id
+        display_order: $display_order
+      }
+    ) {
+      id
+      file_url
+      file_name
+      file_type
+      file_size
+      mime_type
+      cloudinary_public_id
+    }
+  }
+`;
+
+export const DELETE_DOCUMENT_FILE = gql`
+  mutation DeleteDocumentFile($id: Int!) {
+    delete_document_files_by_pk(id: $id) {
+      id
+      cloudinary_public_id
+    }
+  }
+`;
