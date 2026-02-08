@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import AddActivityModal from "../components/AddActivityModal";
 import EditActivityModal from "../components/EditActivityModal";
+import ActivityDetailModal from "../components/ActivityDetailModal";
 
 interface GroupData {
   groupName: string;
@@ -105,6 +106,8 @@ export default function TravelPlanner() {
   const [isMobileParticipantsOpen, setIsMobileParticipantsOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [detailActivity, setDetailActivity] = useState<Activity | null>(null);
   const [selectedDateForModal, setSelectedDateForModal] = useState<string>("");
   const [participants, setParticipants] = useState<string[]>([]);
   const [isAddParticipantModalOpen, setIsAddParticipantModalOpen] = useState(false);
@@ -117,6 +120,10 @@ export default function TravelPlanner() {
   const [swipedActivityId, setSwipedActivityId] = useState<number | null>(null);
   const [touchStart, setTouchStart] = useState<number>(0);
   const [touchCurrent, setTouchCurrent] = useState<number>(0);
+  // タップ検出用（Y軸移動量と開始時刻で区別）
+  const [touchStartY, setTouchStartY] = useState<number>(0);
+  const [touchCurrentY, setTouchCurrentY] = useState<number>(0);
+  const [touchStartTime, setTouchStartTime] = useState<number>(0);
 
   // Load group data from localStorage if it's a new group
   useEffect(() => {
@@ -565,23 +572,45 @@ export default function TravelPlanner() {
     }
   };
 
+  // 詳細モーダルを開く
+  const openActivityDetail = (activity: Activity) => {
+    setDetailActivity(activity);
+    setDetailModalOpen(true);
+  };
+
   // スワイプハンドラー
   const handleTouchStart = (e: React.TouchEvent, activityId: number) => {
     setTouchStart(e.touches[0].clientX);
     setTouchCurrent(e.touches[0].clientX);
+    setTouchStartY(e.touches[0].clientY);
+    setTouchCurrentY(e.touches[0].clientY);
+    setTouchStartTime(Date.now());
     setSwipedActivityId(activityId);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (touchStart === 0) return;
     setTouchCurrent(e.touches[0].clientX);
+    setTouchCurrentY(e.touches[0].clientY);
   };
 
-  const handleTouchEnd = () => {
-    const diff = touchStart - touchCurrent;
+  const handleTouchEnd = (activity: Activity) => {
+    const diffX = Math.abs(touchStart - touchCurrent);
+    const diffY = Math.abs(touchStartY - touchCurrentY);
+    const elapsed = Date.now() - touchStartTime;
 
+    // タップ判定: 移動量が小さく、短時間のタッチ
+    if (diffX < 10 && diffY < 10 && elapsed < 300) {
+      openActivityDetail(activity);
+      setSwipedActivityId(null);
+      setTouchStart(0);
+      setTouchCurrent(0);
+      return;
+    }
+
+    const swipeDiff = touchStart - touchCurrent;
     // 50px以上左にスワイプした場合、ボタンを表示
-    if (diff > 50) {
+    if (swipeDiff > 50) {
       // ボタンを表示したまま
     } else {
       // スワイプを元に戻す
@@ -988,13 +1017,19 @@ export default function TravelPlanner() {
 
                             {/* スワイプ可能なコンテンツ */}
                             <div
-                              className="bg-white rounded-lg border border-gray-200 shadow-sm group-hover:shadow overflow-hidden relative transition-transform duration-200 ease-out"
+                              className="bg-white rounded-lg border border-gray-200 shadow-sm group-hover:shadow overflow-hidden relative transition-transform duration-200 ease-out cursor-pointer"
                               style={{
                                 transform: `translateX(-${getSwipeOffset(activity.id)}px)`
                               }}
                               onTouchStart={(e) => handleTouchStart(e, activity.id)}
                               onTouchMove={handleTouchMove}
-                              onTouchEnd={handleTouchEnd}
+                              onTouchEnd={() => handleTouchEnd(activity)}
+                              onClick={() => {
+                                // デスクトップ用: スワイプ状態でなければ詳細を開く
+                                if (!swipedActivityId) {
+                                  openActivityDetail(activity);
+                                }
+                              }}
                             >
                               {/* 背景画像 */}
                               {activity.photo_url && (
@@ -1037,7 +1072,7 @@ export default function TravelPlanner() {
                                   {/* デスクトップ用ボタン */}
                                   <div className="hidden lg:flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button
-                                      onClick={() => startEditActivity(activity)}
+                                      onClick={(e) => { e.stopPropagation(); startEditActivity(activity); }}
                                       className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded"
                                       title="編集"
                                     >
@@ -1046,7 +1081,7 @@ export default function TravelPlanner() {
                                       </svg>
                                     </button>
                                     <button
-                                      onClick={() => handleDeleteActivity(index)}
+                                      onClick={(e) => { e.stopPropagation(); handleDeleteActivity(index); }}
                                       className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
                                       title="削除"
                                     >
@@ -1113,6 +1148,19 @@ export default function TravelPlanner() {
           refetchActivities(); // データを再取得
         }}
         activity={editingActivity}
+      />
+      <ActivityDetailModal
+        isOpen={detailModalOpen}
+        onClose={() => {
+          setDetailModalOpen(false);
+          setDetailActivity(null);
+        }}
+        activity={detailActivity}
+        onEdit={(activity) => {
+          setDetailModalOpen(false);
+          setDetailActivity(null);
+          startEditActivity(activity);
+        }}
       />
 
       {/* 参加者追加モーダル */}
