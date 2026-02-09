@@ -206,10 +206,23 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
             }
 
             if (place.photos && place.photos.length > 0) {
-              // 最初の写真のURLを取得（幅400pxで）
-              const photoUrl = place.photos[0].getUrl({ maxWidth: 400 });
-              console.log('Photo URL obtained:', photoUrl);
-              setPhotoUrl(photoUrl);
+              // 最初の写真のURLを取得してキャッシュ保存
+              const googlePhotoUrl = place.photos[0].getUrl({ maxWidth: 400 });
+              fetch('/api/cache-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: googlePhotoUrl }),
+              })
+                .then(res => res.json())
+                .then(data => {
+                  if (data.cached_url) {
+                    setPhotoUrl(data.cached_url);
+                  }
+                })
+                .catch(err => {
+                  console.error('Photo cache failed, using original:', err);
+                  setPhotoUrl(googlePhotoUrl);
+                });
             }
           }
         }
