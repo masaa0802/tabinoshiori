@@ -667,17 +667,19 @@ export default function TravelPlanner() {
               />
             </div>
           ) : activeTab === "budget" ? (
-            <BudgetContent
-              itinerary_id={travelPlan.id}
-              itinerary={{
-                id: travelPlan.id,
-                start_date: travelPlan.start_date,
-                end_date: travelPlan.end_date,
-                destination: travelPlan.destination,
-                total_budget: travelPlan.total_budget,
-              }}
-              selectedDay={selectedDay}
-            />
+            <div className="flex-1 overflow-y-auto">
+              <BudgetContent
+                itinerary_id={travelPlan.id}
+                itinerary={{
+                  id: travelPlan.id,
+                  start_date: travelPlan.start_date,
+                  end_date: travelPlan.end_date,
+                  destination: travelPlan.destination,
+                  total_budget: travelPlan.total_budget,
+                }}
+                selectedDay={selectedDay}
+              />
+            </div>
           ) : (
             <>
               {/* メインエリア：日程詳細 */}
