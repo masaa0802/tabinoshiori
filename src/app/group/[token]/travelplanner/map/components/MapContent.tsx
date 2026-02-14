@@ -27,7 +27,6 @@ interface GroupData {
   startDate: string;
   endDate: string;
   purposes: string[];
-  participants: string[];
   createdAt: string;
   token: string;
 }

@@ -417,21 +417,6 @@ export default function TravelPlanner() {
 
   const activities: DayPlan[] = groupedActivities;
 
-  // 目的コードを日本語ラベルに変換
-  const getPurposeLabel = (purpose: string) => {
-    const purposeMap: { [key: string]: string } = {
-      'accommodation': '宿泊場所の雰囲気を楽しみたい',
-      'relaxation': 'のんびり過ごす',
-      'newAtmosphere': '日常と違う雰囲気を味わう',
-      'scenery': '風景・景色を楽しみたい',
-      'refresh': 'リフレッシュ・気分転換したい',
-      'sightseeing': '観光地や名所を巡りたい',
-      'food': '旅先の食べ物を堪能したい',
-      'other': 'その他'
-    };
-    return purposeMap[purpose] || purpose;
-  };
-
   // アクティビティタイプに応じたアイコン取得
   const getActivityIcon = (type: string) => {
     switch (type) {
