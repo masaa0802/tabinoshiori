@@ -117,6 +117,29 @@ export default function TravelPlanner() {
   const [touchStart, setTouchStart] = useState<number>(0);
   const [touchCurrent, setTouchCurrent] = useState<number>(0);
 
+  // しおり表示時にlocalStorageへ保存（最近作ったしおり用）
+  useEffect(() => {
+    if (!groupToken || !travelPlannerId) return;
+    // itineraryDataのロード完了後に保存
+    const itinerary = itineraryData?.itineraries_by_pk;
+    if (!itinerary) return;
+    const existing = localStorage.getItem(`shiori_${groupToken}`);
+    let existingCreatedAt: string | undefined;
+    if (existing) {
+      try { existingCreatedAt = JSON.parse(existing).createdAt; } catch { /* ignore */ }
+    }
+    const shioriData = {
+      token: groupToken,
+      itineraryId: parseInt(travelPlannerId),
+      groupName: itinerary.title || '',
+      destination: itinerary.destination || '',
+      startDate: itinerary.start_date || '',
+      endDate: itinerary.end_date || '',
+      createdAt: existingCreatedAt || new Date().toISOString(),
+    };
+    localStorage.setItem(`shiori_${groupToken}`, JSON.stringify(shioriData));
+  }, [groupToken, travelPlannerId, itineraryData]);
+
   // Load group data from localStorage if it's a new group
   useEffect(() => {
     if (groupToken) {

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import RecentPlans from '@/components/RecentPlans';
 
 const page: React.FC = () => {
   return (
@@ -77,6 +78,9 @@ const page: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* 最近作ったしおり */}
+      <RecentPlans />
 
       {/* 機能紹介セクション */}
       <section id="features" className="py-24 px-4 bg-gradient-to-b from-gray-50 to-white">
