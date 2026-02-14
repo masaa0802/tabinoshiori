@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@apollo/client';
 import { INSERT_GROUP, INSERT_ITINERARY } from '@/graphql/mutates';
+import { regions, prefectures } from '@/data/countries';
 
 export default function Group() {
   const router = useRouter();
@@ -20,24 +21,22 @@ export default function Group() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [purposes, setPurposes] = useState<string[]>([]);
+  const [countrySearch, setCountrySearch] = useState('');
+  const [prefectureSearch, setPrefectureSearch] = useState('');
 
+  const allCountries = regions.flatMap(r => r.countries);
 
-  const prefectures = [
-    '北海道', '青森県', '岩手県', '宮城県', '秋田県', '山形県', '福島県',
-    '茨城県', '栃木県', '群馬県', '埼玉県', '千葉県', '東京都', '神奈川県',
-    '新潟県', '富山県', '石川県', '福井県', '山梨県', '長野県', '岐阜県',
-    '静岡県', '愛知県', '三重県', '滋賀県', '京都府', '大阪府', '兵庫県',
-    '奈良県', '和歌山県', '鳥取県', '島根県', '岡山県', '広島県', '山口県',
-    '徳島県', '香川県', '愛媛県', '高知県', '福岡県', '佐賀県', '長崎県',
-    '熊本県', '大分県', '宮崎県', '鹿児島県', '沖縄県'
-  ];
+  const countrySuggestions = countrySearch
+    ? allCountries.filter(
+        c => c.includes(countrySearch) && !selectedCountries.includes(c)
+      )
+    : [];
 
-  const countries = [
-    'アメリカ', 'イギリス', 'フランス', 'イタリア', 'スペイン', 'ドイツ',
-    'オーストラリア', '韓国', '中国', 'タイ', 'シンガポール', 'マレーシア',
-    'インドネシア', 'ベトナム', 'カナダ', 'メキシコ', 'ブラジル', 'エジプト',
-    'トルコ', 'インド', 'ニュージーランド'
-  ];
+  const prefectureSuggestions = prefectureSearch
+    ? prefectures.filter(
+        p => p.includes(prefectureSearch) && !selectedPrefectures.includes(p)
+      )
+    : [];
 
   const handleAddParticipant = () => {
     if (newParticipant.trim()) {
@@ -225,46 +224,124 @@ export default function Group() {
                 </label>
               </div>
 
-              {/* 都道府県選択 */}
+              {/* 都道府県選択（タグ入力） */}
               {tripType === 'domestic' && (
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    訪問する都道府県を選択（複数選択可）
+                    訪問する都道府県を入力（複数選択可）
                   </label>
-                  <div className="grid grid-cols-4 gap-2 p-4 border rounded-md bg-white max-h-60 overflow-y-auto">
-                    {prefectures.map((prefecture) => (
-                      <label key={prefecture} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedPrefectures.includes(prefecture)}
-                          onChange={() => handlePrefectureChange(prefecture)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="text-sm">{prefecture}</span>
-                      </label>
-                    ))}
+                  {/* 選択済みタグ */}
+                  {selectedPrefectures.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {selectedPrefectures.map((prefecture) => (
+                        <span
+                          key={prefecture}
+                          className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+                        >
+                          {prefecture}
+                          <button
+                            type="button"
+                            onClick={() => handlePrefectureChange(prefecture)}
+                            className="text-blue-500 hover:text-blue-700 font-bold"
+                          >
+                            &times;
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {/* 入力欄 */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="都道府県名を入力..."
+                      value={prefectureSearch}
+                      onChange={(e) => setPrefectureSearch(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    />
+                    {/* サジェスト候補 */}
+                    {prefectureSuggestions.length > 0 && (
+                      <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                        {prefectureSuggestions.map((prefecture) => (
+                          <li
+                            key={prefecture}
+                            onClick={() => {
+                              handlePrefectureChange(prefecture);
+                              setPrefectureSearch('');
+                            }}
+                            className="px-4 py-2 text-sm cursor-pointer hover:bg-blue-50"
+                          >
+                            {prefecture}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {prefectureSearch && prefectureSuggestions.length === 0 && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+                        <p className="px-4 py-2 text-sm text-gray-500">該当する都道府県が見つかりません</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
 
-              {/* 国選択 */}
+              {/* 国選択（タグ入力） */}
               {tripType === 'overseas' && (
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    訪問する国を選択（複数選択可）
+                    訪問する国を入力（複数選択可）
                   </label>
-                  <div className="grid grid-cols-3 gap-2 p-4 border rounded-md bg-white max-h-60 overflow-y-auto">
-                    {countries.map((country) => (
-                      <label key={country} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedCountries.includes(country)}
-                          onChange={() => handleCountryChange(country)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="text-sm">{country}</span>
-                      </label>
-                    ))}
+                  {/* 選択済みタグ */}
+                  {selectedCountries.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {selectedCountries.map((country) => (
+                        <span
+                          key={country}
+                          className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+                        >
+                          {country}
+                          <button
+                            type="button"
+                            onClick={() => handleCountryChange(country)}
+                            className="text-blue-500 hover:text-blue-700 font-bold"
+                          >
+                            &times;
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {/* 入力欄 */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="国名を入力..."
+                      value={countrySearch}
+                      onChange={(e) => setCountrySearch(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    />
+                    {/* サジェスト候補 */}
+                    {countrySuggestions.length > 0 && (
+                      <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                        {countrySuggestions.map((country) => (
+                          <li
+                            key={country}
+                            onClick={() => {
+                              handleCountryChange(country);
+                              setCountrySearch('');
+                            }}
+                            className="px-4 py-2 text-sm cursor-pointer hover:bg-blue-50"
+                          >
+                            {country}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {countrySearch && countrySuggestions.length === 0 && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+                        <p className="px-4 py-2 text-sm text-gray-500">該当する国が見つかりません</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
