@@ -9,7 +9,6 @@ interface AddBudgetModalProps {
   itineraryId: number;
   onBudgetAdded: () => void;
   defaultDate?: string;
-  participants?: string[];
   itinerary?: {
     start_date: string;
     end_date: string;
@@ -32,7 +31,6 @@ const AddBudgetModal: React.FC<AddBudgetModalProps> = ({
   itineraryId,
   onBudgetAdded,
   defaultDate = '',
-  participants = [],
   itinerary
 }) => {
   const [formData, setFormData] = useState({
@@ -41,7 +39,6 @@ const AddBudgetModal: React.FC<AddBudgetModalProps> = ({
     amount: '',
     description: '',
     currency: 'JPY',
-    paidBy: participants[0] || '' // デフォルトで最初の参加者を選択
   });
 
   // 旅行プラン情報を取得（propsで渡されていない場合のフォールバック）
@@ -142,7 +139,6 @@ const AddBudgetModal: React.FC<AddBudgetModalProps> = ({
           amount: parseFloat(formData.amount),
           description: formData.description,
           currency: formData.currency,
-          paid_by: formData.paidBy,
         },
         refetchQueries: ['GetBudgets'],
         awaitRefetchQueries: true,
@@ -156,7 +152,6 @@ const AddBudgetModal: React.FC<AddBudgetModalProps> = ({
         amount: '',
         description: '',
         currency: 'JPY',
-        paidBy: participants[0] || ''
       });
     } catch (error) {
       console.error('支出の追加に失敗しました:', error);
@@ -231,29 +226,6 @@ const AddBudgetModal: React.FC<AddBudgetModalProps> = ({
                 この日のアクティビティはありません
               </p>
             )}
-          </div>
-
-          {/* 建て替え者 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              建て替えた人 <span className="text-red-500">*</span>
-            </label>
-            <select
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={formData.paidBy}
-              onChange={(e) => handleInputChange('paidBy', e.target.value)}
-              required
-            >
-              {participants.length > 0 ? (
-                participants.map((participant) => (
-                  <option key={participant} value={participant}>
-                    {participant}
-                  </option>
-                ))
-              ) : (
-                <option value="">参加者データがありません</option>
-              )}
-            </select>
           </div>
 
           {/* 金額 */}

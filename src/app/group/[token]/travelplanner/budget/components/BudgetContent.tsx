@@ -29,7 +29,6 @@ interface GraphQLBudget {
 }
 
 interface BudgetContentProps {
-  participants?: string[];
   itinerary_id?: number;
   itinerary?: {
     id: number;
@@ -41,7 +40,7 @@ interface BudgetContentProps {
   selectedDay?: number;
 }
 
-const BudgetContent: React.FC<BudgetContentProps> = ({ participants = [], itinerary_id, itinerary, selectedDay = 1 }) => {
+const BudgetContent: React.FC<BudgetContentProps> = ({ itinerary_id, itinerary, selectedDay = 1 }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [isEditingBudget, setIsEditingBudget] = useState(false);
@@ -318,7 +317,6 @@ const BudgetContent: React.FC<BudgetContentProps> = ({ participants = [], itiner
           itineraryId={itineraryId!}
           onBudgetAdded={onBudgetAdded}
           defaultDate={selectedDate}
-          participants={participants}
           itinerary={currentItinerary ? {
             start_date: currentItinerary.start_date,
             end_date: currentItinerary.end_date,

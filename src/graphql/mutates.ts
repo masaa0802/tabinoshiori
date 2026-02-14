@@ -57,7 +57,6 @@ export const INSERT_BUDGET = gql`
     $amount: numeric!
     $description: String
     $currency: String
-    $paid_by: String
   ) {
     insert_budgets(
       objects: {
@@ -68,7 +67,6 @@ export const INSERT_BUDGET = gql`
         amount: $amount
         description: $description
         currency: $currency
-        paid_by: $paid_by
       }
     ) {
       affected_rows
@@ -81,7 +79,6 @@ export const INSERT_BUDGET = gql`
         amount
         description
         currency
-        paid_by
         created_at
       }
     }

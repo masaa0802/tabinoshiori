@@ -19,7 +19,6 @@ import {
   Sunrise,
   Globe,
   Clock,
-  Users,
   ChevronRight,
   ChevronLeft,
   Star,
@@ -194,20 +193,6 @@ export default function TravelPlanner() {
                 </div>
               </div>
               
-              <div className="p-4 border-t border-gray-200">
-                <h2 className="font-semibold text-gray-700 mb-2">参加者</h2>
-                <div className="space-y-2">
-                  {tripInfo.participants.map((person, index) => (
-                    <div key={index} className="flex items-center text-sm text-gray-600">
-                      <Users className="w-4 h-4 mr-2" />
-                      {person}
-                    </div>
-                  ))}
-                  <button className="text-blue-600 text-sm flex items-center mt-2">
-                    + 参加者を追加
-                  </button>
-                </div>
-              </div>
             </div>
             {activeTab === 'map' ? (
           <MapPage />

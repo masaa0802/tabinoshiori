@@ -12,8 +12,6 @@ export default function Group() {
   const router = useRouter();
   const [insertGroup] = useMutation(INSERT_GROUP);
   const [insertItinerary] = useMutation(INSERT_ITINERARY);
-  const [participants, setParticipants] = useState<string[]>([]);
-  const [newParticipant, setNewParticipant] = useState('');
   const [tripType, setTripType] = useState('domestic');
   const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
@@ -37,20 +35,6 @@ export default function Group() {
         p => p.includes(prefectureSearch) && !selectedPrefectures.includes(p)
       )
     : [];
-
-  const handleAddParticipant = () => {
-    if (newParticipant.trim()) {
-      setParticipants([...participants, newParticipant.trim()]);
-      setNewParticipant('');
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddParticipant();
-    }
-  };
 
   const handleTripTypeChange = (type: string) => {
     setTripType(type);
@@ -479,50 +463,6 @@ export default function Group() {
               <p className="text-sm text-blue-700 mt-1">
                 目的や好みを選択すると、あなたの旅行に合わせたおすすめスポットが表示されます。
                 より詳細な情報を入力すると、よりパーソナライズされた旅のプランを提案できます。
-              </p>
-            </div>
-
-            {/* 参加者 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                参加者
-              </label>
-              <div className="flex items-center space-x-2 mb-4">
-                <input
-                  type="text"
-                  placeholder="名前を入力"
-                  value={newParticipant}
-                  onChange={(e) => setNewParticipant(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="flex-grow px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                />
-                <button 
-                  type="button" 
-                  onClick={handleAddParticipant}
-                  className="px-4 py-2 bg-gray-200 rounded-md text-gray-700 hover:bg-gray-300"
-                >
-                  追加
-                </button>
-              </div>
-              <div className="bg-gray-50 p-3 rounded-md">
-                <div className="flex items-center justify-between p-2 border-b">
-                  <span>あなた（作成者）</span>
-                </div>
-                {participants.map((participant, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 border-b">
-                    <span>{participant}</span>
-                    <button
-                      type="button"
-                      onClick={() => setParticipants(participants.filter((_, i) => i !== index))}
-                      className="text-red-500 hover:text-red-700 font-light"
-                    >
-                      削除
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <p className="text-sm text-gray-500 mt-2">
-                ※参加者はあとからでも追加できます
               </p>
             </div>
 
