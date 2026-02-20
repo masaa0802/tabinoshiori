@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import { INSERT_BUDGET } from '@/graphql/mutates';
 import { GET_ACTIVITIES_BY_DATE, GET_ITINERARIES } from '@/graphql/queries';
+import LoadingAirplane from '@/components/LoadingAirplane';
 
 interface AddBudgetModalProps {
   isOpen: boolean;
@@ -277,7 +278,7 @@ const AddBudgetModal: React.FC<AddBudgetModalProps> = ({
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
               disabled={isSubmitting}
             >
-              {isSubmitting ? '追加中...' : '支出を追加'}
+              {isSubmitting ? <LoadingAirplane /> : '支出を追加'}
             </button>
           </div>
         </form>

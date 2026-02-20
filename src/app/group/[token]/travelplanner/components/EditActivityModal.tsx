@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { UPDATE_ACTIVITY } from "@/graphql/mutates";
+import LoadingAirplane from "@/components/LoadingAirplane";
 
 interface EditActivityModalProps {
   isOpen: boolean;
@@ -45,7 +46,7 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
   const [lng, setLng] = useState<number | null>(null);
   const [placeId, setPlaceId] = useState("");
 
-  const [updateActivity] = useMutation(UPDATE_ACTIVITY);
+  const [updateActivity, { loading: isSubmitting }] = useMutation(UPDATE_ACTIVITY);
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
   const placesService = useRef<google.maps.places.PlacesService | null>(null);
 
@@ -244,7 +245,12 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: '#0000004d' }}>
         <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
-          <div className="text-center">Google Maps APIを読み込み中...</div>
+          <div className="flex flex-col items-center">
+            <div className="mb-2">
+              <LoadingAirplane />
+            </div>
+            <p className="text-gray-600">Google Maps APIを読み込み中...</p>
+          </div>
         </div>
       </div>
     );
@@ -363,14 +369,16 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
               type="button"
               className="mr-2 px-4 py-2 rounded bg-gray-200 text-gray-700"
               onClick={onClose}
+              disabled={isSubmitting}
             >
               キャンセル
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded bg-blue-600 text-white font-bold"
+              className="px-4 py-2 rounded bg-blue-600 text-white font-bold disabled:opacity-50 min-w-[64px]"
+              disabled={isSubmitting}
             >
-              更新
+              {isSubmitting ? <LoadingAirplane /> : '更新'}
             </button>
           </div>
         </form>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import { UPDATE_BUDGET } from '@/graphql/mutates';
 import { GET_ACTIVITIES_BY_DATE } from '@/graphql/queries';
+import LoadingAirplane from '@/components/LoadingAirplane';
 
 interface Budget {
   id: number;
@@ -228,7 +229,7 @@ const EditBudgetModal: React.FC<EditBudgetModalProps> = ({
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
               disabled={isSubmitting}
             >
-              {isSubmitting ? '更新中...' : '更新'}
+              {isSubmitting ? <LoadingAirplane /> : '更新'}
             </button>
           </div>
         </form>

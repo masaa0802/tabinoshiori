@@ -7,11 +7,13 @@ import { useRouter } from 'next/navigation';
 import { useMutation } from '@apollo/client';
 import { INSERT_GROUP, INSERT_ITINERARY } from '@/graphql/mutates';
 import { regions, prefectures } from '@/data/countries';
+import LoadingAirplane from '@/components/LoadingAirplane';
 
 export default function Group() {
   const router = useRouter();
-  const [insertGroup] = useMutation(INSERT_GROUP);
-  const [insertItinerary] = useMutation(INSERT_ITINERARY);
+  const [insertGroup, { loading: groupLoading }] = useMutation(INSERT_GROUP);
+  const [insertItinerary, { loading: itineraryLoading }] = useMutation(INSERT_ITINERARY);
+  const isSubmitting = groupLoading || itineraryLoading;
   const [tripType, setTripType] = useState('domestic');
   const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
@@ -470,9 +472,10 @@ export default function Group() {
             <div className="pt-4">
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors duration-300"
+                disabled={isSubmitting}
+                className="w-full bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors duration-300 disabled:opacity-50"
               >
-                しおり作りを開始
+                {isSubmitting ? <LoadingAirplane /> : 'しおり作りを開始'}
               </button>
             </div>
           </form>

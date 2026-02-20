@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import AddActivityModal from "../components/AddActivityModal";
 import EditActivityModal from "../components/EditActivityModal";
+import LoadingAirplane from "@/components/LoadingAirplane";
 
 interface GroupData {
   groupName: string;
@@ -237,12 +238,7 @@ export default function TravelPlanner() {
 
   if ((loading || itineraryLoading) && !isNewGroup) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4 mx-auto"></div>
-          <p>読み込み中...</p>
-        </div>
-      </div>
+      <LoadingAirplane fullPage message="読み込み中..." />
     );
   }
 
@@ -292,12 +288,7 @@ export default function TravelPlanner() {
     // Use the created itinerary ID or show loading state
     if (!createdItineraryId) {
       return (
-        <div className="flex items-center justify-center h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4 mx-auto"></div>
-            <p>旅行プランを作成中...</p>
-          </div>
-        </div>
+        <LoadingAirplane fullPage message="旅行プランを作成中..." />
       );
     }
 

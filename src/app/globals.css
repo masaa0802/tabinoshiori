@@ -188,3 +188,14 @@
   animation: slideshow 20s infinite;
   animation-delay: 15s;
 }
+
+/* 飛行機旋回ローディングアニメーション */
+@keyframes orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-orbit {
+  animation: orbit 2s linear infinite;
+  transform-origin: center center;
+}

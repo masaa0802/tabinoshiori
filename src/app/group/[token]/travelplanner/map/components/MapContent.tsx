@@ -6,6 +6,7 @@ import { GoogleMap, Marker, OverlayView } from '@react-google-maps/api';
 import { GET_ACTIVITIES } from '@/graphql/queries';
 import Image from 'next/image';
 import { useGoogleMaps } from '@/components/GoogleMapsProvider';
+import LoadingAirplane from '@/components/LoadingAirplane';
 
 interface Activity {
   id: number;
@@ -237,12 +238,7 @@ const MapContent: React.FC<MapContentProps> = ({
   // 新しいグループで読み込み中、または既存グループでGraphQL読み込み中の場合
   if (!isNewGroup && loading) {
     return (
-      <div className="w-full h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
-          <p>アクティビティを読み込み中...</p>
-        </div>
-      </div>
+      <LoadingAirplane fullPage message="アクティビティを読み込み中..." />
     );
   }
 
@@ -399,12 +395,7 @@ const MapContent: React.FC<MapContentProps> = ({
             )}
           </GoogleMap>
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
-              <p>マップを読み込み中...</p>
-            </div>
-          </div>
+          <LoadingAirplane fullPage message="マップを読み込み中..." />
         )}
       </div>
     </div>

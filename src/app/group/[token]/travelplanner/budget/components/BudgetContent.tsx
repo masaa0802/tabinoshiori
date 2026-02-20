@@ -6,6 +6,7 @@ import { GET_BUDGETS, GET_ITINERARIES, GET_ITINERARY_BY_ID } from '@/graphql/que
 import { UPDATE_ITINERARY_TOTAL_BUDGET } from '@/graphql/mutates';
 import BudgetByDate from './BudgetByDate';
 import AddBudgetModal from './AddBudgetModal';
+import LoadingAirplane from '@/components/LoadingAirplane';
 
 type Nullable<T> = T | null | undefined;
 
@@ -62,7 +63,7 @@ const BudgetContent: React.FC<BudgetContentProps> = ({ itinerary_id, itinerary, 
   const loading = itineraryLoading || itinerariesLoading;
 
   // total_budgetの更新用ミューテーション
-  const [updateTotalBudget] = useMutation(UPDATE_ITINERARY_TOTAL_BUDGET);
+  const [updateTotalBudget, { loading: isSavingBudget }] = useMutation(UPDATE_ITINERARY_TOTAL_BUDGET);
 
   // データベースからtotal_budgetを取得（リアクティブに更新されるようにuseMemoを使用）
   const tripBudget = useMemo(() => {
@@ -165,7 +166,7 @@ const BudgetContent: React.FC<BudgetContentProps> = ({ itinerary_id, itinerary, 
   }, []);
 
   if (loading) {
-    return <div className="p-6">読み込み中...</div>;
+    return <LoadingAirplane fullPage message="読み込み中..." />;
   }
 
   if (!currentItinerary) {
@@ -210,13 +211,15 @@ const BudgetContent: React.FC<BudgetContentProps> = ({ itinerary_id, itinerary, 
                       />
                       <button
                         onClick={handleSaveBudget}
-                        className="bg-green-600 text-white px-2 py-1 rounded text-sm"
+                        className="bg-green-600 text-white px-2 py-1 rounded text-sm disabled:opacity-50 min-w-[48px]"
+                        disabled={isSavingBudget}
                       >
-                        保存
+                        {isSavingBudget ? <LoadingAirplane /> : '保存'}
                       </button>
                       <button
                         onClick={handleCancelEditBudget}
                         className="bg-gray-600 text-white px-2 py-1 rounded text-sm"
+                        disabled={isSavingBudget}
                       >
                         キャンセル
                       </button>
@@ -303,8 +306,10 @@ const BudgetContent: React.FC<BudgetContentProps> = ({ itinerary_id, itinerary, 
         )}
 
         {budgetsLoading && (
-          <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="bg-white rounded-xl shadow-sm p-12 flex flex-col items-center">
+            <div className="mb-4">
+              <LoadingAirplane />
+            </div>
             <p className="text-gray-500">支出データを読み込み中...</p>
           </div>
         )}
