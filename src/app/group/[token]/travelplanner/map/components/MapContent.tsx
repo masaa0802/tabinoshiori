@@ -19,6 +19,7 @@ interface Activity {
   time: string;
   notes?: string;
   photo_url?: string;
+  place_id?: string;
 }
 
 interface GroupData {
@@ -235,6 +236,14 @@ const MapContent: React.FC<MapContentProps> = ({
     return typeLabels[type] || type;
   };
 
+  // 現在地にマップを移動
+  const handleRecenterToCurrentLocation = useCallback(() => {
+    if (map && currentLocation) {
+      map.panTo(currentLocation);
+      map.setZoom(15);
+    }
+  }, [map, currentLocation]);
+
   // 新しいグループで読み込み中、または既存グループでGraphQL読み込み中の場合
   if (!isNewGroup && loading) {
     return (
@@ -252,14 +261,6 @@ const MapContent: React.FC<MapContentProps> = ({
       </div>
     );
   }
-
-  // 現在地にマップを移動
-  const handleRecenterToCurrentLocation = useCallback(() => {
-    if (map && currentLocation) {
-      map.panTo(currentLocation);
-      map.setZoom(15);
-    }
-  }, [map, currentLocation]);
 
   return (
     <div className="w-full h-full relative">
