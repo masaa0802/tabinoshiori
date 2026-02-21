@@ -80,10 +80,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Script
           strategy="afterInteractive"
-          src={`https://www.googletagmanager.com/gtag/js?id=G-BN1E62264W`}
+          src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_MEASUREMENT_ID}`}
         />
         <Script
           id="gtag-init"
@@ -97,8 +97,6 @@ export default function RootLayout({
             `,
           }}
         />
-      </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ApolloWrapper>
           <Providers>
             {children}
