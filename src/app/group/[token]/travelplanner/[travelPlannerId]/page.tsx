@@ -22,6 +22,7 @@ import {
 import AddActivityModal from "../components/AddActivityModal";
 import EditActivityModal from "../components/EditActivityModal";
 import LoadingAirplane from "@/components/LoadingAirplane";
+import ActivityImage from "@/components/ActivityImage";
 
 interface GroupData {
   groupName: string;
@@ -801,26 +802,19 @@ export default function TravelPlanner() {
                             >
                               {/* 背景画像 */}
                               {activity.photo_url && (
-                                <>
-                                  {console.log('Rendering image for activity:', activity.name, 'URL:', activity.photo_url)}
-                                  <div className="absolute inset-0 flex">
-                                    <div className="flex-1"></div>
-                                    <div className="w-1/2 h-full relative">
-                                      <Image
-                                        src={activity.photo_url}
-                                        alt={activity.name}
-                                        fill
-                                        className="object-cover"
-                                        onError={(e) => {
-                                          console.error('Image load error for:', activity.photo_url);
-                                          const target = e.target as HTMLImageElement;
-                                          target.style.display = 'none';
-                                        }}
-                                      />
-                                      <div className="absolute inset-0 bg-gradient-to-r from-white via-white/70 to-transparent"></div>
-                                    </div>
+                                <div className="absolute inset-0 flex">
+                                  <div className="flex-1"></div>
+                                  <div className="w-1/2 h-full relative">
+                                    <ActivityImage
+                                      src={activity.photo_url}
+                                      alt={activity.name}
+                                      placeId={activity.place_id}
+                                      fill
+                                      className="object-cover"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-r from-white via-white/70 to-transparent"></div>
                                   </div>
-                                </>
+                                </div>
                               )}
                               <div className="relative z-10 p-4">
                                 <div className="flex justify-between items-center">

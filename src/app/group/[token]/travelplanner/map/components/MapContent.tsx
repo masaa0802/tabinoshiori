@@ -4,9 +4,9 @@ import { useState, useCallback, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 import { GoogleMap, Marker, OverlayView } from '@react-google-maps/api';
 import { GET_ACTIVITIES } from '@/graphql/queries';
-import Image from 'next/image';
 import { useGoogleMaps } from '@/components/GoogleMapsProvider';
 import LoadingAirplane from '@/components/LoadingAirplane';
+import ActivityImage from '@/components/ActivityImage';
 
 interface Activity {
   id: number;
@@ -340,16 +340,13 @@ const MapContent: React.FC<MapContentProps> = ({
 
                   {/* 画像 */}
                   {selectedActivity.photo_url && (
-                    <Image
+                    <ActivityImage
                       src={selectedActivity.photo_url}
                       alt={selectedActivity.name}
+                      placeId={selectedActivity.place_id}
                       width={400}
                       height={160}
                       className="w-full h-28 sm:h-32 object-cover rounded-t-lg"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                      }}
                     />
                   )}
 
