@@ -239,6 +239,51 @@ export const INSERT_ITINERARY = gql`
   }
 `;
 
+export const INSERT_DOCUMENT = gql`
+  mutation InsertDocument(
+    $itinerary_id: Int!
+    $category: String!
+    $title: String!
+    $date: date
+    $notes: String
+    $file_url: String
+    $file_name: String
+  ) {
+    insert_documents(
+      objects: {
+        itinerary_id: $itinerary_id
+        category: $category
+        title: $title
+        date: $date
+        notes: $notes
+        file_url: $file_url
+        file_name: $file_name
+      }
+    ) {
+      affected_rows
+      returning {
+        id
+        itinerary_id
+        category
+        title
+        date
+        notes
+        file_url
+        file_name
+        created_at
+      }
+    }
+  }
+`;
+
+export const DELETE_DOCUMENT = gql`
+  mutation DeleteDocument($id: Int!) {
+    delete_documents_by_pk(id: $id) {
+      id
+    }
+  }
+`;
+
 export const UPDATE_ITINERARY_TOTAL_BUDGET = gql`
   mutation UpdateItineraryTotalBudget(
     $id: Int!

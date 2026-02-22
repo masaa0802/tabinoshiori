@@ -138,3 +138,19 @@ export const GET_ACTIVITIES_BY_DATE = gql`
     }
   }
 `;
+
+export const GET_DOCUMENTS = gql`
+  query GetDocuments($itinerary_id: Int!) {
+    documents(where: { itinerary_id: { _eq: $itinerary_id } }, order_by: { date: asc }) {
+      id
+      itinerary_id
+      category
+      title
+      date
+      notes
+      file_url
+      file_name
+      created_at
+    }
+  }
+`;
