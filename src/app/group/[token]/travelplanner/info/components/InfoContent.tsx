@@ -60,11 +60,28 @@ const InfoContent: React.FC<InfoContentProps> = ({ itinerary_id }) => {
       ? documents
       : documents.filter((d) => d.category === activeCategory);
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("この予約情報を削除しますか？")) return;
+  const handleDelete = async (doc: Document) => {
+    const message = doc.file_url
+      ? `「${doc.title}」を削除しますか？\n\n添付ファイルもCloudinaryから完全に削除されます。\nこの操作は取り消せません。`
+      : `「${doc.title}」を削除しますか？`;
+    if (!confirm(message)) return;
+
     try {
+      // Cloudinary削除を先に実行（失敗したらDB削除は行わない）
+      if (doc.file_url) {
+        const res = await fetch("/api/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ file_url: doc.file_url }),
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error ?? "ファイルの削除に失敗しました");
+        }
+      }
+
       await deleteDocument({
-        variables: { id },
+        variables: { id: doc.id },
         refetchQueries: ["GetDocuments"],
         awaitRefetchQueries: true,
       });
@@ -179,7 +196,7 @@ const InfoContent: React.FC<InfoContentProps> = ({ itinerary_id }) => {
                     )}
                   </div>
                   <button
-                    onClick={() => handleDelete(doc.id)}
+                    onClick={() => handleDelete(doc)}
                     className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors flex-shrink-0"
                     title="削除"
                   >
