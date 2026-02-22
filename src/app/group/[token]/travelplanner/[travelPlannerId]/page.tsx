@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import MapContent from "../map/components/MapContent";
 import BudgetContent from "../budget/components/BudgetContent";
+import InfoContent from "../info/components/InfoContent";
 import { GET_ITINERARIES, GET_ITINERARY_BY_ID, GET_ACTIVITIES } from "@/graphql/queries";
 import { DELETE_ACTIVITY, INSERT_ITINERARY, INSERT_GROUP } from "@/graphql/mutates";
 import { GoogleMapsProvider } from "@/components/GoogleMapsProvider";
@@ -571,6 +572,16 @@ export default function TravelPlanner() {
               >
                 予算
               </button>
+              <button
+                className={`flex-shrink-0 px-3 py-2 sm:px-4 sm:py-3 font-bold text-sm sm:text-base ${
+                  activeTab === "info"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500"
+                }`}
+                onClick={() => setActiveTab("info")}
+              >
+                情報
+              </button>
             </div>
           </div>
         </div>
@@ -579,7 +590,7 @@ export default function TravelPlanner() {
       {/* メインコンテンツ */}
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* モバイル用日程選択 */}
-        <div className="lg:hidden bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div className={`lg:hidden bg-white border-b border-gray-200 sticky top-0 z-50 ${activeTab === "info" ? "hidden" : ""}`}>
           {/* モバイル用日程タブ */}
           <div className="px-4 py-3">
             <div className="flex overflow-x-auto scrollbar-hide -mx-4 px-4">
@@ -671,6 +682,10 @@ export default function TravelPlanner() {
                 }}
                 selectedDay={selectedDay}
               />
+            </div>
+          ) : activeTab === "info" ? (
+            <div className="flex-1 overflow-y-auto">
+              <InfoContent itinerary_id={travelPlan.id} />
             </div>
           ) : (
             <>
