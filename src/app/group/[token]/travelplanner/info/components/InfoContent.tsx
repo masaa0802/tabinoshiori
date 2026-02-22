@@ -91,6 +91,15 @@ const InfoContent: React.FC<InfoContentProps> = ({ itinerary_id }) => {
     }
   };
 
+  // rawリソース（PDF）はデフォルトでattachment配信されるため、
+  // fl_attachment:falseを挿入してブラウザでインライン表示させる
+  const toInlineUrl = (url: string) => {
+    if (url.includes("/raw/upload/") && !url.includes("fl_attachment:false")) {
+      return url.replace("/raw/upload/", "/raw/upload/fl_attachment:false/");
+    }
+    return url;
+  };
+
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return null;
     const d = new Date(dateStr);
@@ -178,7 +187,7 @@ const InfoContent: React.FC<InfoContentProps> = ({ itinerary_id }) => {
                     )}
                     {doc.file_url && (
                       <a
-                        href={doc.file_url}
+                        href={toInlineUrl(doc.file_url)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline mt-2"
