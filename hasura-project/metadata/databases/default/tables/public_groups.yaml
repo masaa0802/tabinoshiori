@@ -1,0 +1,18 @@
+table:
+  name: groups
+  schema: public
+array_relationships:
+  - name: group_members
+    using:
+      foreign_key_constraint_on:
+        column: group_id
+        table:
+          name: group_members
+          schema: public
+  - name: itineraries
+    using:
+      foreign_key_constraint_on:
+        column: group_id
+        table:
+          name: itineraries
+          schema: public

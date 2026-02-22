@@ -1,0 +1,10 @@
+table:
+  name: budgets
+  schema: public
+object_relationships:
+  - name: activity
+    using:
+      foreign_key_constraint_on: activity_id
+  - name: itinerary
+    using:
+      foreign_key_constraint_on: itinerary_id

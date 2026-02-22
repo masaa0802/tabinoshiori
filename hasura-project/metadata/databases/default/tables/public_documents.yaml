@@ -1,0 +1,24 @@
+table:
+  name: documents
+  schema: public
+insert_permissions:
+  - role: anonymous
+    permission:
+      check: {}
+      columns:
+        - itinerary_id
+        - category
+        - title
+        - date
+        - notes
+        - file_url
+        - file_name
+select_permissions:
+  - role: anonymous
+    permission:
+      columns: '*'
+      filter: {}
+delete_permissions:
+  - role: anonymous
+    permission:
+      filter: {}

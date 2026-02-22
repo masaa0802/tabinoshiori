@@ -1,0 +1,32 @@
+table:
+  name: itineraries
+  schema: public
+object_relationships:
+  - name: group
+    using:
+      foreign_key_constraint_on: group_id
+  - name: user
+    using:
+      foreign_key_constraint_on: created_by
+array_relationships:
+  - name: activities
+    using:
+      foreign_key_constraint_on:
+        column: itinerary_id
+        table:
+          name: activities
+          schema: public
+  - name: budgets
+    using:
+      foreign_key_constraint_on:
+        column: itinerary_id
+        table:
+          name: budgets
+          schema: public
+  - name: travel_documents
+    using:
+      foreign_key_constraint_on:
+        column: itinerary_id
+        table:
+          name: travel_documents
+          schema: public
