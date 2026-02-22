@@ -91,11 +91,11 @@ const InfoContent: React.FC<InfoContentProps> = ({ itinerary_id }) => {
     }
   };
 
-  // rawリソース（PDF）はデフォルトでattachment配信されるため、
-  // fl_attachment:falseを挿入してブラウザでインライン表示させる
+  // rawリソース（PDF）はCloudinaryがattachment配信するため、
+  // 自前のプロキシ経由でinline表示させる
   const toInlineUrl = (url: string) => {
-    if (url.includes("/raw/upload/") && !url.includes("fl_attachment:false")) {
-      return url.replace("/raw/upload/", "/raw/upload/fl_attachment:false/");
+    if (url.includes("/raw/upload/")) {
+      return `/api/proxy?url=${encodeURIComponent(url)}`;
     }
     return url;
   };
