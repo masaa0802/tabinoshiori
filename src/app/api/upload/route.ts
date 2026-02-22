@@ -24,13 +24,16 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    // PDFはrawとして保存しないとブラウザで直接開けない
+    const resourceType = file.type === "application/pdf" ? "raw" : "image";
+
     const result = await new Promise<{ secure_url: string; original_filename: string }>(
       (resolve, reject) => {
         cloudinary.uploader
           .upload_stream(
             {
               folder: "travel-planner/documents",
-              resource_type: "auto",
+              resource_type: resourceType,
             },
             (error, result) => {
               if (error) reject(error);
