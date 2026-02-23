@@ -28,7 +28,7 @@ const ContactPage = () => {
 
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           <iframe
-            src="https://forms.gle/Rmiw5QnzkTssa19b6"
+            src="https://docs.google.com/forms/d/e/1FAIpQLSfvsKu1W20GytlyOJZ3XZ2LuAlE0qJZ7GBbcTjmscgEuBB6xw/viewform?embedded=true"
             width="100%"
             height="800"
             frameBorder="0"
