@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import RecentPlans from '@/components/RecentPlans';
+import FeatureTabDemo from '@/components/FeatureTabDemo';
 
 const page: React.FC = () => {
   return (
@@ -98,27 +99,7 @@ const page: React.FC = () => {
             {/* 機能1 */}
             <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 overflow-hidden">
               {/* デモ画面 */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 px-5 pt-5 h-52 relative overflow-hidden">
-                <div className="flex gap-4 mb-3 border-b border-blue-100 pb-2">
-                  <span className="text-xs font-bold text-blue-600 border-b-2 border-blue-600 pb-1 -mb-2.5">旅行プラン</span>
-                  <span className="text-xs text-gray-400">予算</span>
-                  <span className="text-xs text-gray-400">情報</span>
-                </div>
-                <div className="space-y-2">
-                  {[
-                    { color: 'bg-green-500', name: '金閣寺', time: '09:00' },
-                    { color: 'bg-orange-500', name: '昼食 錦市場', time: '12:00' },
-                    { color: 'bg-purple-500', name: '京都ホテル チェックイン', time: '16:00' },
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 shadow-sm">
-                      <div className={`w-2 h-2 rounded-full ${item.color} flex-shrink-0`}></div>
-                      <span className="text-xs text-gray-700 font-medium flex-1 truncate">{item.name}</span>
-                      <span className="text-xs text-gray-400">{item.time}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-blue-50 to-transparent" />
-              </div>
+              <FeatureTabDemo />
               <div className="p-8">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
