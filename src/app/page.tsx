@@ -103,9 +103,9 @@ const page: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-800">スマートプランニング</h3>
+                <h3 className="text-2xl font-bold mb-4 text-gray-800">日程・予算・予約をひとまとめ</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  AIが提案する最適なルートで、行きたい場所を効率よく巡る旅行プランを簡単作成
+                  行き先を日別に登録して旅の流れを整理。費用の記録からホテル・フライトの予約書類まで、旅に必要な情報をすべて1か所で管理できます。
                 </p>
               </div>
             </div>
@@ -118,9 +118,9 @@ const page: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-800">リアルタイム共有</h3>
+                <h3 className="text-2xl font-bold mb-4 text-gray-800">URLひとつで全員に共有</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  友達や家族とリアルタイムで旅行プランを共有・編集。みんなでワクワクを共有
+                  作成したしおりのURLを送るだけで、家族や友人と旅行プランを共有できます。アカウント登録不要で、受け取った相手もすぐに確認・編集できます。
                 </p>
               </div>
             </div>
@@ -134,9 +134,9 @@ const page: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-800">インタラクティブマップ</h3>
+                <h3 className="text-2xl font-bold mb-4 text-gray-800">マップで旅を俯瞰する</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  美しいマップ上で旅行ルートを視覚的に確認。目的地間の移動も一目瞭然
+                  登録したスポットがGoogleマップ上に順番通りに表示され、1日の動きが一目でわかります。現在地も確認できるので、旅行当日もそのまま使えます。
                 </p>
               </div>
             </div>
