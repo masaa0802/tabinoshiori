@@ -96,7 +96,29 @@ const page: React.FC = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* 機能1 */}
-            <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+            <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 overflow-hidden">
+              {/* デモ画面 */}
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 px-5 pt-5 h-52 relative overflow-hidden">
+                <div className="flex gap-4 mb-3 border-b border-blue-100 pb-2">
+                  <span className="text-xs font-bold text-blue-600 border-b-2 border-blue-600 pb-1 -mb-2.5">旅行プラン</span>
+                  <span className="text-xs text-gray-400">予算</span>
+                  <span className="text-xs text-gray-400">情報</span>
+                </div>
+                <div className="space-y-2">
+                  {[
+                    { color: 'bg-green-500', name: '金閣寺', time: '09:00' },
+                    { color: 'bg-orange-500', name: '昼食 錦市場', time: '12:00' },
+                    { color: 'bg-purple-500', name: '京都ホテル チェックイン', time: '16:00' },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 shadow-sm">
+                      <div className={`w-2 h-2 rounded-full ${item.color} flex-shrink-0`}></div>
+                      <span className="text-xs text-gray-700 font-medium flex-1 truncate">{item.name}</span>
+                      <span className="text-xs text-gray-400">{item.time}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-blue-50 to-transparent" />
+              </div>
               <div className="p-8">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +133,30 @@ const page: React.FC = () => {
             </div>
 
             {/* 機能2 */}
-            <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+            <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 overflow-hidden">
+              {/* デモ画面 */}
+              <div className="bg-gradient-to-br from-purple-50 to-violet-50 px-5 pt-5 h-52 relative overflow-hidden">
+                <div className="bg-white rounded-xl p-3 shadow-sm mb-3">
+                  <p className="text-xs text-gray-400 mb-1.5">しおりのURL</p>
+                  <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-2.5 py-1.5">
+                    <span className="text-xs text-gray-500 truncate flex-1">travel-app.com/group/abc123…</span>
+                    <span className="text-xs text-purple-600 font-semibold flex-shrink-0">コピー</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mb-2.5">
+                  <span className="text-xs text-gray-500">参加中</span>
+                  <div className="flex -space-x-1.5">
+                    {['bg-blue-400', 'bg-pink-400', 'bg-yellow-400'].map((c, i) => (
+                      <div key={i} className={`w-6 h-6 rounded-full ${c} border-2 border-white`} />
+                    ))}
+                  </div>
+                  <span className="text-xs text-gray-400">3人</span>
+                </div>
+                <div className="bg-purple-100 rounded-lg px-3 py-2">
+                  <span className="text-xs text-purple-700">アカウント登録不要・ログインなしで閲覧・編集可能</span>
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-purple-50 to-transparent" />
+              </div>
               <div className="p-8">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,7 +171,39 @@ const page: React.FC = () => {
             </div>
 
             {/* 機能3 */}
-            <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+            <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 overflow-hidden">
+              {/* デモ画面 */}
+              <div className="bg-gradient-to-br from-pink-50 to-rose-50 px-5 pt-5 h-52 relative overflow-hidden">
+                <div className="bg-emerald-100 rounded-xl h-36 relative overflow-hidden shadow-sm">
+                  {/* グリッド線でマップを表現 */}
+                  <div className="absolute inset-0 opacity-20">
+                    {[30, 55, 75].map(y => (
+                      <div key={y} className="absolute w-full border-t border-gray-500" style={{ top: `${y}%` }} />
+                    ))}
+                    {[25, 50, 75].map(x => (
+                      <div key={x} className="absolute h-full border-l border-gray-500" style={{ left: `${x}%` }} />
+                    ))}
+                  </div>
+                  {/* 道路風の線 */}
+                  <div className="absolute bg-white/50 h-1.5 w-3/4" style={{ top: '42%', left: '15%' }} />
+                  <div className="absolute bg-white/50 w-1.5 h-1/2" style={{ left: '48%', top: '25%' }} />
+                  {/* 番号付きピン */}
+                  {[
+                    { top: '20%', left: '28%', num: 1, color: 'bg-green-500' },
+                    { top: '48%', left: '58%', num: 2, color: 'bg-orange-500' },
+                    { top: '68%', left: '32%', num: 3, color: 'bg-purple-500' },
+                  ].map(({ top, left, num, color }) => (
+                    <div key={num} className="absolute" style={{ top, left }}>
+                      <div className={`w-7 h-7 ${color} rounded-full flex items-center justify-center text-white text-xs font-bold shadow-md`}>{num}</div>
+                    </div>
+                  ))}
+                  {/* 現在地 */}
+                  <div className="absolute" style={{ top: '35%', left: '68%' }}>
+                    <div className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-md" />
+                  </div>
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-pink-50 to-transparent" />
+              </div>
               <div className="p-8">
                 <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
