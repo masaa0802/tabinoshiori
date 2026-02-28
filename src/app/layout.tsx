@@ -21,8 +21,8 @@ export const metadata: Metadata = {
     default: "旅のしおり - 旅行計画をもっと簡単に、もっと楽しく",
     template: "%s | 旅のしおり"
   },
-  description: "思い出に残る旅行を、もっと簡単に。もっと楽しく。AIが提案する最適なルートで旅行プランを作成。友達や家族とリアルタイムで共有・編集できる旅行計画アプリです。",
-  keywords: ["旅行計画", "旅のしおり", "旅行プラン", "旅行", "観光", "ルート作成", "旅行スケジュール", "グループ旅行", "旅行共有", "AI旅行プラン"],
+  description: "日程・予算・予約情報をまとめて管理できる旅行計画アプリ。URLひとつで家族や友人とプランを共有し、Googleマップで行き先を確認。旅に必要なすべてが1か所に揃います。",
+  keywords: ["旅行計画", "旅のしおり", "旅行プラン", "旅行", "観光", "ルート作成", "旅行スケジュール", "グループ旅行", "旅行共有", "予算管理", "旅程表", "しおり作成"],
   authors: [{ name: "旅のしおり" }],
   creator: "旅のしおり",
   publisher: "旅のしおり",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "旅のしおり - 旅行計画をもっと簡単に、もっと楽しく",
-    description: "思い出に残る旅行を、もっと簡単に。もっと楽しく。AIが提案する最適なルートで旅行プランを作成。友達や家族とリアルタイムで共有・編集できる旅行計画アプリです。",
+    description: "日程・予算・予約情報をまとめて管理できる旅行計画アプリ。URLひとつで家族や友人とプランを共有し、Googleマップで行き先を確認。旅に必要なすべてが1か所に揃います。",
     url: '/',
     siteName: "旅のしおり",
     locale: 'ja_JP',
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: "旅のしおり - 旅行計画をもっと簡単に、もっと楽しく",
-    description: "思い出に残る旅行を、もっと簡単に。もっと楽しく。AIが提案する最適なルートで旅行プランを作成。",
+    description: "日程・予算・予約情報をまとめて管理できる旅行計画アプリ。URLひとつで家族や友人とプランを共有できます。",
     images: ['/og-image.png'],
   },
   robots: {
@@ -95,6 +95,33 @@ export default function RootLayout({
               gtag('js', new Date());
               gtag('config', '${gtag.GA_MEASUREMENT_ID}');
             `,
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              name: "旅のしおり",
+              description:
+                "日程・予算・予約情報をまとめて管理できる旅行計画アプリ。URLひとつで家族や友人とプランを共有し、Googleマップで行き先を確認できます。",
+              url:
+                process.env.NEXT_PUBLIC_BASE_URL ||
+                "https://travel-planner.vercel.app",
+              applicationCategory: "TravelApplication",
+              operatingSystem: "Web",
+              inLanguage: "ja",
+              offers: {
+                "@type": "Offer",
+                price: "0",
+                priceCurrency: "JPY",
+              },
+              publisher: {
+                "@type": "Organization",
+                name: "旅のしおり",
+              },
+            }),
           }}
         />
         <ApolloWrapper>
