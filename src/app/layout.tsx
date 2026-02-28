@@ -42,20 +42,13 @@ export const metadata: Metadata = {
     siteName: "旅のしおり",
     locale: 'ja_JP',
     type: 'website',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: '旅のしおり - 旅行計画アプリ',
-      },
-    ],
+    // OG画像は /opengraph-image.tsx で自動生成
   },
   twitter: {
     card: 'summary_large_image',
     title: "旅のしおり - 旅行計画をもっと簡単に、もっと楽しく",
     description: "日程・予算・予約情報をまとめて管理できる旅行計画アプリ。URLひとつで家族や友人とプランを共有できます。",
-    images: ['/og-image.png'],
+    // OG画像は /opengraph-image.tsx で自動生成
   },
   robots: {
     index: true,
