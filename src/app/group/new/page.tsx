@@ -84,8 +84,8 @@ export default function Group() {
       alert('出発日と帰着日を入力してください');
       return;
     }
-    if (new Date(startDate) >= new Date(endDate)) {
-      alert('帰着日は出発日より後の日付を選択してください');
+    if (new Date(startDate) > new Date(endDate)) {
+      alert('帰着日は出発日と同じか、それより後の日付を選択してください');
       return;
     }
 
