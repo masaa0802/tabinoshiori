@@ -1,10 +1,68 @@
 import Link from 'next/link';
+import type { Metadata } from "next";
 import RecentPlans from '@/components/RecentPlans';
 import FeatureTabDemo from '@/components/FeatureTabDemo';
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: '/',
+  },
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "旅のしおりとは何ですか？",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "旅のしおりは、旅行の日程・予算・予約情報をまとめて管理できる無料の旅行計画アプリです。URLひとつで家族や友人とプランを共有でき、Googleマップで行き先を確認することもできます。",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "アカウント登録は必要ですか？",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "不要です。アカウント登録やログインなしで旅行プランを作成・共有・編集できます。",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "無料で使えますか？",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "はい、完全無料でご利用いただけます。",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "どのような情報を管理できますか？",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "日別の訪問スポット・日程、旅行予算・費用、ホテルやフライトの予約情報を1か所で管理できます。また、登録したスポットをGoogleマップ上で確認することもできます。",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "旅行プランはどうやって共有しますか？",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "作成したしおりのURLを家族や友人に送るだけで共有できます。受け取った相手はアカウント登録不要でそのまま確認・編集できます。",
+      },
+    },
+  ],
+};
 
 const page: React.FC = () => {
   return (
     <div className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* ヒーローセクション */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* 背景画像スライドショー */}
