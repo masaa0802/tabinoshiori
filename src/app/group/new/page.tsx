@@ -459,14 +459,6 @@ export default function Group() {
                 </label>
               </div>
             </div>
-            {/* ヒント */}
-            <div className="mt-8 bg-blue-50 p-4 rounded-lg">
-              <h3 className="font-medium text-blue-800">💡<b>ヒント</b></h3>
-              <p className="text-sm text-blue-700 mt-1">
-                目的や好みを選択すると、あなたの旅行に合わせたおすすめスポットが表示されます。
-                より詳細な情報を入力すると、よりパーソナライズされた旅のプランを提案できます。
-              </p>
-            </div>
 
             {/* 送信ボタン */}
             <div className="pt-4">
