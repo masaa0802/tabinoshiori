@@ -1,4 +1,18 @@
 import Link from 'next/link';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "お問い合わせ",
+  description: "旅のしおりへのご質問・ご要望はこちらからお問い合わせください。",
+  openGraph: {
+    title: "お問い合わせ | 旅のしおり",
+    description: "旅のしおりへのご質問・ご要望はこちらからお問い合わせください。",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 const ContactPage = () => {
   return (
