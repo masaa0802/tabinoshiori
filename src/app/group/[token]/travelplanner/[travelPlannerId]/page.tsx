@@ -8,7 +8,7 @@ import Image from "next/image";
 import MapContent from "../map/components/MapContent";
 import BudgetContent from "../budget/components/BudgetContent";
 import InfoContent from "../info/components/InfoContent";
-import { GET_ITINERARIES, GET_ITINERARY_BY_ID, GET_ACTIVITIES } from "@/graphql/queries";
+import { GET_ITINERARIES, GET_ITINERARY_BY_TOKEN_AND_ID, GET_ACTIVITIES } from "@/graphql/queries";
 import { DELETE_ACTIVITY, INSERT_ITINERARY, INSERT_GROUP } from "@/graphql/mutates";
 import { GoogleMapsProvider } from "@/components/GoogleMapsProvider";
 import {
@@ -77,9 +77,9 @@ export default function TravelPlanner() {
   // Only run GraphQL queries for existing groups, or for new groups after itinerary is created
   const shouldSkipQueries = Boolean(isNewGroup && groupData && !createdItineraryId);
 
-  // 既存の旅行プラン（travelPlannerIdがある場合）は個別に取得
-  const { data: itineraryData, loading: itineraryLoading, error: itineraryError } = useQuery(GET_ITINERARY_BY_ID, {
-    variables: { id: parseInt(travelPlannerId) },
+  // 既存の旅行プラン（travelPlannerIdがある場合）はtokenと一致するもののみ取得
+  const { data: itineraryData, loading: itineraryLoading, error: itineraryError } = useQuery(GET_ITINERARY_BY_TOKEN_AND_ID, {
+    variables: { id: parseInt(travelPlannerId), token: groupToken },
     skip: !travelPlannerId || isNewGroup
   });
 
@@ -112,7 +112,7 @@ export default function TravelPlanner() {
   useEffect(() => {
     if (!groupToken || !travelPlannerId) return;
     // itineraryDataのロード完了後に保存
-    const itinerary = itineraryData?.itineraries_by_pk;
+    const itinerary = itineraryData?.itineraries?.[0];
     if (!itinerary) return;
     const existing = localStorage.getItem(`shiori_${groupToken}`);
     let existingCreatedAt: string | undefined;
@@ -303,7 +303,7 @@ export default function TravelPlanner() {
   } else {
     // For existing groups, use GraphQL data
     // travelPlannerIdがある場合は個別取得したデータを使用
-    const itinerary = travelPlannerId ? itineraryData?.itineraries_by_pk : itinerariesData?.itineraries?.[0];
+    const itinerary = travelPlannerId ? itineraryData?.itineraries?.[0] : itinerariesData?.itineraries?.[0];
 
     if (!itinerary) {
       return (

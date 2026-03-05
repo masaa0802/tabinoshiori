@@ -47,6 +47,27 @@ export const GET_ITINERARY_BY_ID = gql`
   }
 `;
 
+export const GET_ITINERARY_BY_TOKEN_AND_ID = gql`
+  query GetItineraryByTokenAndId($id: Int!, $token: String!) {
+    itineraries(where: {
+      id: { _eq: $id },
+      group: { token: { _eq: $token } }
+    }) {
+      created_by
+      destination
+      end_date
+      group_id
+      id
+      location_type
+      start_date
+      title
+      travel_purpose
+      updated_at
+      total_budget
+    }
+  }
+`;
+
 export const GET_ITINERARY_BY_GROUP = gql`
   query itineraries_by_group($group_id: uuid!, $id: Int!) {
     itineraries(where: { group_id: { _eq: $group_id }, id: { _eq: $id } }) {
