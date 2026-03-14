@@ -360,7 +360,7 @@ const MapContent: React.FC<MapContentProps> = ({
                   {getTypeLabel(selectedActivity.type)}
                 </span>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600">
-                  🕐 {selectedActivity.time}
+                  🕐 {selectedActivity.time.slice(0, 5)}
                 </span>
               </div>
 
@@ -463,7 +463,7 @@ const MapContent: React.FC<MapContentProps> = ({
                         {getTypeLabel(selectedActivity.type)}
                       </span>
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700">
-                        🕐 {selectedActivity.time}
+                        🕐 {selectedActivity.time.slice(0, 5)}
                       </span>
                     </div>
 
