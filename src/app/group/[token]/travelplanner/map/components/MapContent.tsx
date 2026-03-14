@@ -262,6 +262,10 @@ const MapContent: React.FC<MapContentProps> = ({
     );
   }
 
+  const selectedIndex = selectedActivity
+    ? (activitiesByDay[selectedDay]?.sort((a, b) => a.time.localeCompare(b.time)).findIndex(a => a.id === selectedActivity.id) ?? -1) + 1
+    : 0;
+
   return (
     <div className="w-full h-full relative">
       {/* 現在地ボタン */}
@@ -291,6 +295,79 @@ const MapContent: React.FC<MapContentProps> = ({
             />
           </svg>
         </button>
+      )}
+
+      {/* スマホ用ボトムシート */}
+      {selectedActivity && (
+        <div className="sm:hidden fixed inset-0 z-40" onClick={() => setSelectedActivity(null)}>
+          <div
+            className="absolute bottom-16 left-0 right-0 bg-white rounded-t-2xl shadow-2xl overflow-hidden"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* ドラッグハンドル */}
+            <div className="flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 bg-gray-300 rounded-full" />
+            </div>
+
+            {/* 画像 */}
+            {selectedActivity.photo_url && (
+              <ActivityImage
+                src={selectedActivity.photo_url}
+                alt={selectedActivity.name}
+                placeId={selectedActivity.place_id}
+                width={800}
+                height={200}
+                className="w-full h-44 object-cover"
+              />
+            )}
+
+            {/* コンテンツ */}
+            <div className="p-4">
+              {/* ヘッダー */}
+              <div className="flex items-start gap-3 mb-3">
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 shadow"
+                  style={{ backgroundColor: getMarkerColor(selectedActivity.type) }}
+                >
+                  {selectedIndex}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-base leading-tight">{selectedActivity.name}</h3>
+                  {selectedActivity.location && (
+                    <p className="text-sm text-gray-500 mt-0.5 truncate">{selectedActivity.location}</p>
+                  )}
+                </div>
+                <button
+                  onClick={() => setSelectedActivity(null)}
+                  className="flex-shrink-0 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-lg transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* バッジ行 */}
+              <div className="flex gap-2 flex-wrap mb-3">
+                <span
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium text-white"
+                  style={{ backgroundColor: getMarkerColor(selectedActivity.type) }}
+                >
+                  {getTypeLabel(selectedActivity.type)}
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {selectedActivity.time}
+                </span>
+              </div>
+
+              {/* メモ */}
+              {selectedActivity.notes && (
+                <p className="text-sm text-gray-600 leading-relaxed bg-gray-50 rounded-lg p-3">{selectedActivity.notes}</p>
+              )}
+            </div>
+          </div>
+        </div>
       )}
 
       {/* マップ */}
@@ -325,29 +402,35 @@ const MapContent: React.FC<MapContentProps> = ({
                 />
               ))}
 
+            {/* PC用OverlayView */}
             {selectedActivity && (
               <OverlayView
                 position={{ lat: selectedActivity.lat!, lng: selectedActivity.lng! }}
                 mapPaneName='overlayMouseTarget'
               >
-                <div className="relative bg-white rounded-lg shadow-xl border border-gray-200 w-64 sm:w-72 transform -translate-x-1/2 -translate-y-full mb-2">
+                <div className="hidden sm:block relative bg-white rounded-xl shadow-2xl border border-gray-100 w-72 transform -translate-x-1/2 -translate-y-full mb-3">
                   {/* 閉じるボタン */}
                   <button
                     onClick={() => setSelectedActivity(null)}
-                    className="absolute top-1.5 right-1.5 w-5 h-5 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-800 text-xs z-10"
+                    className="absolute top-2 right-2 w-7 h-7 bg-black/20 hover:bg-black/40 rounded-full flex items-center justify-center text-white text-sm z-10 transition-colors"
                   >
                     ×
                   </button>
 
                   {/* 画像 */}
-                  {selectedActivity.photo_url && (
+                  {selectedActivity.photo_url ? (
                     <ActivityImage
                       src={selectedActivity.photo_url}
                       alt={selectedActivity.name}
                       placeId={selectedActivity.place_id}
                       width={400}
                       height={160}
-                      className="w-full h-28 sm:h-32 object-cover rounded-t-lg"
+                      className="w-full h-32 object-cover rounded-t-xl"
+                    />
+                  ) : (
+                    <div
+                      className="w-full h-10 rounded-t-xl"
+                      style={{ backgroundColor: getMarkerColor(selectedActivity.type) }}
                     />
                   )}
 
@@ -355,38 +438,41 @@ const MapContent: React.FC<MapContentProps> = ({
                   <div className="p-3">
                     <div className="flex items-start gap-2 mb-2">
                       <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5"
+                        className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5 shadow"
                         style={{ backgroundColor: getMarkerColor(selectedActivity.type) }}
                       >
                         {activitiesByDay[selectedDay]
                           ?.sort((a, b) => a.time.localeCompare(b.time))
                           .findIndex(activity => activity.id === selectedActivity.id) + 1}
                       </div>
-                      <div className="flex-1 pr-4">
-                        <h3 className="font-bold text-sm leading-tight mb-1">{selectedActivity.name}</h3>
-                        <p className="text-xs text-gray-600 leading-tight">{selectedActivity.location}</p>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-sm leading-tight">{selectedActivity.name}</h3>
+                        {selectedActivity.location && (
+                          <p className="text-xs text-gray-500 mt-0.5 leading-tight">{selectedActivity.location}</p>
+                        )}
                       </div>
                     </div>
 
-                    <div className="flex gap-3 text-xs text-gray-700 mb-2">
-                      <div className="flex items-center gap-1">
-                        <span className="font-medium">🕐</span>
-                        <span>{selectedActivity.time}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span className="font-medium">📍</span>
-                        <span>{getTypeLabel(selectedActivity.type)}</span>
-                      </div>
+                    <div className="flex gap-2 mb-2">
+                      <span
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium text-white"
+                        style={{ backgroundColor: getMarkerColor(selectedActivity.type) }}
+                      >
+                        {getTypeLabel(selectedActivity.type)}
+                      </span>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700">
+                        🕐 {selectedActivity.time}
+                      </span>
                     </div>
 
                     {selectedActivity.notes && (
-                      <p className="text-xs text-gray-700 leading-relaxed">{selectedActivity.notes}</p>
+                      <p className="text-xs text-gray-600 leading-relaxed border-t border-gray-100 pt-2">{selectedActivity.notes}</p>
                     )}
                   </div>
 
                   {/* 吹き出しの三角形 */}
                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
-                    <div className="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-white filter drop-shadow-sm"></div>
+                    <div className="w-0 h-0 border-l-[7px] border-r-[7px] border-t-[7px] border-l-transparent border-r-transparent border-t-white" style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.1))' }}></div>
                   </div>
                 </div>
               </OverlayView>
