@@ -182,6 +182,11 @@ const MapContent: React.FC<MapContentProps> = ({
     }
   }, [selectedDay, activitiesByDay, fitBoundsToActivities, map]);
 
+  // 日付が変わったら選択をリセット
+  useEffect(() => {
+    setSelectedActivity(null);
+  }, [selectedDay]);
+
   const handleMarkerClick = (activity: Activity) => {
     setSelectedActivity(activity);
     if (map && activity.lat && activity.lng) {
