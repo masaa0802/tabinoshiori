@@ -521,7 +521,7 @@ export default function TravelPlanner() {
   return (
     <GoogleMapsProvider>
     <div className="flex flex-col h-screen bg-gray-50">
-      {/* タブナビゲーション */}
+      {/* タブナビゲーション（PC用上部タブ） */}
       <nav className="bg-white border-b border-gray-200">
         <div className="flex flex-row items-center">
           {/* ロゴ部分 */}
@@ -539,11 +539,11 @@ export default function TravelPlanner() {
             </Link>
           </div>
 
-          {/* タブボタン部分 */}
-          <div className="flex overflow-x-auto flex-1">
-            <div className="flex space-x-1 sm:space-x-0">
+          {/* タブボタン部分（PC） */}
+          <div className="hidden sm:flex overflow-x-auto flex-1">
+            <div className="flex sm:space-x-0">
               <button
-                className={`flex-shrink-0 px-3 py-2 sm:px-4 sm:py-3 font-bold text-sm sm:text-base ${
+                className={`flex-shrink-0 px-4 py-3 font-bold text-base ${
                   activeTab === "plan"
                     ? "text-blue-600 border-b-2 border-blue-600"
                     : "text-gray-500"
@@ -553,7 +553,7 @@ export default function TravelPlanner() {
                 旅行プラン
               </button>
               <button
-                className={`flex-shrink-0 px-3 py-2 sm:px-4 sm:py-3 font-bold text-sm sm:text-base ${
+                className={`flex-shrink-0 px-4 py-3 font-bold text-base ${
                   activeTab === "map"
                     ? "text-blue-600 border-b-2 border-blue-600"
                     : "text-gray-500"
@@ -563,7 +563,7 @@ export default function TravelPlanner() {
                 マップ
               </button>
               <button
-                className={`flex-shrink-0 px-3 py-2 sm:px-4 sm:py-3 font-bold text-sm sm:text-base ${
+                className={`flex-shrink-0 px-4 py-3 font-bold text-base ${
                   activeTab === "budget"
                     ? "text-blue-600 border-b-2 border-blue-600"
                     : "text-gray-500"
@@ -573,7 +573,7 @@ export default function TravelPlanner() {
                 予算
               </button>
               <button
-                className={`flex-shrink-0 px-3 py-2 sm:px-4 sm:py-3 font-bold text-sm sm:text-base ${
+                className={`flex-shrink-0 px-4 py-3 font-bold text-base ${
                   activeTab === "info"
                     ? "text-blue-600 border-b-2 border-blue-600"
                     : "text-gray-500"
@@ -584,6 +584,56 @@ export default function TravelPlanner() {
               </button>
             </div>
           </div>
+        </div>
+      </nav>
+
+      {/* ボトムナビゲーション（スマホ用） */}
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 safe-area-pb">
+        <div className="flex">
+          <button
+            className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 ${
+              activeTab === "plan" ? "text-blue-600" : "text-gray-400"
+            }`}
+            onClick={() => setActiveTab("plan")}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={activeTab === "plan" ? 2.5 : 1.8} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <span className={`text-xs font-medium ${activeTab === "plan" ? "font-bold" : ""}`}>プラン</span>
+          </button>
+          <button
+            className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 ${
+              activeTab === "map" ? "text-blue-600" : "text-gray-400"
+            }`}
+            onClick={() => setActiveTab("map")}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={activeTab === "map" ? 2.5 : 1.8} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
+            <span className={`text-xs font-medium ${activeTab === "map" ? "font-bold" : ""}`}>マップ</span>
+          </button>
+          <button
+            className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 ${
+              activeTab === "budget" ? "text-blue-600" : "text-gray-400"
+            }`}
+            onClick={() => setActiveTab("budget")}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={activeTab === "budget" ? 2.5 : 1.8} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className={`text-xs font-medium ${activeTab === "budget" ? "font-bold" : ""}`}>予算</span>
+          </button>
+          <button
+            className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 ${
+              activeTab === "info" ? "text-blue-600" : "text-gray-400"
+            }`}
+            onClick={() => setActiveTab("info")}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={activeTab === "info" ? 2.5 : 1.8} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className={`text-xs font-medium ${activeTab === "info" ? "font-bold" : ""}`}>情報</span>
+          </button>
         </div>
       </nav>
 
@@ -624,7 +674,7 @@ export default function TravelPlanner() {
 
         </div>
 
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 overflow-hidden pb-16 sm:pb-0">
           {/* デスクトップ用サイドバー */}
           <div className="hidden lg:block w-48 bg-white border-r border-gray-200 overflow-y-auto">
             <div className="p-4">
