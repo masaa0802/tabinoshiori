@@ -18,11 +18,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "旅のしおり - 旅行計画をもっと簡単に、もっと楽しく",
+    default: "旅のしおり - 無料の旅行しおり作成アプリ",
     template: "%s | 旅のしおり"
   },
-  description: "日程・予算・予約情報をまとめて管理できる旅行計画アプリ。URLひとつで家族や友人とプランを共有し、Googleマップで行き先を確認。旅に必要なすべてが1か所に揃います。",
-  keywords: ["旅行計画", "旅のしおり", "旅行プラン", "旅行", "観光", "ルート作成", "旅行スケジュール", "グループ旅行", "旅行共有", "予算管理", "旅程表", "しおり作成"],
+  description: "旅行しおりを無料で簡単に作成・共有できるアプリ。日程・予算・ホテル・フライトの予約情報をひとまとめに管理。URLひとつで家族や友人にしおりを共有でき、Googleマップで行き先を確認。アカウント登録不要。",
+  keywords: [
+    "旅行しおり", "旅行しおり作成", "しおり作成アプリ", "旅行しおり無料", "無料しおり作成",
+    "旅のしおり", "旅行計画", "旅行プラン", "旅行スケジュール", "グループ旅行",
+    "旅行共有", "予算管理", "旅程表", "ルート作成", "観光", "旅行"
+  ],
   authors: [{ name: "旅のしおり" }],
   creator: "旅のしおり",
   publisher: "旅のしおり",
@@ -36,8 +40,8 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: "旅のしおり - 旅行計画をもっと簡単に、もっと楽しく",
-    description: "日程・予算・予約情報をまとめて管理できる旅行計画アプリ。URLひとつで家族や友人とプランを共有し、Googleマップで行き先を確認。旅に必要なすべてが1か所に揃います。",
+    title: "旅のしおり - 無料の旅行しおり作成アプリ",
+    description: "旅行しおりを無料で簡単に作成・共有できるアプリ。日程・予算・ホテル・フライトの予約情報をひとまとめに管理。URLひとつで家族や友人にしおりを共有。アカウント登録不要。",
     url: '/',
     siteName: "旅のしおり",
     locale: 'ja_JP',
@@ -46,8 +50,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "旅のしおり - 旅行計画をもっと簡単に、もっと楽しく",
-    description: "日程・予算・予約情報をまとめて管理できる旅行計画アプリ。URLひとつで家族や友人とプランを共有できます。",
+    title: "旅のしおり - 無料の旅行しおり作成アプリ",
+    description: "旅行しおりを無料で簡単に作成・共有。日程・予算・予約情報をひとまとめに管理できます。アカウント登録不要。",
     images: ['/og-image.png'],
   },
   robots: {
@@ -95,16 +99,27 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "WebApplication",
+              "@type": "SoftwareApplication",
               name: "旅のしおり",
+              alternateName: ["旅行しおり作成アプリ", "旅行しおり", "しおり作成アプリ"],
               description:
-                "日程・予算・予約情報をまとめて管理できる旅行計画アプリ。URLひとつで家族や友人とプランを共有し、Googleマップで行き先を確認できます。",
+                "旅行しおりを無料で作成・共有できるアプリ。日程・予算・ホテル・フライトの予約情報をひとまとめに管理し、URLひとつで家族や友人とプランを共有。Googleマップで行き先を確認できます。",
               url:
                 process.env.NEXT_PUBLIC_BASE_URL ||
                 "https://travel-planner.vercel.app",
               applicationCategory: "TravelApplication",
-              operatingSystem: "Web",
+              operatingSystem: "Web, iOS, Android",
+              browserRequirements: "HTML5をサポートするブラウザ",
               inLanguage: "ja",
+              featureList: [
+                "旅行しおりの無料作成",
+                "URLによるしおり共有",
+                "日程・スケジュール管理",
+                "予算・費用管理",
+                "ホテル・フライト予約情報の保存",
+                "Googleマップ連携",
+                "アカウント登録不要",
+              ],
               offers: {
                 "@type": "Offer",
                 price: "0",

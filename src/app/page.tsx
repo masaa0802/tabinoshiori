@@ -4,6 +4,8 @@ import RecentPlans from '@/components/RecentPlans';
 import FeatureTabDemo from '@/components/FeatureTabDemo';
 
 export const metadata: Metadata = {
+  title: "旅行しおりを無料で作成・共有 | 旅のしおり",
+  description: "旅行しおりが無料で簡単に作れるアプリ「旅のしおり」。日程・予算・ホテル・フライトの予約情報をまとめて管理し、URLひとつでグループ全員に共有。アカウント登録不要ですぐ使えます。",
   alternates: {
     canonical: '/',
   },
@@ -18,7 +20,23 @@ const faqJsonLd = {
       name: "旅のしおりとは何ですか？",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "旅のしおりは、旅行の日程・予算・予約情報をまとめて管理できる無料の旅行計画アプリです。URLひとつで家族や友人とプランを共有でき、Googleマップで行き先を確認することもできます。",
+        text: "旅のしおりは、旅行しおりを無料で簡単に作成・共有できるアプリです。日程・予算・予約情報をまとめて管理でき、URLひとつで家族や友人とプランを共有。Googleマップで行き先を確認することもできます。",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "旅行しおりを無料で作れますか？",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "はい、完全無料で旅行しおりを作成できます。登録からしおり作成・共有まですべての機能を無料でご利用いただけます。",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "しおり作成アプリとして何ができますか？",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "旅行しおりの作成・共有はもちろん、1日ごとの訪問スポット管理、旅行予算の記録、ホテルやフライトなどの予約情報の保存、Googleマップでのルート確認ができます。旅行計画に必要なすべてをひとまとめに管理できます。",
       },
     },
     {
@@ -26,15 +44,7 @@ const faqJsonLd = {
       name: "アカウント登録は必要ですか？",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "不要です。アカウント登録やログインなしで旅行プランを作成・共有・編集できます。",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "無料で使えますか？",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "はい、完全無料でご利用いただけます。",
+        text: "不要です。アカウント登録やログインなしで旅行しおりを作成・共有・編集できます。",
       },
     },
     {
@@ -47,10 +57,10 @@ const faqJsonLd = {
     },
     {
       "@type": "Question",
-      name: "旅行プランはどうやって共有しますか？",
+      name: "旅行しおりはどうやって共有しますか？",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "作成したしおりのURLを家族や友人に送るだけで共有できます。受け取った相手はアカウント登録不要でそのまま確認・編集できます。",
+        text: "作成した旅行しおりのURLを家族や友人に送るだけで共有できます。受け取った相手はアカウント登録不要でそのまま確認・編集できます。",
       },
     },
   ],
@@ -286,6 +296,86 @@ const page: React.FC = () => {
                 </svg>
               </div>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* SEOコンテンツセクション */}
+      <section className="py-20 px-4 bg-gray-50">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
+            旅行しおり作成アプリなら「旅のしおり」
+          </h2>
+          <p className="text-center text-gray-500 mb-12 text-sm">よくある質問</p>
+
+          <div className="space-y-4">
+            {[
+              {
+                q: "旅行しおりを無料で作れますか？",
+                a: "はい、完全無料で旅行しおりを作成できます。登録からしおり作成・共有まですべての機能を無料でご利用いただけます。",
+              },
+              {
+                q: "しおり作成アプリとして何ができますか？",
+                a: "1日ごとの訪問スポット管理・旅行予算の記録・ホテルやフライトの予約情報の保存・Googleマップでのルート確認ができます。旅行しおりに必要な情報をすべてひとまとめに管理できます。",
+              },
+              {
+                q: "アカウント登録は必要ですか？",
+                a: "不要です。アカウント登録やログインなしで旅行しおりを作成・共有・編集できます。",
+              },
+              {
+                q: "旅行しおりはどうやって共有しますか？",
+                a: "作成した旅行しおりのURLを家族や友人に送るだけで共有できます。受け取った相手もアカウント登録不要でそのまま確認・編集できます。",
+              },
+            ].map(({ q, a }) => (
+              <details
+                key={q}
+                className="bg-white rounded-xl border border-gray-200 shadow-sm group"
+              >
+                <summary className="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer list-none font-medium text-gray-800 hover:text-blue-600 transition-colors">
+                  <span>{q}</span>
+                  <svg
+                    className="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform group-open:rotate-180"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <p className="px-6 pb-5 text-gray-600 leading-relaxed text-sm">{a}</p>
+              </details>
+            ))}
+          </div>
+
+          <div className="mt-14 bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              旅行しおり作成に必要な機能がすべて揃っています
+            </h3>
+            <p className="text-gray-600 leading-relaxed mb-6">
+              「旅のしおり」は、グループ旅行の計画から当日の案内まで使える無料の旅行しおり作成アプリです。
+              日程・予算・ホテル・フライトの予約情報を1か所にまとめて管理できるため、
+              複数のメモアプリやスプレッドシートを行き来する手間がありません。
+              作成した旅行しおりはURLひとつで共有でき、受け取った相手はアカウント登録不要でそのまま閲覧・編集できます。
+            </p>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
+              {[
+                "旅行しおりを数分で作成",
+                "URLひとつでグループ全員に共有",
+                "日程・スポットを日別に整理",
+                "旅行予算・費用をリアルタイム管理",
+                "ホテル・フライトの予約情報を保存",
+                "Googleマップで行き先を確認",
+                "アカウント登録不要・完全無料",
+                "スマホ・PCどちらからでも利用可能",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>

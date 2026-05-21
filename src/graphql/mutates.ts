@@ -276,6 +276,40 @@ export const INSERT_DOCUMENT = gql`
   }
 `;
 
+export const UPDATE_DOCUMENT = gql`
+  mutation UpdateDocument(
+    $id: Int!
+    $category: String!
+    $title: String!
+    $date: date
+    $notes: String
+    $file_url: String
+    $file_name: String
+  ) {
+    update_documents_by_pk(
+      pk_columns: { id: $id }
+      _set: {
+        category: $category
+        title: $title
+        date: $date
+        notes: $notes
+        file_url: $file_url
+        file_name: $file_name
+      }
+    ) {
+      id
+      itinerary_id
+      category
+      title
+      date
+      notes
+      file_url
+      file_name
+      created_at
+    }
+  }
+`;
+
 export const DELETE_DOCUMENT = gql`
   mutation DeleteDocument($id: Int!) {
     delete_documents_by_pk(id: $id) {
