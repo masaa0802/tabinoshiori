@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import AddActivityModal from "../components/AddActivityModal";
 import EditActivityModal from "../components/EditActivityModal";
+import ActivityDetailSheet from "../components/ActivityDetailSheet";
 import LoadingAirplane from "@/components/LoadingAirplane";
 import ActivityImage from "@/components/ActivityImage";
 
@@ -57,6 +58,7 @@ interface Activity {
   lng?: number;
   place_id?: string;
 }
+
 
 interface DayPlan {
   day: number;
@@ -107,6 +109,9 @@ export default function TravelPlanner() {
   const [swipedActivityId, setSwipedActivityId] = useState<number | null>(null);
   const [touchStart, setTouchStart] = useState<number>(0);
   const [touchCurrent, setTouchCurrent] = useState<number>(0);
+
+  // 詳細シート
+  const [selectedActivityForDetail, setSelectedActivityForDetail] = useState<Activity | null>(null);
 
   // しおり表示時にlocalStorageへ保存（最近作ったしおり用）
   useEffect(() => {
@@ -410,6 +415,15 @@ export default function TravelPlanner() {
 
   const activities: DayPlan[] = groupedActivities;
 
+  // 現在の日のアクティビティをソート
+  const sortedCurrentDayActivities = (activities.find(d => d.day === selectedDay)?.activities || [])
+    .slice()
+    .sort((a, b) => {
+      const timeA = a.time.split(':').map(Number);
+      const timeB = b.time.split(':').map(Number);
+      return (timeA[0] * 60 + timeA[1]) - (timeB[0] * 60 + timeB[1]);
+    });
+
   // アクティビティタイプに応じたアイコン取得
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -453,6 +467,19 @@ export default function TravelPlanner() {
   const startEditActivity = (activity: Activity) => {
     setEditingActivity(activity);
     setEditModalOpen(true);
+  };
+
+  // 詳細シートからの削除
+  const handleDeleteFromDetail = async (activity: Activity) => {
+    if (!confirm(`「${activity.name}」を削除しますか？`)) return;
+    try {
+      await deleteActivity({ variables: { id: activity.id } });
+      await refetchActivities();
+      setSelectedActivityForDetail(null);
+    } catch (error) {
+      console.error('Error deleting activity:', error);
+      alert('アクティビティの削除に失敗しました');
+    }
   };
 
   // アクティビティ削除
@@ -757,14 +784,8 @@ export default function TravelPlanner() {
 
                   {/* タイムライン */}
                   <div className="space-y-4 lg:space-y-6">
-                    {activities.find((day) => day.day === selectedDay)?.activities
-                    .sort((a, b) => {
-                      const timeA = a.time.split(':').map(Number);
-                      const timeB = b.time.split(':').map(Number);
-                      return (timeA[0] * 60 + timeA[1]) - (timeB[0] * 60 + timeB[1]);
-                    })
-                    .map((activity, index) => (
-                      <div key={index} className="group">
+                    {sortedCurrentDayActivities.map((activity, index) => (
+                      <div key={activity.id} className="group">
                         {/* モバイル: 時間を上に表示 */}
                         <div className="lg:hidden flex items-center mb-2 px-4">
                           <div
@@ -810,8 +831,7 @@ export default function TravelPlanner() {
                               </span>
                             </div>
                             {index <
-                              (activities.find((day) => day.day === selectedDay)?.activities?.length ?? 0) -
-                              1 && (
+                              sortedCurrentDayActivities.length - 1 && (
                               <div className="w-px bg-gray-300 h-full"></div>
                             )}
                           </div>
@@ -819,8 +839,7 @@ export default function TravelPlanner() {
                           {/* モバイル用の縦線 */}
                           <div className="lg:hidden relative flex flex-col items-center mx-4">
                             {index <
-                              (activities.find((day) => day.day === selectedDay)?.activities?.length ?? 0) -
-                              1 && (
+                              sortedCurrentDayActivities.length - 1 && (
                               <div className="w-px bg-gray-300 h-full"></div>
                             )}
                           </div>
@@ -857,13 +876,20 @@ export default function TravelPlanner() {
 
                             {/* スワイプ可能なコンテンツ */}
                             <div
-                              className="bg-white rounded-lg border border-gray-200 shadow-sm group-hover:shadow overflow-hidden relative transition-transform duration-200 ease-out"
+                              className="bg-white rounded-lg border border-gray-200 shadow-sm group-hover:shadow overflow-hidden relative transition-transform duration-200 ease-out cursor-pointer"
                               style={{
                                 transform: `translateX(-${getSwipeOffset(activity.id)}px)`
                               }}
                               onTouchStart={(e) => handleTouchStart(e, activity.id)}
                               onTouchMove={handleTouchMove}
                               onTouchEnd={handleTouchEnd}
+                              onClick={() => {
+                                if (swipedActivityId === activity.id) {
+                                  setSwipedActivityId(null);
+                                  return;
+                                }
+                                setSelectedActivityForDetail(activity);
+                              }}
                             >
                               {/* 背景画像 */}
                               {activity.photo_url && (
@@ -899,7 +925,7 @@ export default function TravelPlanner() {
                                   {/* デスクトップ用ボタン */}
                                   <div className="hidden lg:flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button
-                                      onClick={() => startEditActivity(activity)}
+                                      onClick={(e) => { e.stopPropagation(); startEditActivity(activity); }}
                                       className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded"
                                       title="編集"
                                     >
@@ -908,7 +934,7 @@ export default function TravelPlanner() {
                                       </svg>
                                     </button>
                                     <button
-                                      onClick={() => handleDeleteActivity(index)}
+                                      onClick={(e) => { e.stopPropagation(); handleDeleteActivity(index); }}
                                       className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
                                       title="削除"
                                     >
@@ -923,6 +949,7 @@ export default function TravelPlanner() {
                           </div>
                         </div>
                       </div>
+
                     ))}
 
                     {/* アクティビティ追加ボタン */}
@@ -975,6 +1002,16 @@ export default function TravelPlanner() {
           refetchActivities(); // データを再取得
         }}
         activity={editingActivity}
+      />
+      <ActivityDetailSheet
+        activity={selectedActivityForDetail}
+        isOpen={selectedActivityForDetail !== null}
+        onClose={() => setSelectedActivityForDetail(null)}
+        onEdit={(a) => {
+          setSelectedActivityForDetail(null);
+          startEditActivity(a);
+        }}
+        onDelete={handleDeleteFromDetail}
       />
 
     </div>

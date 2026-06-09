@@ -23,13 +23,23 @@ const typeOptions = [
   { label: "エリア", value: "area" },
 ];
 
+// Google Places のタイプをアプリのアクティビティタイプに変換
+function inferActivityType(placeTypes: string[]): string | null {
+  if (placeTypes.some(t => ["transit_station", "subway_station", "train_station", "bus_station", "airport", "ferry_terminal", "light_rail_station"].includes(t))) return "transport";
+  if (placeTypes.some(t => ["lodging", "hotel"].includes(t))) return "hotel";
+  if (placeTypes.some(t => ["restaurant", "food", "cafe", "bakery", "bar", "meal_takeaway", "meal_delivery"].includes(t))) return "restaurant";
+  if (placeTypes.some(t => ["tourist_attraction", "museum", "park", "amusement_park", "art_gallery", "zoo", "aquarium", "stadium", "natural_feature", "place_of_worship"].includes(t))) return "sightseeing";
+  if (placeTypes.some(t => ["shopping_mall", "store", "clothing_store", "convenience_store", "department_store", "supermarket"].includes(t))) return "activity";
+  return null;
+}
+
 const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, itinerary_id, defaultDate, onActivityAdded, startDate, endDate }) => {
   const [date, setDate] = useState(defaultDate || "");
   const [time, setTime] = useState("");
   const [location, setLocation] = useState("");
   const [placeName, setPlaceName] = useState("");
   const [notes, setNotes] = useState("");
-  const [type, setType] = useState(typeOptions[0].value);
+  const [type, setType] = useState("sightseeing");
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [photoUrl, setPhotoUrl] = useState("");
@@ -185,12 +195,16 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
     setShowSuggestions(false);
     setPlaceId(suggestion.place_id);
 
+    // suggestion.types からタイプを自動判定
+    const inferred = inferActivityType(suggestion.types ?? []);
+    if (inferred) setType(inferred);
+
     // 場所の詳細情報と写真を取得
     if (placesService.current && suggestion.place_id) {
       placesService.current.getDetails(
         {
           placeId: suggestion.place_id,
-          fields: ['photos', 'name', 'formatted_address', 'geometry'],
+          fields: ['photos', 'name', 'formatted_address', 'geometry', 'types'],
           language: 'ja'
         },
         (place, status) => {
@@ -198,6 +212,12 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
             // 場所の名前を保存（住所を除く）
             if (place.name) {
               setPlaceName(place.name);
+            }
+
+            // 詳細タイプでさらに精度よく判定（上書き）
+            if (place.types) {
+              const detailed = inferActivityType(place.types);
+              if (detailed) setType(detailed);
             }
 
             // 緯度・経度を取得
