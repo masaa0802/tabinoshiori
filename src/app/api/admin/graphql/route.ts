@@ -17,8 +17,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const HASURA_ENDPOINT = process.env.HASURA_GRAPHQL_ENDPOINT;
-  const HASURA_ADMIN_SECRET = process.env.HASURA_GRAPHQL_ADMIN_SECRET;
+  const HASURA_ENDPOINT =
+    process.env.HASURA_GRAPHQL_ENDPOINT ??
+    process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT;
+  const HASURA_ADMIN_SECRET =
+    process.env.HASURA_GRAPHQL_ADMIN_SECRET ??
+    process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET;
 
   if (!HASURA_ENDPOINT || !HASURA_ADMIN_SECRET) {
     return NextResponse.json(
