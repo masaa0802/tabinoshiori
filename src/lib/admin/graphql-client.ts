@@ -68,7 +68,14 @@ export async function adminQueryServer<T>(
     cache: 'no-store',
   });
 
-  const { data, errors } = await res.json();
-  if (errors?.length) throw new Error(errors[0].message);
-  return data as T;
+  const json = await res.json();
+  if (json.errors?.length) {
+    console.error(`[adminQueryServer] ${operationName} errors:`, json.errors);
+    throw new Error(json.errors[0].message);
+  }
+  if (!json.data) {
+    console.error(`[adminQueryServer] ${operationName} empty response:`, json);
+    throw new Error('Empty response from Hasura');
+  }
+  return json.data as T;
 }

@@ -6,7 +6,7 @@ const HASURA_ADMIN_SECRET = process.env.HASURA_GRAPHQL_ADMIN_SECRET!;
 // 許可する分析クエリのオペレーション名
 const ALLOWED_OPERATIONS = new Set([
   'DashboardStats',
-  'DestinationStats',
+  'DestinationStats', // 目的地・旅の目的を含むitinerary一覧
   'PurposeStats',
   'TrendStats',
 ]);
