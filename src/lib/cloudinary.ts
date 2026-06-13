@@ -21,14 +21,25 @@ function useCloudinary(): boolean {
 }
 
 /**
+ * URLからグループトークンを取得
+ */
+function getGroupTokenFromUrl(): string | null {
+  if (typeof window === 'undefined') return null;
+  const match = window.location.pathname.match(/\/group\/([^/]+)/);
+  return match ? match[1] : null;
+}
+
+/**
  * ローカルAPIにファイルをアップロード
  */
 async function uploadLocal(file: File): Promise<UploadedFile> {
   const formData = new FormData();
   formData.append('file', file);
 
+  const groupToken = getGroupTokenFromUrl();
   const response = await fetch('/api/upload', {
     method: 'POST',
+    headers: groupToken ? { 'x-group-token': groupToken } : {},
     body: formData,
   });
 

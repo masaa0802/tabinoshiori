@@ -197,9 +197,14 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
             if (place.photos && place.photos.length > 0) {
               // 最初の写真のURLを取得してキャッシュ保存
               const googlePhotoUrl = place.photos[0].getUrl({ maxWidth: 400 });
+              const groupTokenMatch = window.location.pathname.match(/\/group\/([^/]+)/);
+              const groupToken = groupTokenMatch ? groupTokenMatch[1] : null;
               fetch('/api/cache-image', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...(groupToken ? { 'x-group-token': groupToken } : {}),
+                },
                 body: JSON.stringify({ url: googlePhotoUrl }),
               })
                 .then(res => res.json())
