@@ -160,18 +160,80 @@ export const GET_ACTIVITIES_BY_DATE = gql`
   }
 `;
 
-export const GET_DOCUMENTS = gql`
-  query GetDocuments($itinerary_id: Int!) {
-    documents(where: { itinerary_id: { _eq: $itinerary_id } }, order_by: { date: asc }) {
+export const GET_TRAVEL_DOCUMENTS = gql`
+  query GetTravelDocuments($itinerary_id: Int!) {
+    travel_documents(
+      where: { itinerary_id: { _eq: $itinerary_id } }
+      order_by: { created_at: desc }
+    ) {
       id
-      itinerary_id
-      category
       title
+      category
       date
+      reservation_number
       notes
-      file_url
-      file_name
       created_at
+      updated_at
+      files: document_files(order_by: { display_order: asc }) {
+        id
+        file_url
+        file_type
+        file_name
+        file_size
+        mime_type
+        display_order
+      }
+    }
+  }
+`;
+
+export const GET_TRAVEL_DOCUMENT = gql`
+  query GetTravelDocument($id: Int!) {
+    travel_documents_by_pk(id: $id) {
+      id
+      title
+      category
+      date
+      reservation_number
+      notes
+      created_at
+      updated_at
+      files: document_files(order_by: { display_order: asc }) {
+        id
+        file_url
+        file_type
+        file_name
+        file_size
+        mime_type
+        cloudinary_public_id
+        display_order
+      }
+    }
+  }
+`;
+
+export const GET_DOCUMENTS_BY_CATEGORY = gql`
+  query GetDocumentsByCategory($itinerary_id: Int!, $category: String!) {
+    travel_documents(
+      where: {
+        itinerary_id: { _eq: $itinerary_id }
+        category: { _eq: $category }
+      }
+      order_by: { date: asc }
+    ) {
+      id
+      title
+      category
+      date
+      reservation_number
+      notes
+      files: document_files(order_by: { display_order: asc }) {
+        id
+        file_url
+        file_type
+        file_name
+        file_size
+      }
     }
   }
 `;

@@ -7,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import MapContent from "../map/components/MapContent";
 import BudgetContent from "../budget/components/BudgetContent";
-import InfoContent from "../info/components/InfoContent";
+import InformationContent from "../information/components/InformationContent";
 import { GET_ITINERARIES, GET_ITINERARY_BY_TOKEN_AND_ID, GET_ACTIVITIES } from "@/graphql/queries";
 import { DELETE_ACTIVITY, INSERT_ITINERARY, INSERT_GROUP } from "@/graphql/mutates";
 import { GoogleMapsProvider } from "@/components/GoogleMapsProvider";
@@ -23,6 +23,7 @@ import {
 import AddActivityModal from "../components/AddActivityModal";
 import EditActivityModal from "../components/EditActivityModal";
 import ActivityDetailSheet from "../components/ActivityDetailSheet";
+import ActivityDetailModal from "../components/ActivityDetailModal";
 import LoadingAirplane from "@/components/LoadingAirplane";
 import ActivityImage from "@/components/ActivityImage";
 
@@ -103,12 +104,18 @@ export default function TravelPlanner() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [detailActivity, setDetailActivity] = useState<Activity | null>(null);
   const [selectedDateForModal, setSelectedDateForModal] = useState<string>("");
 
   // スワイプ状態管理
   const [swipedActivityId, setSwipedActivityId] = useState<number | null>(null);
   const [touchStart, setTouchStart] = useState<number>(0);
   const [touchCurrent, setTouchCurrent] = useState<number>(0);
+  // タップ検出用（Y軸移動量と開始時刻で区別）
+  const [touchStartY, setTouchStartY] = useState<number>(0);
+  const [touchCurrentY, setTouchCurrentY] = useState<number>(0);
+  const [touchStartTime, setTouchStartTime] = useState<number>(0);
 
   // 詳細シート
   const [selectedActivityForDetail, setSelectedActivityForDetail] = useState<Activity | null>(null);
@@ -509,23 +516,41 @@ export default function TravelPlanner() {
     }
   };
 
+
+
   // スワイプハンドラー
   const handleTouchStart = (e: React.TouchEvent, activityId: number) => {
     setTouchStart(e.touches[0].clientX);
     setTouchCurrent(e.touches[0].clientX);
+    setTouchStartY(e.touches[0].clientY);
+    setTouchCurrentY(e.touches[0].clientY);
+    setTouchStartTime(Date.now());
     setSwipedActivityId(activityId);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (touchStart === 0) return;
     setTouchCurrent(e.touches[0].clientX);
+    setTouchCurrentY(e.touches[0].clientY);
   };
 
-  const handleTouchEnd = () => {
-    const diff = touchStart - touchCurrent;
+  const handleTouchEnd = (activity: Activity) => {
+    const diffX = Math.abs(touchStart - touchCurrent);
+    const diffY = Math.abs(touchStartY - touchCurrentY);
+    const elapsed = Date.now() - touchStartTime;
 
+    // タップ判定: 移動量が小さく、短時間のタッチ
+    if (diffX < 10 && diffY < 10 && elapsed < 300) {
+      setSelectedActivityForDetail(activity);
+      setSwipedActivityId(null);
+      setTouchStart(0);
+      setTouchCurrent(0);
+      return;
+    }
+
+    const swipeDiff = touchStart - touchCurrent;
     // 50px以上左にスワイプした場合、ボタンを表示
-    if (diff > 50) {
+    if (swipeDiff > 50) {
       // ボタンを表示したまま
     } else {
       // スワイプを元に戻す
@@ -600,12 +625,12 @@ export default function TravelPlanner() {
                 予算
               </button>
               <button
-                className={`flex-shrink-0 px-4 py-3 font-bold text-base ${
-                  activeTab === "info"
+                className={`flex-shrink-0 px-3 py-2 sm:px-4 sm:py-3 font-bold text-sm sm:text-base ${
+                  activeTab === "information"
                     ? "text-blue-600 border-b-2 border-blue-600"
                     : "text-gray-500"
                 }`}
-                onClick={() => setActiveTab("info")}
+                onClick={() => setActiveTab("information")}
               >
                 情報
               </button>
@@ -747,22 +772,24 @@ export default function TravelPlanner() {
               />
             </div>
           ) : activeTab === "budget" ? (
-            <div className="flex-1 overflow-y-auto">
-              <BudgetContent
+            <BudgetContent
+              itinerary_id={travelPlan.id}
+              itinerary={{
+                id: travelPlan.id,
+                start_date: travelPlan.start_date,
+                end_date: travelPlan.end_date,
+                destination: travelPlan.destination,
+                total_budget: travelPlan.total_budget,
+              }}
+              selectedDay={selectedDay}
+            />
+          ) : activeTab === "information" ? (
+            <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden">
+              <InformationContent
                 itinerary_id={travelPlan.id}
-                itinerary={{
-                  id: travelPlan.id,
-                  start_date: travelPlan.start_date,
-                  end_date: travelPlan.end_date,
-                  destination: travelPlan.destination,
-                  total_budget: travelPlan.total_budget,
-                }}
-                selectedDay={selectedDay}
+                startDate={travelPlan.start_date}
+                endDate={travelPlan.end_date}
               />
-            </div>
-          ) : activeTab === "info" ? (
-            <div className="flex-1 overflow-y-auto">
-              <InfoContent itinerary_id={travelPlan.id} />
             </div>
           ) : (
             <>
@@ -882,7 +909,7 @@ export default function TravelPlanner() {
                               }}
                               onTouchStart={(e) => handleTouchStart(e, activity.id)}
                               onTouchMove={handleTouchMove}
-                              onTouchEnd={handleTouchEnd}
+                              onTouchEnd={() => handleTouchEnd(activity)}
                               onClick={() => {
                                 if (swipedActivityId === activity.id) {
                                   setSwipedActivityId(null);
