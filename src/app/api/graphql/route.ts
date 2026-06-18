@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateGroupToken } from '@/lib/validate-group-token';
 
-const HASURA_ENDPOINT = process.env.HASURA_GRAPHQL_ENDPOINT;
-const HASURA_ADMIN_SECRET = process.env.HASURA_GRAPHQL_ADMIN_SECRET;
+const HASURA_ENDPOINT =
+  process.env.HASURA_GRAPHQL_ENDPOINT ??
+  process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT;
+const HASURA_ADMIN_SECRET =
+  process.env.HASURA_GRAPHQL_ADMIN_SECRET ??
+  process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET;
 
 // グループ未作成時に呼ばれる操作（トークン不要）
 const PUBLIC_OPERATIONS = new Set(['InsertGroup', 'InsertItinerary']);
