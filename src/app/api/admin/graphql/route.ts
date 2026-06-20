@@ -6,6 +6,8 @@ const ALLOWED_OPERATIONS = new Set([
   'DestinationStats',
   'PurposeStats',
   'TrendStats',
+  'TrendData',
+  'ChartData',
 ]);
 
 export async function POST(req: NextRequest) {

@@ -35,6 +35,8 @@ const ALLOWED_SERVER_OPERATIONS = new Set([
   'DestinationStats',
   'PurposeStats',
   'TrendStats',
+  'TrendData',
+  'ChartData',
 ]);
 
 export async function adminQueryServer<T>(
