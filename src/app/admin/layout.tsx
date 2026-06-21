@@ -23,7 +23,9 @@ function LogoutButton() {
       action={async () => {
         'use server';
         const { cookies } = await import('next/headers');
+        const { redirect } = await import('next/navigation');
         (await cookies()).delete('admin_session');
+        redirect('/admin/login');
       }}
     >
       <button
