@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useMutation } from "@apollo/client";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { UPDATE_ACTIVITY } from "@/graphql/mutates";
@@ -53,7 +53,6 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
   const [type, setType] = useState("sightseeing");
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [photoUrl, setPhotoUrl] = useState("");
   const [lat, setLat] = useState<number | null>(null);
   const [lng, setLng] = useState<number | null>(null);
   const [placeId, setPlaceId] = useState("");
@@ -61,6 +60,10 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
   const [updateActivity, { loading: isSubmitting }] = useMutation(UPDATE_ACTIVITY);
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
   const placesService = useRef<google.maps.places.PlacesService | null>(null);
+  // ① SessionToken: 入力開始〜候補選択までを1セッションとして課金をまとめる
+  const sessionToken = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
+  // ② デバウンス用タイマー
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -71,8 +74,7 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
   });
 
   useEffect(() => {
-    // Google Maps APIが利用可能になったら初期化
-    if (isLoaded && window.google && window.google.maps && window.google.maps.places) {
+    if (isLoaded && window.google?.maps?.places) {
       autocompleteService.current = new window.google.maps.places.AutocompleteService();
       const mapDiv = document.createElement('div');
       const map = new window.google.maps.Map(mapDiv);
@@ -80,106 +82,64 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
     }
   }, [isLoaded]);
 
-  // activityが変更されたらフォームを更新
   useEffect(() => {
     if (activity) {
       const activityDate = new Date(activity.date);
       setDate(activityDate.toISOString().split('T')[0]);
-      setTime(activity.time.substring(0, 5)); // HH:MM:SS から HH:MM を取得
+      setTime(activity.time.substring(0, 5));
       setLocation(activity.location);
       setPlaceName(activity.name);
       setNotes(activity.notes || "");
       setType(activity.type);
-      setPhotoUrl(activity.photo_url || "");
       setLat(activity.lat || null);
       setLng(activity.lng || null);
       setPlaceId(activity.place_id || "");
     }
   }, [activity]);
 
+  // ③ 実際の検索処理（1リクエストに統合）
+  const fetchSuggestions = useCallback((value: string) => {
+    if (!autocompleteService.current || value.length <= 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    // SessionTokenがなければ新規作成（入力開始時）
+    if (!sessionToken.current) {
+      sessionToken.current = new window.google.maps.places.AutocompleteSessionToken();
+    }
+
+    autocompleteService.current.getPlacePredictions(
+      {
+        input: value,
+        sessionToken: sessionToken.current,
+        language: 'ja',
+        region: 'jp',
+      },
+      (predictions, status) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
+          setSuggestions(predictions.slice(0, 8));
+        } else {
+          setSuggestions([]);
+        }
+      }
+    );
+  }, []);
+
   const handleLocationChange = (value: string) => {
     setLocation(value);
     setShowSuggestions(true);
 
-    // Google Maps APIがロードされていない場合は初期化を試行
-    if (!autocompleteService.current && isLoaded && window.google && window.google.maps && window.google.maps.places) {
+    if (!autocompleteService.current && isLoaded && window.google?.maps?.places) {
       autocompleteService.current = new window.google.maps.places.AutocompleteService();
       const mapDiv = document.createElement('div');
       const map = new window.google.maps.Map(mapDiv);
       placesService.current = new window.google.maps.places.PlacesService(map);
     }
 
-    if (value.length > 2 && autocompleteService.current) {
-      // 複数のタイプで検索して結果をマージ
-      const searchPromises = [
-        // 駅・交通機関
-        new Promise<google.maps.places.AutocompletePrediction[]>((resolve) => {
-          autocompleteService.current!.getPlacePredictions(
-            {
-              input: value,
-              types: ['transit_station'],
-              language: 'ja',
-              region: 'jp'
-            },
-            (predictions, status) => {
-              if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
-                resolve(predictions);
-              } else {
-                resolve([]);
-              }
-            }
-          );
-        }),
-        // 一般的な施設
-        new Promise<google.maps.places.AutocompletePrediction[]>((resolve) => {
-          autocompleteService.current!.getPlacePredictions(
-            {
-              input: value,
-              types: ['establishment'],
-              language: 'ja',
-              region: 'jp'
-            },
-            (predictions, status) => {
-              if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
-                resolve(predictions);
-              } else {
-                resolve([]);
-              }
-            }
-          );
-        }),
-        // 地名・住所
-        new Promise<google.maps.places.AutocompletePrediction[]>((resolve) => {
-          autocompleteService.current!.getPlacePredictions(
-            {
-              input: value,
-              types: ['geocode'],
-              language: 'ja',
-              region: 'jp'
-            },
-            (predictions, status) => {
-              if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
-                resolve(predictions);
-              } else {
-                resolve([]);
-              }
-            }
-          );
-        })
-      ];
-
-      Promise.all(searchPromises).then((results) => {
-        const [transitStations, establishments, geocodes] = results;
-        // 駅を優先して表示し、重複を除去
-        const allSuggestions = [...transitStations, ...establishments, ...geocodes];
-        const uniqueSuggestions = allSuggestions.filter((suggestion, index, self) =>
-          index === self.findIndex(s => s.place_id === suggestion.place_id)
-        );
-        setSuggestions(uniqueSuggestions.slice(0, 10)); // 最大10件
-      });
-    } else {
-      setSuggestions([]);
-    }
+    // ④ デバウンス: 300ms待ってから検索（タイピング中のリクエストを抑制）
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => fetchSuggestions(value), 300);
   };
 
   const handleSuggestionClick = (suggestion: google.maps.places.AutocompletePrediction) => {
@@ -188,75 +148,45 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
     setShowSuggestions(false);
     setPlaceId(suggestion.place_id);
 
-    // suggestion.types からタイプを自動判定
     const inferred = inferActivityType(suggestion.types ?? []);
     if (inferred) setType(inferred);
 
-    // 場所の詳細情報と写真を取得
-    if (placesService.current && suggestion.place_id) {
+    // ⑤ getDetails: photosを除外してBasicフィールドのみ取得（コスト削減）
+    //    SessionTokenを渡すことでAutocomplete+DetailsをセットでSession課金にまとめる
+    if (placesService.current && suggestion.place_id && sessionToken.current) {
       placesService.current.getDetails(
         {
           placeId: suggestion.place_id,
-          fields: ['photos', 'name', 'formatted_address', 'geometry', 'types'],
-          language: 'ja'
+          fields: ['name', 'formatted_address', 'geometry', 'types'],
+          sessionToken: sessionToken.current,
+          language: 'ja',
         },
         (place, status) => {
           if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
-            // 場所の名前を保存（住所を除く）
-            if (place.name) {
-              setPlaceName(place.name);
-            }
-
-            // 詳細タイプでさらに精度よく判定（上書き）
+            if (place.name) setPlaceName(place.name);
             if (place.types) {
               const detailed = inferActivityType(place.types);
               if (detailed) setType(detailed);
             }
-
-            // 緯度・経度を取得
-            if (place.geometry && place.geometry.location) {
+            if (place.geometry?.location) {
               setLat(place.geometry.location.lat());
               setLng(place.geometry.location.lng());
             }
-
-            if (place.photos && place.photos.length > 0) {
-              // 最初の写真のURLを取得してキャッシュ保存
-              const googlePhotoUrl = place.photos[0].getUrl({ maxWidth: 400 });
-              const groupTokenMatch = window.location.pathname.match(/\/group\/([^/]+)/);
-              const groupToken = groupTokenMatch ? groupTokenMatch[1] : null;
-              fetch('/api/cache-image', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  ...(groupToken ? { 'x-group-token': groupToken } : {}),
-                },
-                body: JSON.stringify({ url: googlePhotoUrl }),
-              })
-                .then(res => res.json())
-                .then(data => {
-                  if (data.cached_url) {
-                    setPhotoUrl(data.cached_url);
-                  }
-                })
-                .catch(err => {
-                  console.error('Photo cache failed, using original:', err);
-                  setPhotoUrl(googlePhotoUrl);
-                });
-            }
           }
+          // ⑥ getDetails完了でセッション終了 → 次の検索用に新しいTokenを発行
+          sessionToken.current = null;
         }
       );
+    } else {
+      sessionToken.current = null;
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activity) return;
-
     try {
-      // placeNameがあれば使用、なければlocationを使用
       const activityName = placeName || location;
-
       await updateActivity({
         variables: {
           id: activity.id,
@@ -265,8 +195,8 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
           notes,
           type,
           date,
-          time: time + ':00', // HH:MM to HH:MM:SS
-          photo_url: photoUrl,
+          time: time + ':00',
+          photo_url: activity.photo_url ?? null,
           lat,
           lng,
           place_id: placeId,
@@ -286,9 +216,7 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
       <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: '#0000004d' }}>
         <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
           <div className="flex flex-col items-center">
-            <div className="mb-2">
-              <LoadingAirplane />
-            </div>
+            <div className="mb-2"><LoadingAirplane /></div>
             <p className="text-gray-600">Google Maps APIを読み込み中...</p>
           </div>
         </div>
@@ -299,33 +227,16 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: '#0000004d' }}>
       <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
-        <button
-          className="absolute top-2 right-4 text-gray-400 hover:text-gray-600"
-          onClick={onClose}
-        >
-          ×
-        </button>
+        <button className="absolute top-2 right-4 text-gray-400 hover:text-gray-600" onClick={onClose}>×</button>
         <h2 className="text-lg font-bold mb-4">アクティビティを編集</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">日付</label>
-            <input
-              type="date"
-              className="w-full border rounded px-3 py-2"
-              value={date || ""}
-              onChange={e => setDate(e.target.value)}
-              required
-            />
+            <input type="date" className="w-full border rounded px-3 py-2" value={date || ""} onChange={e => setDate(e.target.value)} required />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">時間</label>
-            <input
-              type="time"
-              className="w-full border rounded px-3 py-2"
-              value={time || ""}
-              onChange={e => setTime(e.target.value)}
-              required
-            />
+            <input type="time" className="w-full border rounded px-3 py-2" value={time || ""} onChange={e => setTime(e.target.value)} required />
           </div>
           <div className="relative">
             <label className="block text-sm font-medium mb-1">場所</label>
@@ -342,7 +253,6 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
             {showSuggestions && suggestions.length > 0 && (
               <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
                 {suggestions.map((suggestion) => {
-                  // 場所の種類を判定してアイコンを決定
                   const getPlaceIcon = (types: string[]) => {
                     if (types.includes('transit_station')) return '🚉';
                     if (types.includes('airport')) return '✈️';
@@ -354,7 +264,6 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
                     if (types.includes('school') || types.includes('university')) return '🏫';
                     return '📍';
                   };
-
                   return (
                     <div
                       key={suggestion.place_id}
@@ -362,16 +271,10 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
                       onClick={() => handleSuggestionClick(suggestion)}
                     >
                       <div className="flex items-center">
-                        <span className="mr-2 text-lg">
-                          {getPlaceIcon(suggestion.types)}
-                        </span>
+                        <span className="mr-2 text-lg">{getPlaceIcon(suggestion.types)}</span>
                         <div className="flex-1">
-                          <div className="font-medium text-gray-900">
-                            {suggestion.structured_formatting.main_text}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {suggestion.structured_formatting.secondary_text}
-                          </div>
+                          <div className="font-medium text-gray-900">{suggestion.structured_formatting.main_text}</div>
+                          <div className="text-sm text-gray-600">{suggestion.structured_formatting.secondary_text}</div>
                         </div>
                       </div>
                     </div>
@@ -382,42 +285,19 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">説明</label>
-            <textarea
-              className="w-full border rounded px-3 py-2"
-              value={notes || ""}
-              onChange={e => setNotes(e.target.value)}
-              rows={2}
-            />
+            <textarea className="w-full border rounded px-3 py-2" value={notes || ""} onChange={e => setNotes(e.target.value)} rows={2} />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">タイプ</label>
-            <select
-              className="w-full border rounded px-3 py-2"
-              value={type || typeOptions[0].value}
-              onChange={e => setType(e.target.value)}
-              required
-            >
+            <select className="w-full border rounded px-3 py-2" value={type || typeOptions[0].value} onChange={e => setType(e.target.value)} required>
               {typeOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
+                <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
           </div>
           <div className="flex justify-end">
-            <button
-              type="button"
-              className="mr-2 px-4 py-2 rounded bg-gray-200 text-gray-700"
-              onClick={onClose}
-              disabled={isSubmitting}
-            >
-              キャンセル
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded bg-blue-600 text-white font-bold disabled:opacity-50 min-w-[64px]"
-              disabled={isSubmitting}
-            >
+            <button type="button" className="mr-2 px-4 py-2 rounded bg-gray-200 text-gray-700" onClick={onClose} disabled={isSubmitting}>キャンセル</button>
+            <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white font-bold disabled:opacity-50 min-w-[64px]" disabled={isSubmitting}>
               {isSubmitting ? <LoadingAirplane /> : '更新'}
             </button>
           </div>
