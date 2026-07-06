@@ -677,14 +677,14 @@ export default function TravelPlanner() {
           </button>
           <button
             className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 ${
-              activeTab === "info" ? "text-blue-600" : "text-gray-400"
+              activeTab === "information" ? "text-blue-600" : "text-gray-400"
             }`}
-            onClick={() => setActiveTab("info")}
+            onClick={() => setActiveTab("information")}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={activeTab === "info" ? 2.5 : 1.8} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={activeTab === "information" ? 2.5 : 1.8} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span className={`text-xs font-medium ${activeTab === "info" ? "font-bold" : ""}`}>情報</span>
+            <span className={`text-xs font-medium ${activeTab === "information" ? "font-bold" : ""}`}>情報</span>
           </button>
         </div>
       </nav>
@@ -692,7 +692,7 @@ export default function TravelPlanner() {
       {/* メインコンテンツ */}
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* モバイル用日程選択 */}
-        <div className={`lg:hidden bg-white border-b border-gray-200 sticky top-0 z-50 ${activeTab === "info" ? "hidden" : ""}`}>
+        <div className={`lg:hidden bg-white border-b border-gray-200 sticky top-0 z-50 ${activeTab === "information" ? "hidden" : ""}`}>
           {/* モバイル用日程タブ */}
           <div className="px-4 py-3">
             <div className="flex overflow-x-auto scrollbar-hide -mx-4 px-4">
