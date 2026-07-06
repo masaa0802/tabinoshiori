@@ -166,7 +166,12 @@ const BudgetContent: React.FC<BudgetContentProps> = ({ itinerary_id, itinerary, 
   }, []);
 
   if (loading) {
-    return <LoadingAirplane fullPage message="読み込み中..." />;
+    return (
+      <div className="flex flex-col items-center justify-center flex-1 h-64 gap-3 text-gray-400">
+        <LoadingAirplane />
+        <p className="text-sm">読み込み中...</p>
+      </div>
+    );
   }
 
   if (!currentItinerary) {

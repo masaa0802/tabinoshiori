@@ -125,9 +125,9 @@ const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id, s
 
   if (loading) {
     return (
-      <div className="p-6 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">読み込み中...</p>
+      <div className="flex flex-col items-center justify-center flex-1 h-64 gap-3 text-gray-400">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <p className="text-sm">読み込み中...</p>
       </div>
     );
   }
