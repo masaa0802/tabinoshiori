@@ -91,22 +91,28 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
 
     try {
       // ファイルをCloudinaryにアップロード
-      const uploadedFiles = await Promise.all(
-        files.map((file, index) =>
-          uploadToCloudinary(file, `travel-planner/${itineraryId}/documents`).then(result => ({
-            ...result,
-            display_order: index,
-          }))
-        )
-      );
+      let uploadedFiles;
+      try {
+        uploadedFiles = await Promise.all(
+          files.map((file, index) =>
+            uploadToCloudinary(file, `travel-planner/${itineraryId}/documents`).then(result => ({
+              ...result,
+              display_order: index,
+            }))
+          )
+        );
+      } catch (uploadError) {
+        console.error('ファイルアップロードに失敗しました:', uploadError);
+        alert(`ファイルのアップロードに失敗しました: ${uploadError instanceof Error ? uploadError.message : String(uploadError)}`);
+        return;
+      }
 
       // 選択した日付を取得
       let dateTime = null;
       if (selectedDay !== null) {
         const selectedDayOption = dayOptions.find(d => d.day === selectedDay);
         if (selectedDayOption) {
-          const dateStr = selectedDayOption.date.toISOString().split('T')[0];
-          dateTime = `${dateStr}T00:00:00`;
+          dateTime = selectedDayOption.date.toISOString().split('T')[0];
         }
       }
 
@@ -135,7 +141,8 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
       resetForm();
     } catch (error) {
       console.error('ドキュメントの追加に失敗しました:', error);
-      alert('ドキュメントの追加に失敗しました');
+      const message = error instanceof Error ? error.message : String(error);
+      alert(`ドキュメントの追加に失敗しました: ${message}`);
     } finally {
       setUploading(false);
     }

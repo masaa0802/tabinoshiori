@@ -339,7 +339,7 @@ export const INSERT_TRAVEL_DOCUMENT = gql`
     $itinerary_id: Int!
     $title: String!
     $category: String!
-    $date: timestamp
+    $date: date
     $reservation_number: String
     $notes: String
     $files: [document_files_insert_input!]!
@@ -380,7 +380,7 @@ export const UPDATE_TRAVEL_DOCUMENT = gql`
     $id: Int!
     $title: String
     $category: String
-    $date: timestamp
+    $date: date
     $reservation_number: String
     $notes: String
   ) {
