@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import AddActivityModal from "../components/AddActivityModal";
 import EditActivityModal from "../components/EditActivityModal";
+import EditItineraryDatesModal from "../components/EditItineraryDatesModal";
 import ActivityDetailSheet from "../components/ActivityDetailSheet";
 import ActivityDetailModal from "../components/ActivityDetailModal";
 import LoadingAirplane from "@/components/LoadingAirplane";
@@ -81,7 +82,7 @@ export default function TravelPlanner() {
   const shouldSkipQueries = Boolean(isNewGroup && groupData && !createdItineraryId);
 
   // 既存の旅行プラン（travelPlannerIdがある場合）はtokenと一致するもののみ取得
-  const { data: itineraryData, loading: itineraryLoading, error: itineraryError } = useQuery(GET_ITINERARY_BY_TOKEN_AND_ID, {
+  const { data: itineraryData, loading: itineraryLoading, error: itineraryError, refetch: refetchItinerary } = useQuery(GET_ITINERARY_BY_TOKEN_AND_ID, {
     variables: { id: parseInt(travelPlannerId), token: groupToken },
     skip: !travelPlannerId || isNewGroup
   });
@@ -101,6 +102,7 @@ export default function TravelPlanner() {
 
   const [activeTab, setActiveTab] = useState("plan");
   const [selectedDay, setSelectedDay] = useState(1);
+  const [editDatesModalOpen, setEditDatesModalOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
@@ -518,6 +520,16 @@ export default function TravelPlanner() {
 
 
 
+  // 日程変更後の処理
+  const handleDatesUpdated = async (newStartDate: string, newEndDate: string) => {
+    await Promise.all([refetchItinerary(), refetchActivities()]);
+    const newStart = new Date(newStartDate);
+    const newEnd = new Date(newEndDate);
+    const newTermDay = Math.ceil((newEnd.getTime() - newStart.getTime() + 1) / 86400000);
+    if (selectedDay > newTermDay) setSelectedDay(newTermDay);
+    setEditDatesModalOpen(false);
+  };
+
   // スワイプハンドラー
   const handleTouchStart = (e: React.TouchEvent, activityId: number) => {
     setTouchStart(e.touches[0].clientX);
@@ -695,7 +707,8 @@ export default function TravelPlanner() {
         <div className={`lg:hidden bg-white border-b border-gray-200 sticky top-0 z-50 ${activeTab === "information" ? "hidden" : ""}`}>
           {/* モバイル用日程タブ */}
           <div className="px-4 py-3">
-            <div className="flex overflow-x-auto scrollbar-hide -mx-4 px-4">
+            <div className="flex items-center gap-2">
+            <div className="flex overflow-x-auto scrollbar-hide flex-1">
               <div className="flex space-x-3 min-w-full">
                 {Array.from({ length: tripInfo.days }, (_, i) => {
                   const dayNumber = i + 1;
@@ -722,6 +735,16 @@ export default function TravelPlanner() {
                 })}
               </div>
             </div>
+            <button
+              onClick={() => setEditDatesModalOpen(true)}
+              className="flex-none text-gray-400 hover:text-blue-500 transition-colors p-1.5 rounded-full hover:bg-gray-100"
+              title="旅行期間を変更"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </button>
+            </div>
           </div>
 
         </div>
@@ -730,7 +753,18 @@ export default function TravelPlanner() {
           {/* デスクトップ用サイドバー */}
           <div className="hidden lg:block w-48 bg-white border-r border-gray-200 overflow-y-auto">
             <div className="p-4">
-              <h2 className="font-semibold text-gray-700 mb-2">日程</h2>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="font-semibold text-gray-700">日程</h2>
+                <button
+                  onClick={() => setEditDatesModalOpen(true)}
+                  className="text-gray-400 hover:text-blue-500 transition-colors p-0.5 rounded"
+                  title="旅行期間を変更"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </button>
+              </div>
               <div className="space-y-1">
                 {Array.from({ length: tripInfo.days }, (_, i) => {
                   const dayNumber = i + 1;
@@ -1041,6 +1075,15 @@ export default function TravelPlanner() {
         onDelete={handleDeleteFromDetail}
       />
 
+      <EditItineraryDatesModal
+        isOpen={editDatesModalOpen}
+        onClose={() => setEditDatesModalOpen(false)}
+        itineraryId={travelPlan.id}
+        currentStartDate={travelPlan.start_date}
+        currentEndDate={travelPlan.end_date}
+        activities={activitiesToProcess}
+        onSuccess={handleDatesUpdated}
+      />
     </div>
     </GoogleMapsProvider>
   );

@@ -4,7 +4,7 @@ table:
 object_relationships:
   - name: travel_document
     using:
-      foreign_key_constraint_on: document_id
+      foreign_key_constraint_on: travel_document_id
 insert_permissions:
   - role: anonymous
     permission:

@@ -123,6 +123,7 @@ export const DELETE_BUDGET = gql`
   }
 `;
 
+
 export const UPDATE_ACTIVITY = gql`
   mutation UpdateActivity(
     $id: Int!
@@ -175,6 +176,7 @@ export const DELETE_ACTIVITY = gql`
     }
   }
 `;
+
 export const INSERT_GROUP = gql`
   mutation InsertGroup(
     $name: String!
@@ -314,6 +316,46 @@ export const DELETE_DOCUMENT = gql`
   mutation DeleteDocument($id: Int!) {
     delete_documents_by_pk(id: $id) {
       id
+    }
+  }
+`;
+
+// 日程変更・期間外データ削除を1トランザクションで実行
+export const UPDATE_ITINERARY_DATES_WITH_CLEANUP = gql`
+  mutation UpdateItineraryDatesWithCleanup(
+    $id: Int!
+    $start_date: date!
+    $end_date: date!
+  ) {
+    update_itineraries_by_pk(
+      pk_columns: { id: $id }
+      _set: { start_date: $start_date, end_date: $end_date }
+    ) {
+      id
+      start_date
+      end_date
+    }
+    delete_activities(
+      where: {
+        itinerary_id: { _eq: $id }
+        _or: [
+          { date: { _lt: $start_date } }
+          { date: { _gt: $end_date } }
+        ]
+      }
+    ) {
+      affected_rows
+    }
+    delete_budgets(
+      where: {
+        itinerary_id: { _eq: $id }
+        _or: [
+          { date: { _lt: $start_date } }
+          { date: { _gt: $end_date } }
+        ]
+      }
+    ) {
+      affected_rows
     }
   }
 `;

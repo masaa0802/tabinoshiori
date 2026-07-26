@@ -9,7 +9,7 @@ array_relationships:
   - name: document_files
     using:
       foreign_key_constraint_on:
-        column: document_id
+        column: travel_document_id
         table:
           name: document_files
           schema: public
