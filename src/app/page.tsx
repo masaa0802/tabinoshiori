@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from "next";
 import RecentPlans from '@/components/RecentPlans';
 import FeatureTabDemo from '@/components/FeatureTabDemo';
@@ -77,29 +78,38 @@ const page: React.FC = () => {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* 背景画像スライドショー */}
         <div className="absolute inset-0">
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 animate-slideshow-1"
-            style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=2000')",
-            }}
+          <Image
+            src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=2000"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            quality={75}
+            className="object-cover transition-opacity duration-1000 animate-slideshow-1"
           />
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 animate-slideshow-2"
-            style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2000')",
-            }}
+          <Image
+            src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2000"
+            alt=""
+            fill
+            sizes="100vw"
+            quality={75}
+            className="object-cover transition-opacity duration-1000 animate-slideshow-2"
           />
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 animate-slideshow-3"
-            style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2000')",
-            }}
+          <Image
+            src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2000"
+            alt=""
+            fill
+            sizes="100vw"
+            quality={75}
+            className="object-cover transition-opacity duration-1000 animate-slideshow-3"
           />
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 animate-slideshow-4"
-            style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1503220317375-aaad61436b1b?q=80&w=2000')",
-            }}
+          <Image
+            src="https://images.unsplash.com/photo-1503220317375-aaad61436b1b?q=80&w=2000"
+            alt=""
+            fill
+            sizes="100vw"
+            quality={75}
+            className="object-cover transition-opacity duration-1000 animate-slideshow-4"
           />
           {/* 暗いオーバーレイで文字を読みやすく */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60"></div>
