@@ -39,6 +39,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     title: "旅のしおり - 無料の旅行しおり作成アプリ",
     description: "旅行しおりを無料で簡単に作成・共有できるアプリ。日程・予算・ホテル・フライトの予約情報をひとまとめに管理。URLひとつで家族や友人にしおりを共有。アカウント登録不要。",
@@ -46,13 +50,13 @@ export const metadata: Metadata = {
     siteName: "旅のしおり",
     locale: 'ja_JP',
     type: 'website',
-    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
     title: "旅のしおり - 無料の旅行しおり作成アプリ",
     description: "旅行しおりを無料で簡単に作成・共有。日程・予算・予約情報をひとまとめに管理できます。アカウント登録不要。",
-    images: ['/og-image.png'],
+    images: ['/og-image.jpg'],
   },
   robots: {
     index: true,
