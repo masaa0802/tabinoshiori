@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://travel-planner.vercel.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://tabinoshiori.jp'),
   alternates: {
     canonical: '/',
   },
@@ -110,7 +110,7 @@ export default function RootLayout({
                 "旅行しおりを無料で作成・共有できるアプリ。日程・予算・ホテル・フライトの予約情報をひとまとめに管理し、URLひとつで家族や友人とプランを共有。Googleマップで行き先を確認できます。",
               url:
                 process.env.NEXT_PUBLIC_BASE_URL ||
-                "https://travel-planner.vercel.app",
+                "https://tabinoshiori.jp",
               applicationCategory: "TravelApplication",
               operatingSystem: "Web, iOS, Android",
               browserRequirements: "HTML5をサポートするブラウザ",
