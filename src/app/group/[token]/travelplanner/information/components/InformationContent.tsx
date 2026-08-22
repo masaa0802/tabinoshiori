@@ -87,7 +87,7 @@ export const CATEGORIES = [
   { value: 'other', label: 'その他', color: '#6B7280' },
 ];
 
-const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id, startDate, endDate }) => {
+const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -144,31 +144,18 @@ const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id, s
     <div className="min-h-full bg-gradient-to-b from-gray-50 to-white overflow-x-hidden">
       <div className="w-full max-w-full px-3 py-3 sm:px-4 sm:py-4 md:px-6 md:py-6 overflow-x-hidden">
         {/* ヘッダー */}
-        <div className="mb-4">
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-3 sm:p-4 md:p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex-1 min-w-0">
-                <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900">旅行情報</h2>
-                <p className="text-[11px] sm:text-xs md:text-sm text-gray-500 mt-0.5 truncate">航空券・ホテル・チケットなどをまとめて管理</p>
-              </div>
-              <div className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-sky-100 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 ml-2">
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-sky-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                  <polyline points="14,2 14,8 20,8"/>
-                </svg>
-              </div>
-            </div>
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white px-3 sm:px-4 py-2.5 rounded-lg sm:rounded-xl font-medium shadow-sm transition-all text-sm flex items-center justify-center gap-2"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-              情報を追加
-            </button>
-          </div>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900">旅行情報</h2>
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium shadow-sm transition-all text-sm flex items-center justify-center gap-1.5 flex-shrink-0"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            追加
+          </button>
         </div>
 
         {/* カテゴリーフィルター */}
@@ -248,8 +235,6 @@ const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id, s
           onClose={() => setIsAddModalOpen(false)}
           itineraryId={itinerary_id}
           onDocumentAdded={handleDocumentAdded}
-          startDate={startDate || ''}
-          endDate={endDate || ''}
         />
       )}
     </div>

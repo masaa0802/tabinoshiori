@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { INSERT_TRAVEL_DOCUMENT } from '@/graphql/mutates';
 import { CATEGORIES, CategoryIcon } from './InformationContent';
@@ -11,8 +11,6 @@ interface AddDocumentModalProps {
   onClose: () => void;
   itineraryId: number;
   onDocumentAdded: () => void;
-  startDate: string;
-  endDate: string;
 }
 
 const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
@@ -20,42 +18,12 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
   onClose,
   itineraryId,
   onDocumentAdded,
-  startDate,
-  endDate,
 }) => {
   const [category, setCategory] = useState(CATEGORIES[0].value);
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [notes, setNotes] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
 
   const [insertDocument] = useMutation(INSERT_TRAVEL_DOCUMENT);
-
-  // 日程オプションを生成
-  const dayOptions = useMemo(() => {
-    if (!startDate || !endDate) return [];
-
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const days: { day: number; date: Date; label: string }[] = [];
-
-    let currentDate = new Date(start);
-    let dayNumber = 1;
-
-    while (currentDate <= end) {
-      const month = currentDate.getMonth() + 1;
-      const date = currentDate.getDate();
-      days.push({
-        day: dayNumber,
-        date: new Date(currentDate),
-        label: `${dayNumber}日目 ${month}/${date}日`,
-      });
-      currentDate.setDate(currentDate.getDate() + 1);
-      dayNumber++;
-    }
-
-    return days;
-  }, [startDate, endDate]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -107,24 +75,15 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
         return;
       }
 
-      // 選択した日付を取得
-      let dateTime = null;
-      if (selectedDay !== null) {
-        const selectedDayOption = dayOptions.find(d => d.day === selectedDay);
-        if (selectedDayOption) {
-          dateTime = selectedDayOption.date.toISOString().split('T')[0];
-        }
-      }
-
       // ドキュメントをデータベースに保存
       await insertDocument({
         variables: {
           itinerary_id: itineraryId,
           title: files[0]?.name.replace(/\.[^/.]+$/, '') || category,
           category,
-          date: dateTime,
+          date: null,
           reservation_number: null,
-          notes: notes || null,
+          notes: null,
           files: uploadedFiles.map(file => ({
             file_url: file.file_url,
             file_type: file.file_type,
@@ -150,8 +109,6 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
 
   const resetForm = () => {
     setCategory(CATEGORIES[0].value);
-    setSelectedDay(null);
-    setNotes('');
     setFiles([]);
   };
 
@@ -210,35 +167,6 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* 日程選択 */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">日程</label>
-            <select
-              className="w-full border border-gray-200 rounded-lg px-2.5 py-2 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all bg-white"
-              value={selectedDay ?? ''}
-              onChange={e => setSelectedDay(e.target.value ? Number(e.target.value) : null)}
-            >
-              <option value="">選択なし</option>
-              {dayOptions.map(option => (
-                <option key={option.day} value={option.day}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* メモ */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">メモ</label>
-            <textarea
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all resize-none"
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-              rows={2}
-              placeholder="追加情報やメモ"
-            />
           </div>
 
           {/* ファイルアップロード */}
