@@ -161,36 +161,6 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
         <div className="p-3 sm:p-5 overflow-y-auto max-h-[calc(85vh-52px)]">
 
         <form onSubmit={handleSubmit} className="space-y-3">
-          {/* カテゴリー */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">カテゴリー *</label>
-            <div className="grid grid-cols-4 gap-1.5">
-              {CATEGORIES.map(cat => (
-                <button
-                  key={cat.value}
-                  type="button"
-                  onClick={() => setCategory(cat.value)}
-                  className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg border-2 transition-all ${
-                    category === cat.value
-                      ? 'border-current shadow-sm'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  style={{
-                    borderColor: category === cat.value ? cat.color : undefined,
-                    backgroundColor: category === cat.value ? `${cat.color}10` : undefined,
-                  }}
-                >
-                  <span style={{ color: cat.color }}>
-                    <CategoryIcon category={cat.value} className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </span>
-                  <span className={`text-[10px] sm:text-xs mt-0.5 ${category === cat.value ? 'font-medium' : 'text-gray-600'}`}>
-                    {cat.label}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* ファイルアップロード */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">ファイル *</label>
@@ -263,6 +233,36 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
                 ))}
               </div>
             )}
+          </div>
+
+          {/* カテゴリー */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">カテゴリー *</label>
+            <div className="grid grid-cols-4 gap-1.5">
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat.value}
+                  type="button"
+                  onClick={() => setCategory(cat.value)}
+                  className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg border-2 transition-all ${
+                    category === cat.value
+                      ? 'border-current shadow-sm'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  style={{
+                    borderColor: category === cat.value ? cat.color : undefined,
+                    backgroundColor: category === cat.value ? `${cat.color}10` : undefined,
+                  }}
+                >
+                  <span style={{ color: cat.color }}>
+                    <CategoryIcon category={cat.value} className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </span>
+                  <span className={`text-[10px] sm:text-xs mt-0.5 ${category === cat.value ? 'font-medium' : 'text-gray-600'}`}>
+                    {cat.label}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* ボタン */}
