@@ -137,8 +137,8 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-md max-h-[90vh] sm:max-h-[85vh] overflow-hidden relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] overflow-hidden relative">
         {/* ヘッダー */}
         <div className="bg-gradient-to-r from-sky-500 to-blue-600 px-3 sm:px-5 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -158,7 +158,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
           </button>
         </div>
 
-        <div className="p-3 sm:p-5 overflow-y-auto max-h-[calc(90vh-52px)] sm:max-h-[calc(85vh-52px)]">
+        <div className="p-3 sm:p-5 overflow-y-auto max-h-[calc(85vh-52px)]">
 
         <form onSubmit={handleSubmit} className="space-y-3">
           {/* カテゴリー */}
