@@ -22,13 +22,14 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
   const [category, setCategory] = useState(CATEGORIES[0].value);
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const [insertDocument] = useMutation(INSERT_TRAVEL_DOCUMENT);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
+  const addFiles = (fileList: FileList | null) => {
+    if (!fileList) return;
 
-    const newFiles = Array.from(e.target.files);
+    const newFiles = Array.from(fileList);
     const validFiles: File[] = [];
 
     for (const file of newFiles) {
@@ -40,7 +41,28 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
       validFiles.push(file);
     }
 
-    setFiles([...files, ...validFiles]);
+    setFiles(prev => [...prev, ...validFiles]);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    addFiles(e.target.files);
+    e.target.value = '';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    addFiles(e.dataTransfer.files);
   };
 
   const removeFile = (index: number) => {
@@ -172,7 +194,14 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
           {/* ファイルアップロード */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">ファイル *</label>
-            <div className="border-2 border-dashed border-sky-200 rounded-lg p-3 sm:p-4 text-center bg-sky-50/50 hover:bg-sky-50 transition-colors">
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`border-2 border-dashed rounded-lg p-3 sm:p-4 text-center transition-colors ${
+                isDragging ? 'border-sky-400 bg-sky-100' : 'border-sky-200 bg-sky-50/50 hover:bg-sky-50'
+              }`}
+            >
               <input
                 type="file"
                 multiple
@@ -183,7 +212,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
               />
               <label
                 htmlFor="file-upload"
-                className="cursor-pointer"
+                className="cursor-pointer block"
               >
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-sky-100 rounded-lg flex items-center justify-center mx-auto mb-2">
                   <svg className="w-5 h-5 sm:w-6 sm:h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,7 +220,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
                   </svg>
                 </div>
                 <p className="text-xs text-gray-700 font-medium mb-0.5">
-                  タップしてファイルを選択
+                  ドラッグ&ドロップ、またはタップして選択
                 </p>
                 <p className="text-[10px] text-gray-500">
                   PDF, JPG, PNG (最大10MB)
