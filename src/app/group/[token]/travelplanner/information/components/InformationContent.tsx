@@ -159,39 +159,19 @@ const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id })
         </div>
 
         {/* カテゴリーフィルター */}
-        <div className="mb-4 overflow-hidden">
-          <div className="flex overflow-x-auto gap-1.5 sm:gap-2 pb-2 scrollbar-hide">
-            <button
-              onClick={() => setSelectedCategory('all')}
-              className={`flex-shrink-0 px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full whitespace-nowrap transition-all text-[11px] sm:text-xs md:text-sm font-medium border ${
-                selectedCategory === 'all'
-                  ? 'bg-gray-900 text-white border-gray-900 shadow-md'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              すべて
-            </button>
+        <div className="mb-4">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full sm:w-56 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white text-gray-700 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+          >
+            <option value="all">すべて</option>
             {CATEGORIES.map((category) => (
-              <button
-                key={category.value}
-                onClick={() => setSelectedCategory(category.value)}
-                className={`flex-shrink-0 px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full whitespace-nowrap transition-all flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs md:text-sm font-medium border ${
-                  selectedCategory === category.value
-                    ? 'text-white shadow-md'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                }`}
-                style={{
-                  backgroundColor: selectedCategory === category.value ? category.color : undefined,
-                  borderColor: selectedCategory === category.value ? category.color : undefined,
-                }}
-              >
-                <span style={{ color: selectedCategory === category.value ? 'white' : category.color }}>
-                  <CategoryIcon category={category.value} className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                </span>
-                <span>{category.label}</span>
-              </button>
+              <option key={category.value} value={category.value}>
+                {category.label}
+              </option>
             ))}
-          </div>
+          </select>
         </div>
 
         {/* ドキュメント一覧 */}
