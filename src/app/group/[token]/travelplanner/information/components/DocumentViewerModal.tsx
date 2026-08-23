@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useMutation } from '@apollo/client';
+import { DELETE_TRAVEL_DOCUMENT } from '@/graphql/mutates';
 import { CATEGORIES, CategoryIcon } from './InformationContent';
+import EditDocumentModal from './EditDocumentModal';
 
 interface DocumentFile {
   id: number;
@@ -26,14 +29,20 @@ interface DocumentViewerModalProps {
   document: Document;
   isOpen: boolean;
   onClose: () => void;
+  onDeleted: () => void;
+  itineraryId: number;
 }
 
 const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
   document: travelDocument,
   isOpen,
   onClose,
+  onDeleted,
+  itineraryId,
 }) => {
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [deleteDocument] = useMutation(DELETE_TRAVEL_DOCUMENT);
 
   if (!isOpen) return null;
 
@@ -58,19 +67,27 @@ const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
     document.body.removeChild(link);
   };
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('ja-JP', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date);
+  const handleDelete = async () => {
+    if (!confirm('この情報を削除しますか？')) return;
+
+    try {
+      await deleteDocument({ variables: { id: travelDocument.id } });
+      onDeleted();
+      onClose();
+    } catch (error) {
+      console.error('削除に失敗しました:', error);
+      alert('削除に失敗しました');
+    }
+  };
+
+  const handleDocumentUpdated = () => {
+    onDeleted();
+    setIsEditOpen(false);
+    onClose();
   };
 
   return (
+    <>
     <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm" onClick={onClose}>
       <div
         className="h-full flex flex-col"
@@ -153,33 +170,8 @@ const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
           )}
         </div>
 
-        {/* フッター（情報とアクション） */}
+        {/* フッター（アクション） */}
         <div className="bg-white border-t border-gray-100 p-3 sm:p-4 space-y-3 safe-area-bottom">
-          {/* ドキュメント情報 */}
-          {(travelDocument.date || travelDocument.reservation_number || travelDocument.notes) && (
-            <div className="bg-gray-50 rounded-xl p-3 space-y-2">
-              {travelDocument.date && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <svg className="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <span className="truncate">{formatDate(travelDocument.date)}</span>
-                </div>
-              )}
-              {travelDocument.reservation_number && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <svg className="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                  </svg>
-                  <span className="font-mono truncate">{travelDocument.reservation_number}</span>
-                </div>
-              )}
-              {travelDocument.notes && (
-                <p className="text-sm text-gray-700 line-clamp-2">{travelDocument.notes}</p>
-              )}
-            </div>
-          )}
-
           {/* インディケーター（複数ファイルの場合） */}
           {travelDocument.files.length > 1 && (
             <div className="flex justify-center gap-2">
@@ -198,18 +190,48 @@ const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
           )}
 
           {/* アクションボタン */}
-          <button
-            onClick={handleDownload}
-            className="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white px-4 py-2.5 sm:py-3 rounded-xl font-medium flex items-center justify-center gap-2 text-sm sm:text-base shadow-sm transition-all"
-          >
-            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            ダウンロード
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleDownload}
+              className="flex-1 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white px-4 py-2.5 sm:py-3 rounded-xl font-medium flex items-center justify-center gap-2 text-sm sm:text-base shadow-sm transition-all"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              ダウンロード
+            </button>
+            <button
+              onClick={() => setIsEditOpen(true)}
+              className="px-4 py-2.5 sm:py-3 rounded-xl font-medium flex items-center justify-center bg-gray-100 text-gray-500 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+              title="編集"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </button>
+            <button
+              onClick={handleDelete}
+              className="px-4 py-2.5 sm:py-3 rounded-xl font-medium flex items-center justify-center bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors"
+              title="削除"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
+    {isEditOpen && (
+      <EditDocumentModal
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        document={travelDocument}
+        itineraryId={itineraryId}
+        onDocumentUpdated={handleDocumentUpdated}
+      />
+    )}
+    </>
   );
 };
 
