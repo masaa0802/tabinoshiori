@@ -29,9 +29,10 @@ interface Document {
 interface DocumentCardProps {
   document: Document;
   onUpdate: () => void;
+  itineraryId: number;
 }
 
-const DocumentCard: React.FC<DocumentCardProps> = ({ document, onUpdate }) => {
+const DocumentCard: React.FC<DocumentCardProps> = ({ document, onUpdate, itineraryId }) => {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
 
   const [deleteDocument] = useMutation(DELETE_TRAVEL_DOCUMENT);
@@ -133,6 +134,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ document, onUpdate }) => {
           isOpen={isViewerOpen}
           onClose={() => setIsViewerOpen(false)}
           onDeleted={onUpdate}
+          itineraryId={itineraryId}
         />
       )}
     </>

@@ -202,6 +202,7 @@ const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id })
                 key={document.id}
                 document={document}
                 onUpdate={handleDocumentUpdated}
+                itineraryId={itinerary_id}
               />
             ))}
           </div>

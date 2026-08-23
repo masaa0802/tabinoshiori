@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { DELETE_TRAVEL_DOCUMENT } from '@/graphql/mutates';
 import { CATEGORIES, CategoryIcon } from './InformationContent';
+import EditDocumentModal from './EditDocumentModal';
 
 interface DocumentFile {
   id: number;
@@ -29,6 +30,7 @@ interface DocumentViewerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDeleted: () => void;
+  itineraryId: number;
 }
 
 const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
@@ -36,8 +38,10 @@ const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
   isOpen,
   onClose,
   onDeleted,
+  itineraryId,
 }) => {
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [deleteDocument] = useMutation(DELETE_TRAVEL_DOCUMENT);
 
   if (!isOpen) return null;
@@ -76,7 +80,14 @@ const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
     }
   };
 
+  const handleDocumentUpdated = () => {
+    onDeleted();
+    setIsEditOpen(false);
+    onClose();
+  };
+
   return (
+    <>
     <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm" onClick={onClose}>
       <div
         className="h-full flex flex-col"
@@ -190,6 +201,15 @@ const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
               ダウンロード
             </button>
             <button
+              onClick={() => setIsEditOpen(true)}
+              className="px-4 py-2.5 sm:py-3 rounded-xl font-medium flex items-center justify-center bg-gray-100 text-gray-500 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+              title="編集"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </button>
+            <button
               onClick={handleDelete}
               className="px-4 py-2.5 sm:py-3 rounded-xl font-medium flex items-center justify-center bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors"
               title="削除"
@@ -202,6 +222,16 @@ const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
         </div>
       </div>
     </div>
+    {isEditOpen && (
+      <EditDocumentModal
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        document={travelDocument}
+        itineraryId={itineraryId}
+        onDocumentUpdated={handleDocumentUpdated}
+      />
+    )}
+    </>
   );
 };
 
