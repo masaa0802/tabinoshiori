@@ -5,11 +5,13 @@ import { useQuery } from '@apollo/client';
 import { GET_TRAVEL_DOCUMENTS } from '@/graphql/queries';
 import DocumentCard from './DocumentCard';
 import AddDocumentModal from './AddDocumentModal';
+import RelatedArticles from '@/components/blog/RelatedArticles';
 
 interface InformationContentProps {
   itinerary_id?: number;
   startDate?: string;
   endDate?: string;
+  destination?: string | null;
 }
 
 // カテゴリーアイコンコンポーネント
@@ -87,7 +89,7 @@ export const CATEGORIES = [
   { value: 'other', label: 'その他', color: '#6B7280' },
 ];
 
-const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id, startDate, endDate }) => {
+const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id, startDate, endDate, destination }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -239,6 +241,9 @@ const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id, s
             ))}
           </div>
         )}
+
+        {/* 関連記事。予約情報の下に置き、主機能の邪魔をしない */}
+        <RelatedArticles destination={destination} />
       </div>
 
       {/* 追加モーダル */}

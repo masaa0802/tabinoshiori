@@ -3,6 +3,7 @@ import Image from 'next/image';
 import type { Metadata } from "next";
 import RecentPlans from '@/components/RecentPlans';
 import FeatureTabDemo from '@/components/FeatureTabDemo';
+import BlogHighlights from '@/components/blog/BlogHighlights';
 
 export const metadata: Metadata = {
   title: "旅行しおりを無料で作成・共有 | 旅のしおり",
@@ -310,6 +311,9 @@ const page: React.FC = () => {
         </div>
       </section>
 
+      {/* 新着記事。ヒーローCTAより下に置き、しおり作成の導線に干渉させない */}
+      <BlogHighlights />
+
       {/* SEOコンテンツセクション */}
       <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto">
@@ -399,7 +403,10 @@ const page: React.FC = () => {
             </h2>
             <p className="text-gray-400 text-lg mb-8">あなたの旅をもっと楽しく、もっと便利に</p>
 
-            <div className="flex justify-center space-x-8 mb-8">
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 mb-8">
+              <Link href="/blog" className="text-gray-400 hover:text-white transition-colors">
+                旅行ガイド
+              </Link>
               <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
                 利用規約
               </Link>

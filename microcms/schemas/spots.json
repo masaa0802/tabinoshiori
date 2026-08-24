@@ -1,0 +1,62 @@
+{
+  "apiFields": [
+    {
+      "idValue": "spot-name",
+      "fieldId": "name",
+      "name": "スポット名",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "idValue": "spot-description",
+      "fieldId": "description",
+      "name": "説明",
+      "kind": "textArea",
+      "required": true
+    },
+    {
+      "idValue": "spot-place-id",
+      "fieldId": "placeId",
+      "name": "Google Maps Place ID",
+      "kind": "text",
+      "required": false
+    },
+    {
+      "idValue": "spot-lat",
+      "fieldId": "lat",
+      "name": "緯度",
+      "kind": "number",
+      "required": false
+    },
+    {
+      "idValue": "spot-lng",
+      "fieldId": "lng",
+      "name": "経度",
+      "kind": "number",
+      "required": false
+    },
+    {
+      "idValue": "spot-address",
+      "fieldId": "address",
+      "name": "住所",
+      "kind": "text",
+      "required": false
+    },
+    {
+      "idValue": "spot-activity-type",
+      "fieldId": "activityType",
+      "name": "種別",
+      "kind": "text",
+      "description": "観光・グルメ・宿泊など。",
+      "required": false
+    },
+    {
+      "idValue": "spot-photo",
+      "fieldId": "photo",
+      "name": "写真",
+      "kind": "media",
+      "required": false
+    }
+  ],
+  "customFields": []
+}
