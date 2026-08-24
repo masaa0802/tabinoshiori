@@ -400,9 +400,14 @@ const page: React.FC = () => {
             <p className="text-gray-400 text-lg mb-8">あなたの旅をもっと楽しく、もっと便利に</p>
 
             <div className="flex justify-center space-x-8 mb-8">
-              <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
+              <a
+                href="https://termsmd.com/1McCuOaSq0VYSVWyHDbZdPKDcih2/tabinoshiori/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 利用規約
-              </Link>
+              </a>
               <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
                 プライバシーポリシー
               </Link>
