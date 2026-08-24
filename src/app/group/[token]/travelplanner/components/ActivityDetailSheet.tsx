@@ -51,14 +51,26 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const [shouldRender, setShouldRender] = useState(isOpen);
   const [visible, setVisible] = useState(false);
+  const [displayActivity, setDisplayActivity] = useState<Activity | null>(activity);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // activity が渡っている間だけ表示用データを更新し、閉じる際は
+  // アニメーションが終わるまで直前の内容を保持する
+  useEffect(() => {
+    if (activity) setDisplayActivity(activity);
+  }, [activity]);
 
   useEffect(() => {
     if (isOpen) {
-      requestAnimationFrame(() => setVisible(true));
+      setShouldRender(true);
+      const raf = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(raf);
     } else {
       setVisible(false);
+      const timer = setTimeout(() => setShouldRender(false), 300);
+      return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
@@ -66,45 +78,42 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, [activity?.id]);
 
-  if (!isOpen && !visible) return null;
+  if (!shouldRender) return null;
 
-  const config = TYPE_CONFIG[activity?.type ?? ""] ?? TYPE_CONFIG.area;
+  const activityData = displayActivity;
+  const config = TYPE_CONFIG[activityData?.type ?? ""] ?? TYPE_CONFIG.area;
 
-  const googleMapsUrl = activity?.lat && activity?.lng
-    ? `https://www.google.com/maps/search/?api=1&query=${activity.lat},${activity.lng}${activity.place_id ? `&query_place_id=${activity.place_id}` : ""}`
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activity?.location ?? "")}`;
+  const googleMapsUrl = activityData?.lat && activityData?.lng
+    ? `https://www.google.com/maps/search/?api=1&query=${activityData.lat},${activityData.lng}${activityData.place_id ? `&query_place_id=${activityData.place_id}` : ""}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activityData?.location ?? "")}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center md:justify-center">
-      {/* バックドロップ */}
+    <div className="fixed inset-0 z-50 flex md:items-center md:justify-center">
+      {/* バックドロップ（デスクトップのみ表示） */}
       <div
-        className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
+        className={`hidden md:block absolute inset-0 bg-black/50 transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
         onClick={onClose}
       />
 
-      {/* シート / モーダル */}
+      {/* 詳細画面 / モーダル */}
       <div
         className={`
           relative w-full bg-white flex flex-col
-          rounded-t-2xl md:rounded-2xl
-          max-h-[90vh] md:max-h-[80vh] md:max-w-lg md:w-full md:mx-4
+          h-full md:h-auto
+          md:rounded-2xl
+          md:max-h-[80vh] md:max-w-lg md:w-full md:mx-4
           transition-transform duration-300 ease-out
           ${visible ? "translate-y-0 md:scale-100 md:opacity-100" : "translate-y-full md:translate-y-0 md:scale-95 md:opacity-0"}
         `}
       >
-        {/* ドラッグハンドル（モバイルのみ） */}
-        <div className="md:hidden flex justify-center pt-3 pb-1 flex-shrink-0">
-          <div className="w-10 h-1 bg-gray-300 rounded-full" />
-        </div>
-
         {/* ヘッダー写真 or カラーヘッダー */}
         <div className="relative flex-shrink-0 h-44 md:h-52 overflow-hidden md:rounded-t-2xl">
-          {activity?.photo_url ? (
+          {activityData?.photo_url ? (
             <>
               <ActivityImage
-                src={activity.photo_url}
-                alt={activity.name ?? ""}
-                placeId={activity.place_id}
+                src={activityData.photo_url}
+                alt={activityData.name ?? ""}
+                placeId={activityData.place_id}
                 fill
                 className="object-cover"
               />
@@ -136,12 +145,12 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
                 {config.label}
               </span>
               <span className="text-white/80 text-sm font-medium">
-                {activity?.time ? formatTime(activity.time) : ""}
-                {activity?.date ? `　${formatDate(activity.date)}` : ""}
+                {activityData?.time ? formatTime(activityData.time) : ""}
+                {activityData?.date ? `　${formatDate(activityData.date)}` : ""}
               </span>
             </div>
             <h2 className="text-xl font-bold text-white leading-tight drop-shadow">
-              {activity?.name}
+              {activityData?.name}
             </h2>
           </div>
         </div>
@@ -151,7 +160,7 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
           <div className="p-4 space-y-4">
 
             {/* 場所 */}
-            {activity?.location && (
+            {activityData?.location && (
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,15 +168,15 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
-                <p className="flex-1 text-sm text-gray-700 leading-relaxed pt-1">{activity.location}</p>
+                <p className="flex-1 text-sm text-gray-700 leading-relaxed pt-1">{activityData.location}</p>
               </div>
             )}
 
             {/* メモ */}
-            {activity?.notes && (
+            {activityData?.notes && (
               <div className="border-t border-gray-100 pt-4">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">メモ</p>
-                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{activity.notes}</p>
+                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{activityData.notes}</p>
               </div>
             )}
 
@@ -189,7 +198,7 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
 
               <div className="flex gap-2">
                 <button
-                  onClick={() => activity && onEdit(activity)}
+                  onClick={() => activityData && onEdit(activityData)}
                   className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-medium text-sm transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -198,7 +207,7 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
                   編集
                 </button>
                 <button
-                  onClick={() => activity && onDelete(activity)}
+                  onClick={() => activityData && onDelete(activityData)}
                   className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-red-100 hover:bg-red-50 text-red-500 rounded-xl font-medium text-sm transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
