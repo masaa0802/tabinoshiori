@@ -74,6 +74,8 @@ export const metadata: Metadata = {
   },
 };
 
+const ADSENSE_CLIENT_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -82,6 +84,14 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        {ADSENSE_CLIENT_ID && (
+          <Script
+            async
+            strategy="afterInteractive"
+            crossOrigin="anonymous"
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
+          />
+        )}
         <Script
           strategy="afterInteractive"
           src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_MEASUREMENT_ID}`}

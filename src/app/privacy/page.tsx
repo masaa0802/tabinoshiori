@@ -141,7 +141,28 @@ const PrivacyPage = () => {
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">第9条（プライバシーポリシーの変更）</h2>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">第9条（広告について）</h2>
+              <p className="mb-4">
+                当社は、本サービス上の一部ページにおいて、第三者配信の広告サービス「Google
+                AdSense」を利用しています。Google
+                AdSenseはCookieを使用して、ユーザーが当サイトや他のサイトに過去にアクセスした情報に基づいた広告を表示することがあります。
+              </p>
+              <p className="mb-4">
+                このCookieを使用した広告配信は、ユーザーがGoogleのウェブサイトにアクセスすることで無効にできます。詳細は
+                <a
+                  href="https://policies.google.com/technologies/ads"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-emerald-600 hover:text-emerald-700 underline"
+                >
+                  Google広告に関するポリシー
+                </a>
+                をご確認ください。
+              </p>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">第10条（プライバシーポリシーの変更）</h2>
               <p className="mb-4">
                 本ポリシーの内容は、法令その他本ポリシーに別段の定めのある事項を除いて、ユーザーに通知することなく、変更することができるものとします。
               </p>
@@ -151,7 +172,7 @@ const PrivacyPage = () => {
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">第10条（お問い合わせ窓口）</h2>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">第11条（お問い合わせ窓口）</h2>
               <p className="mb-4">
                 本ポリシーに関するお問い合わせは、下記の窓口までお願いいたします。
               </p>
