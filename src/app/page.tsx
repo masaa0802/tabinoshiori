@@ -3,6 +3,8 @@ import Image from 'next/image';
 import type { Metadata } from "next";
 import RecentPlans from '@/components/RecentPlans';
 import FeatureTabDemo from '@/components/FeatureTabDemo';
+import AdSlot from '@/components/AdSlot';
+// import AdSlotInFeed from '@/components/AdSlotInFeed'; // 効果検証後に有効化予定
 
 export const metadata: Metadata = {
   title: "旅行しおりを無料で作成・共有 | 旅のしおり",
@@ -276,6 +278,8 @@ const page: React.FC = () => {
                 </p>
               </div>
             </div>
+
+            {/* インフィード広告(AdSense) - 効果検証後に有効化予定 */}
           </div>
         </div>
       </section>
@@ -389,6 +393,11 @@ const page: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* 広告枠(AdSense) */}
+      <div className="py-10 bg-gray-50">
+        <AdSlot />
+      </div>
 
       {/* フッター */}
       <footer className="bg-gray-900 text-white py-16 px-4">
