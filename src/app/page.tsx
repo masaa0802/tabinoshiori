@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import RecentPlans from '@/components/RecentPlans';
 import FeatureTabDemo from '@/components/FeatureTabDemo';
 import AdSlot from '@/components/AdSlot';
+import AdSlotInFeed from '@/components/AdSlotInFeed';
 
 export const metadata: Metadata = {
   title: "旅行しおりを無料で作成・共有 | 旅のしおり",
@@ -277,6 +278,9 @@ const page: React.FC = () => {
                 </p>
               </div>
             </div>
+
+            {/* インフィード広告(AdSense) */}
+            <AdSlotInFeed />
           </div>
         </div>
       </section>
