@@ -3,6 +3,7 @@ import Image from 'next/image';
 import type { Metadata } from "next";
 import RecentPlans from '@/components/RecentPlans';
 import FeatureTabDemo from '@/components/FeatureTabDemo';
+import AdSlot from '@/components/AdSlot';
 
 export const metadata: Metadata = {
   title: "旅行しおりを無料で作成・共有 | 旅のしおり",
@@ -389,6 +390,11 @@ const page: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* 広告枠(AdSense) */}
+      <div className="py-10 bg-gray-50">
+        <AdSlot />
+      </div>
 
       {/* フッター */}
       <footer className="bg-gray-900 text-white py-16 px-4">
