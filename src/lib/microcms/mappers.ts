@@ -61,6 +61,10 @@ export type MicroCMSBlog = MicroCMSMeta & {
   seoDescription?: string;
   ogImage?: MicroCMSImageField;
   featured?: boolean;
+  /** 料金・相場を調べた日 */
+  priceCheckedAt?: string;
+  /** 料金の出典。カンマ区切りテキスト */
+  priceSources?: string;
 };
 
 /**
@@ -133,6 +137,8 @@ export function toBlogPost(raw: MicroCMSBlog): BlogPost {
     publishedAt: raw.publishedAt ?? raw.createdAt,
     updatedAt: raw.revisedAt ?? raw.updatedAt,
     featured: Boolean(raw.featured),
+    priceCheckedAt: raw.priceCheckedAt || undefined,
+    priceSources: splitList(raw.priceSources),
   };
 }
 

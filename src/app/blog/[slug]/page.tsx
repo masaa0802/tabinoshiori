@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ArticleBody from "@/components/blog/ArticleBody";
 import ArticleCard from "@/components/blog/ArticleCard";
+import PriceDisclosure from "@/components/blog/PriceDisclosure";
 import SpotCard from "@/components/blog/SpotCard";
+import { anxietyTagsOf, freeTagsOf } from "@/lib/microcms/tags";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/microcms/queries";
 import {
   estimateReadingMinutes,
@@ -76,6 +78,8 @@ export default async function BlogArticlePage({ params }: PageProps) {
 
   const related = await getRelatedPosts(post);
   const readingMinutes = estimateReadingMinutes(post.body);
+  const anxietyTags = anxietyTagsOf(post.tags);
+  const freeTags = freeTagsOf(post.tags);
 
   const breadcrumbs = [
     { name: BLOG_NAME, path: "/blog" },
@@ -124,6 +128,20 @@ export default async function BlogArticlePage({ params }: PageProps) {
             {post.title}
           </h1>
 
+          {anxietyTags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {anxietyTags.map((tag) => (
+                <Link
+                  key={tag.slug}
+                  href={`/blog/tag/${tag.slug}`}
+                  className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800 transition-colors hover:bg-amber-100"
+                >
+                  {tag.label}
+                </Link>
+              ))}
+            </div>
+          )}
+
           <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-gray-400">
             <time dateTime={toDateAttribute(post.publishedAt)}>
               {formatDate(post.publishedAt)}公開
@@ -160,6 +178,12 @@ export default async function BlogArticlePage({ params }: PageProps) {
           </p>
         )}
 
+        {/* 料金を含む記事の注釈。調査時点が古いと警告色に変わる */}
+        <PriceDisclosure
+          checkedAt={post.priceCheckedAt}
+          sources={post.priceSources}
+        />
+
         <div className="mt-4">
           <ArticleBody body={post.body} />
         </div>
@@ -178,10 +202,19 @@ export default async function BlogArticlePage({ params }: PageProps) {
           </section>
         )}
 
-        {/* タグ */}
+        {/* タグ。不安タグは一覧ページへのリンク、それ以外は表示のみ */}
         {post.tags.length > 0 && (
           <div className="mt-12 flex flex-wrap gap-2">
-            {post.tags.map((tag) => (
+            {anxietyTags.map((tag) => (
+              <Link
+                key={tag.slug}
+                href={`/blog/tag/${tag.slug}`}
+                className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800 transition-colors hover:bg-amber-100"
+              >
+                #{tag.label}
+              </Link>
+            ))}
+            {freeTags.map((tag) => (
               <span
                 key={tag}
                 className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600"

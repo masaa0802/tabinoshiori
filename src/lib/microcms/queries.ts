@@ -12,6 +12,7 @@ import "server-only";
 import { isMicroCMSConfigured, microcmsClient, MICROCMS_ENDPOINTS } from "./client";
 import { toBlogPost, toCategory, type MicroCMSBlog, type MicroCMSCategory } from "./mappers";
 import type { BlogPost, Category } from "./types";
+import { findAnxietyTagBySlug } from "./tags";
 import { seedCategories, seedPosts } from "@/data/blogPosts";
 
 /** microCMS の1リクエストあたり取得上限。記事数が増えたらページングを検討する */
@@ -93,6 +94,18 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
 export async function getPostsByCategory(slug: string): Promise<BlogPost[]> {
   const posts = await getAllPosts();
   return posts.filter((post) => post.category.slug === slug);
+}
+
+/**
+ * 「不安の種類」タグで絞り込む。カテゴリ（情報の種類）と直交する軸。
+ * 判定は tags.ts のラベルとの完全一致。
+ */
+export async function getPostsByAnxietyTag(slug: string): Promise<BlogPost[]> {
+  const tag = findAnxietyTagBySlug(slug);
+  if (!tag) return [];
+
+  const posts = await getAllPosts();
+  return posts.filter((post) => post.tags.includes(tag.label));
 }
 
 /** 注目記事。featured が複数あれば最新のもの、無ければ最新記事を返す */

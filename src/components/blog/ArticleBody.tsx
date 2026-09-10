@@ -5,6 +5,7 @@
  */
 import type { ArticleBody as ArticleBodyType } from "@/lib/microcms/types";
 import HtmlBody from "./HtmlBody";
+import PriceNote from "./PriceNote";
 
 type ArticleBodyProps = {
   body: ArticleBodyType;
@@ -53,6 +54,8 @@ const ArticleBody: React.FC<ArticleBodyProps> = ({ body }) => {
                 {block.text}
               </blockquote>
             );
+          case "price":
+            return <PriceNote key={index} figure={block.figure} />;
           default:
             return null;
         }

@@ -7,8 +7,11 @@ export const SITE_URL =
 
 export const SITE_NAME = "旅のしおり";
 
-/** ブログ（メディア）の表示名。セクション7-(2)の議論により変更の可能性あり */
-export const BLOG_NAME = "旅行ガイド";
+/**
+ * ブログ（メディア）の表示名。
+ * ここを書き換えると、ヘッダー・フッター・RSS・構造化データに一括で反映される。
+ */
+export const BLOG_NAME = "たびのまえに";
 
 export const BLOG_DESCRIPTION =
   "はじめての旅行でつまずきやすいポイントを、準備から現地での動き方までまとめて解説します。";

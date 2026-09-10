@@ -42,7 +42,7 @@
       "fieldId": "tags",
       "name": "タグ",
       "kind": "text",
-      "description": "カンマ区切りで入力（例: 台湾, はじめての旅行）。microCMSに文字列配列型がないためテキストで運用する。",
+      "description": "カンマ区切りで入力。不安の種類（お金の不安 / 手続きの不安 / 現地の不安 / 段取りの不安）を1つ以上入れると、その一覧ページに表示される。文字列は一字一句同じにすること。以降は自由タグ（例: 台湾, はじめての旅行）。",
       "required": false
     },
     {
@@ -91,6 +91,22 @@
       "name": "注目記事",
       "kind": "boolean",
       "description": "ブログトップの大きな枠に表示する。",
+      "required": false
+    },
+    {
+      "idValue": "blog-price-checked-at",
+      "fieldId": "priceCheckedAt",
+      "name": "料金の調査日",
+      "kind": "date",
+      "description": "記事内に金額・相場を書いた場合は必ず設定する。記事冒頭に「◯年◯月時点」の注釈バナーが出る。6か月を過ぎると警告色に変わり、棚卸しが必要なことが分かる。",
+      "required": false
+    },
+    {
+      "idValue": "blog-price-sources",
+      "fieldId": "priceSources",
+      "name": "料金の出典",
+      "kind": "text",
+      "description": "カンマ区切りで入力（例: 各航空会社の公式サイト, 観光局の公表資料）。注釈バナーに列挙される。金額を書くなら必ず入れる。",
       "required": false
     }
   ],

@@ -105,12 +105,14 @@ export const seedPosts: BlogPost[] = [
       height: 900,
     },
     category: category("model-course"),
-    tags: ["国内旅行", "1泊2日", "寺社巡り"],
+    // 先頭は不安タグ（tags.ts のラベルと完全一致させること）。以降は自由タグ
+    tags: ["段取りの不安", "国内旅行", "1泊2日", "寺社巡り"],
     destinations: ["京都", "日本"],
     spots: kyotoSpots,
     publishedAt: "2026-07-14T09:00:00.000Z",
     updatedAt: "2026-08-05T09:00:00.000Z",
     featured: true,
+    priceSources: [],
     seoDescription:
       "京都を1泊2日で回るモデルコース。清水寺・伏見稲荷・錦市場を移動時間込みで無理なく組んだ、はじめての京都向けの行程です。",
     body: {
@@ -173,12 +175,13 @@ export const seedPosts: BlogPost[] = [
       height: 900,
     },
     category: category("preparation"),
-    tags: ["持ち物", "海外旅行", "はじめての旅行"],
+    tags: ["手続きの不安", "持ち物", "海外旅行", "はじめての旅行"],
     destinations: [],
     spots: [],
     publishedAt: "2026-07-28T09:00:00.000Z",
     updatedAt: "2026-07-28T09:00:00.000Z",
     featured: false,
+    priceSources: [],
     seoDescription:
       "はじめての海外旅行の持ち物を「現地で買えないもの」から逆算して整理。パスポート・常備薬・変換プラグなど、出発前に必ず用意すべきものだけをまとめました。",
     body: {
@@ -238,12 +241,15 @@ export const seedPosts: BlogPost[] = [
       height: 900,
     },
     category: category("preparation"),
-    tags: ["費用", "航空券", "節約"],
+    tags: ["お金の不安", "費用", "航空券", "節約"],
     destinations: [],
     spots: [],
     publishedAt: "2026-08-11T09:00:00.000Z",
     updatedAt: "2026-08-11T09:00:00.000Z",
     featured: false,
+    // 金額を含む記事なので調査時点と出典を設定する。記事冒頭に注釈バナーが出る
+    priceCheckedAt: "2026-08-01T00:00:00.000Z",
+    priceSources: ["（サンプル）実記事では実際に確認した出典に差し替えること"],
     seoDescription:
       "航空券が安くなる時期を、需要の増減という仕組みから解説。閑散期の見つけ方、曜日の選び方、予約時期の目安をまとめました。",
     body: {
@@ -268,6 +274,25 @@ export const seedPosts: BlogPost[] = [
         {
           type: "paragraph",
           text: "谷の時期に共通しているのは、大型連休の直後で、かつ次の連休までに間があることです。学校の長期休暇とも重なりません。逆に言えば、カレンダーを見て「連休から遠い平日」を探せば、その年の閑散期はおおよそ見当がつきます。",
+        },
+        {
+          type: "paragraph",
+          text: "実際に山と谷でどのくらい差が出るのか、同じ路線・同じ航空会社で比べると次のようになります。",
+        },
+        {
+          // 金額を出すときは出典と調査時点を必ず併記する（型で必須にしてある）
+          type: "price",
+          figure: {
+            label: "【サンプル】東京→ソウル 往復・エコノミー最安運賃",
+            value: "閑散期 2万円台 / 繁忙期 5万円台",
+            note: "直行便・受託手荷物なしの運賃。空席状況により変動します。※これはレイアウト確認用のサンプル値です。実記事では必ず自分で確認した数値に差し替えてください。",
+            source: "（サンプル）実記事では確認した予約サイト名・航空会社名を入れる",
+            surveyedAt: "2026年8月",
+          },
+        },
+        {
+          type: "paragraph",
+          text: "路線や時期によって幅はありますが、山と谷で倍近く変わることは珍しくありません。日程をずらせる旅行であれば、まず谷の時期を候補にしてから宿や予定を組むほうが、全体の予算は下げやすくなります。",
         },
         { type: "heading", text: "出発曜日で変わる" },
         {
@@ -311,12 +336,13 @@ export const seedPosts: BlogPost[] = [
       height: 900,
     },
     category: category("destination-guide"),
-    tags: ["台湾", "アジア", "はじめての旅行"],
+    tags: ["現地の不安", "台湾", "アジア", "はじめての旅行"],
     destinations: ["台湾", "台北"],
     spots: taipeiSpots,
     publishedAt: "2026-08-18T09:00:00.000Z",
     updatedAt: "2026-08-18T09:00:00.000Z",
     featured: false,
+    priceSources: [],
     seoDescription:
       "はじめての台北向けガイド。桃園空港から市内への行き方、悠遊カードでの移動、両替のタイミングなど、到着日に必要な情報をまとめました。",
     body: {

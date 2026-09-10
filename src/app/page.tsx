@@ -405,7 +405,7 @@ const page: React.FC = () => {
 
             <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 mb-8">
               <Link href="/blog" className="text-gray-400 hover:text-white transition-colors">
-                旅行ガイド
+                たびのまえに
               </Link>
               <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
                 利用規約

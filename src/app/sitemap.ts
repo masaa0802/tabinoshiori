@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { getAllCategories, getAllPosts } from "@/lib/microcms/queries";
+import { ANXIETY_TAGS } from "@/lib/microcms/tags";
 import { SITE_URL } from "@/lib/site";
 
 // セグメント設定はリテラルで書くこと。定数を import して代入するとビルドが落ちる
@@ -66,5 +67,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticEntries, ...postEntries, ...categoryEntries];
+  const tagEntries: MetadataRoute.Sitemap = ANXIETY_TAGS.map((tag) => ({
+    url: `${baseUrl}/blog/tag/${tag.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.6,
+  }));
+
+  return [...staticEntries, ...postEntries, ...categoryEntries, ...tagEntries];
 }

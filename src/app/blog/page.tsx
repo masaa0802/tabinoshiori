@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import ArticleCard from "@/components/blog/ArticleCard";
 import { getAllCategories, getAllPosts, getFeaturedPost } from "@/lib/microcms/queries";
 import { blogJsonLd, itemListJsonLd, jsonLdScript } from "@/lib/microcms/jsonLd";
+import { ANXIETY_TAGS } from "@/lib/microcms/tags";
 import { BLOG_DESCRIPTION, BLOG_NAME } from "@/lib/site";
 
 // セグメント設定はリテラルで書くこと。定数を import して代入するとビルドが落ちる
@@ -61,18 +62,41 @@ export default async function BlogTopPage() {
           </p>
         </section>
 
-        {/* カテゴリ */}
-        {categories.length > 0 && (
-          <nav className="mt-8 flex flex-wrap gap-2" aria-label="カテゴリ">
-            {categories.map((category) => (
+        {/* 不安の種類で探す。読者が自分の悩みから入れるようにするための軸 */}
+        <nav className="mt-8" aria-label="不安の種類">
+          <h2 className="mb-3 text-sm font-bold tracking-wide text-gray-400">
+            気になっていることから探す
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {ANXIETY_TAGS.map((tag) => (
               <Link
-                key={category.id}
-                href={`/blog/category/${category.slug}`}
-                className="rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700"
+                key={tag.slug}
+                href={`/blog/tag/${tag.slug}`}
+                className="rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-800 transition-colors hover:border-amber-400 hover:bg-amber-100"
               >
-                {category.name}
+                {tag.label}
               </Link>
             ))}
+          </div>
+        </nav>
+
+        {/* カテゴリ（情報の種類）。不安タグと直交する軸 */}
+        {categories.length > 0 && (
+          <nav className="mt-6" aria-label="カテゴリ">
+            <h2 className="mb-3 text-sm font-bold tracking-wide text-gray-400">
+              記事の種類から探す
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/blog/category/${category.slug}`}
+                  className="rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700"
+                >
+                  {category.name}
+                </Link>
+              ))}
+            </div>
           </nav>
         )}
 
