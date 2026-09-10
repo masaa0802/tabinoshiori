@@ -295,6 +295,28 @@ microCMSに文字列配列型がないため。`mappers.ts` の `splitList()` �
 記事数が数十本の想定のため、microCMS の `filters` を使わず全件取得後に絞っている
 （`queries.ts` の `getAllPosts` 参照）。数百本規模になったら `filters` に切り替えること。
 
+**APIリクエスト数はプラン上限に注意**
+microCMS はプランごとに月間APIリクエスト数の上限がある。
+`getAllPosts` / `getAllCategories` / `getPostBySlug` は React の `cache()` で包んであり、
+1ページの描画中に何度呼んでも通信は1回で済む（`generateMetadata` と本体の重複呼び出しを含む）。
+
+シードデータでの実測値（1ビルド＝全ページ再生成あたりの関数実行回数）:
+
+| | cache なし | cache あり |
+|---|---|---|
+| getAllPosts | 17 | 16 |
+| getAllCategories | 12 | 6 |
+| getPostBySlug | 8 | 4 |
+| 合計 | 37 | 26 |
+
+`cache()` はページ単位のスコープなので、ページ間の重複までは消せない。
+記事数が増えて上限が近づいたら、`next/cache` の `unstable_cache` でページ横断の
+キャッシュを入れることを検討する（`revalidatePath` との相互作用に注意）。
+
+**Hobby プランでは webhook が使えない**
+その場合 `MICROCMS_WEBHOOK_SECRET` は設定不要。記事は ISR により最大1時間で反映される。
+すぐ反映したいときはホスティング管理画面から手動で再デプロイする。
+
 **`npm run lint` が動かない**
 `next lint` は Next.js 16 で廃止された。ブログ機能とは無関係の既存の問題。
 当面は `./node_modules/.bin/eslint <path>` を直接使う。

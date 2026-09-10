@@ -9,6 +9,7 @@
  * src/data/blogPosts.ts のシードデータを返す。実記事の入稿後はこの分岐ごと削除する。
  */
 import "server-only";
+import { cache } from "react";
 import { isMicroCMSConfigured, microcmsClient, MICROCMS_ENDPOINTS } from "./client";
 import { toBlogPost, toCategory, type MicroCMSBlog, type MicroCMSCategory } from "./mappers";
 import type { BlogPost, Category } from "./types";
@@ -39,8 +40,13 @@ function sortByPublishedAtDesc(posts: BlogPost[]): BlogPost[] {
  *
  * 記事数が数十本の想定のため、カテゴリ・目的地での絞り込みは microCMS の filters ではなく
  * 取得後のメモリ上で行っている。数百本規模になったら filters に切り替えること。
+ *
+ * `cache()` で包んでいるのは、1ページの描画中に何度呼ばれても microCMS への
+ * リクエストを1回に抑えるため。generateMetadata と本体の両方から呼ばれるページや、
+ * 内部で本関数を使う getFeaturedPost などを重ねて呼んでも通信は増えない。
+ * microCMS はプランごとにAPIリクエスト数の上限があるため、ここは効かせておく。
  */
-export async function getAllPosts(): Promise<BlogPost[]> {
+export const getAllPosts = cache(async (): Promise<BlogPost[]> => {
   if (!isMicroCMSConfigured || !microcmsClient) {
     warnOnceAboutSeedData();
     return sortByPublishedAtDesc(seedPosts);
@@ -52,27 +58,29 @@ export async function getAllPosts(): Promise<BlogPost[]> {
   });
 
   return sortByPublishedAtDesc(response.contents.map(toBlogPost));
-}
+});
 
-export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  if (!isMicroCMSConfigured || !microcmsClient) {
-    warnOnceAboutSeedData();
-    return seedPosts.find((post) => post.slug === slug) ?? null;
+export const getPostBySlug = cache(
+  async (slug: string): Promise<BlogPost | null> => {
+    if (!isMicroCMSConfigured || !microcmsClient) {
+      warnOnceAboutSeedData();
+      return seedPosts.find((post) => post.slug === slug) ?? null;
+    }
+
+    try {
+      const content = await microcmsClient.getListDetail<MicroCMSBlog>({
+        endpoint: MICROCMS_ENDPOINTS.blogs,
+        contentId: slug,
+      });
+      return toBlogPost(content);
+    } catch {
+      // 存在しないコンテンツIDは 404 が返るため、null に丸めて notFound() に委ねる
+      return null;
+    }
   }
+);
 
-  try {
-    const content = await microcmsClient.getListDetail<MicroCMSBlog>({
-      endpoint: MICROCMS_ENDPOINTS.blogs,
-      contentId: slug,
-    });
-    return toBlogPost(content);
-  } catch {
-    // 存在しないコンテンツIDは 404 が返るため、null に丸めて notFound() に委ねる
-    return null;
-  }
-}
-
-export async function getAllCategories(): Promise<Category[]> {
+export const getAllCategories = cache(async (): Promise<Category[]> => {
   if (!isMicroCMSConfigured || !microcmsClient) {
     warnOnceAboutSeedData();
     return [...seedCategories].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
@@ -84,7 +92,7 @@ export async function getAllCategories(): Promise<Category[]> {
   });
 
   return response.contents.map(toCategory);
-}
+});
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const categories = await getAllCategories();

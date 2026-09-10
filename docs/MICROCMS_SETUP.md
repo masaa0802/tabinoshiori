@@ -142,7 +142,14 @@ MICROCMS_WEBHOOK_SECRET=<自分で決めた文字列>
 
 推測や伝聞の数字は載せないこと。自分で確認できた数字だけを、確認元とセットで書く。
 
-## 7. Webhook を設定する（記事の即時反映）
+## 7. Webhook を設定する（記事の即時反映・任意）
+
+> **Hobby プランでは webhook を使えない。** その場合はこのセクションを飛ばしてよい。
+> 記事は ISR により最大1時間で自動反映される。すぐ反映したいときは、
+> ホスティング管理画面から手動で再デプロイすれば即時に反映できる。
+>
+> `MICROCMS_WEBHOOK_SECRET` も設定不要。未設定でもブログ本体は動作し、
+> `/api/revalidate` が使えなくなるだけ。
 
 記事の公開・更新時に該当ページだけ再生成する。設定しない場合は最大1時間（ISR）で反映される。
 
@@ -175,11 +182,18 @@ BODY='{"contents":{"new":{"id":"kyoto-2days-guide"}}}'; SIG=$(printf '%s' "$BODY
 
 **忘れると本番でシードデータが表示され続ける。**
 
-Netlify（または利用中のホスティング）の環境変数に、`.env.local` と同じ3つを設定する。
+利用中のホスティング（Vercel なら Settings → Environment Variables、
+Netlify なら Site configuration → Environment variables）に設定する。
 
-- `MICROCMS_SERVICE_DOMAIN`
-- `MICROCMS_API_KEY`
-- `MICROCMS_WEBHOOK_SECRET`
+ソースコードを触る必要はない。ブラウザ上のフォームに入力するだけ。
+
+| 変数名 | 必須 |
+|---|---|
+| `MICROCMS_SERVICE_DOMAIN` | 必須 |
+| `MICROCMS_API_KEY` | 必須 |
+| `MICROCMS_WEBHOOK_SECRET` | 任意（webhook を使う場合のみ） |
+
+**環境変数を追加したら再デプロイすること。** 追加しただけでは反映されない。
 
 `NEXT_PUBLIC_BASE_URL` も本番URL（`https://tabinoshiori.jp`）にしておくこと。
 未設定でも同じ値にフォールバックするが、明示したほうが事故が少ない。
