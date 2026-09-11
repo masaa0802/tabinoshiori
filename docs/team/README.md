@@ -71,11 +71,15 @@ ln -s ~/path/to/tabinoshiori/docs/team/reports 日時報告
 
 | 方式 | 必要な準備 | 向いている場合 |
 |---|---|---|
-| **A. Claude Code の Routine（推奨）** | 不要。Claude に「毎朝8時に /daily-standup を実行して」と依頼するだけ | すぐ始めたい。追加コストや鍵の管理をしたくない |
+| **A. Claude Code の Routine（設定済み）** | 設定済み。`旅のしおり 日次報告（毎朝8時 JST）` が毎日 8:00 JST（cron は UTC で `0 23 * * *`）に発火する | すぐ始めたい。追加コストや鍵の管理をしたくない |
 | **B. GitHub Actions（cron）** | リポジトリに `ANTHROPIC_API_KEY` を Secrets 登録し、`claude-code-action` のワークフローを追加 | GitHub上で完結させたい。実行ログをActionsに残したい |
 | **C. 手動運用** | 不要 | 毎日は不要で、気が向いたときだけ回したい |
 
 いずれの方式でも、エージェントの定義（`.claude/agents/`）と手順（`.claude/skills/daily-standup/`）はこのリポジトリの中にあるので共通で使える。
+
+Routine はクラウド上のコンテナで動くため、**後藤さんのMac内のパスには直接書き込めない**。クラウド実行の日報はリポジトリにコミットされるので、上記のシンボリックリンクと `git pull` で Vault に流し込む。Vault へ直接書き込ませたい場合は、Mac 上の Claude Code で `/daily-standup` をローカル実行する方式にする。
+
+また Routine が起動するセッションは GitHub の MCP ツールを持たないため、Critical 案件の Issue 起票は自動では行われない。日報の「判断待ち」を見て手動で起票するか、必要なら後藤さんの環境で Routine を作り直す。
 
 ## 出力物の置き場所
 
