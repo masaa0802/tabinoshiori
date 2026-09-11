@@ -44,6 +44,29 @@ ops-security エージェントで、直近のコミットのセキュリティ�
 legal エージェントで、AdSense導入にともなう規約の不足を洗い出して
 ```
 
+### Obsidian に毎朝届ける
+
+日報は Obsidian のノートとして読む前提で作られる。フロントマター（`title` / `date` / `tags` / `重要度` / `判断待ち`）が付くので、Obsidian のプロパティとして表示され、タグで絞り込める。
+
+**保存先**
+
+| 実行環境 | 保存先 |
+|---|---|
+| 後藤さんのMac（ローカル実行） | `/Users/gm510/Documents/Obsidian Vault/旅のしおり/日時報告/YYYY-MM-DD.md` |
+| クラウド（Claude Code on the web / Routine） | `docs/team/reports/YYYY-MM-DD.md` にコミット |
+
+クラウドで実行した日報を Vault に流し込むには、Mac 側で一度だけ次を設定する。Obsidian はシンボリックリンクを辿るので、`git pull` するだけで日報が Vault に現れる。
+
+```bash
+cd "/Users/gm510/Documents/Obsidian Vault/旅のしおり"
+rm -rf 日時報告                                     # 中身がある場合は先に退避
+ln -s ~/path/to/tabinoshiori/docs/team/reports 日時報告
+```
+
+あとは Obsidian の Git プラグインで自動 pull を有効にするか、毎朝 `git pull` を走らせる。
+
+**分量**は日報全体で2万字以内（日本語で読んで約30分）に制限している。超える日は、事実と判断待ちを残し、解説と重複を削る。ルールは `.claude/skills/daily-standup/SKILL.md` の「分量のルール」にある。
+
 ### 毎日自動で回す（3つの選択肢）
 
 | 方式 | 必要な準備 | 向いている場合 |
@@ -58,7 +81,7 @@ legal エージェントで、AdSense導入にともなう規約の不足を洗�
 
 | ファイル | 内容 | 更新する担当 |
 |---|---|---|
-| `docs/team/reports/YYYY-MM-DD.md` | 日報（統括サマリ＋各部門の全文） | gm-chief |
+| `docs/team/reports/YYYY-MM-DD.md` | 日報（統括サマリ＋各部門の全文）。Obsidian の `旅のしおり/日時報告` へ同期する | gm-chief |
 | `docs/team/ideas.md` | 新機能アイデアの台帳（提案中/採用/保留/却下） | product-planner |
 | `docs/team/faq-draft.md` | FAQ・返信テンプレートの下書き | cs-support |
 | `docs/team/legal-log.md` | 規約改定の検討記録 | legal |
