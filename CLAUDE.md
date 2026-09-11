@@ -1,0 +1,32 @@
+# 旅のしおり（travel-planner）
+
+旅行計画を作成・共有できる Next.js 製 Web アプリ。
+
+## 技術スタック
+- Next.js 16 (App Router) / React 19 / TypeScript / TailwindCSS / Radix UI
+- GraphQL（Apollo Server & Client）+ Hasura（`hasura-project/`）
+- Google Maps API、Cloudinary（画像）、Google AdSense（広告）、Google Analytics
+
+## よく使うコマンド
+```bash
+npm run dev     # 開発サーバー（Turbopack）
+npm run build   # ビルド
+npm run lint    # ESLint
+npx tsc --noEmit  # 型チェック
+```
+
+## ディレクトリの要点
+- `src/app/` ページとAPIルート（`api/graphql`, `api/upload`, `api/proxy` など）
+- `src/app/admin/` 管理画面（`middleware.ts` で `admin_session` Cookie を検証）
+- `src/components/` UIコンポーネント
+- `src/graphql/` クエリ・ミューテーション定義、`src/types/generated/` は自動生成
+- `database/` `hasura-project/` スキーマとメタデータ
+- `docs/` 仕様書
+
+## 運営チーム（AIエージェント）
+このリポジトリは5つの役割のエージェントで日々運営している。詳細は [docs/team/README.md](docs/team/README.md)。
+
+- `cs-support` カスタマーサポート / `ops-security` 保守運用 / `product-planner` 企画開発 / `legal` 法務 / `gm-chief` 全体統括
+- 日次報告は `/daily-standup` で実行し、`docs/team/reports/` に保存する
+
+エージェントは `src/` 配下の変更、`main` への直接コミット、本番環境への操作を承認なしに行わない。
