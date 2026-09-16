@@ -53,3 +53,6 @@ Chromium ヘッドレス・GPU 無効（ソフトウェア描画）での 8 秒�
 
 - 詳細シート / 詳細モーダル（同時に 1 枚）→ `motion/` を使う
 - リストカード / 地図カード（同時に 5〜10 枚）→ 静止版を使う
+
+パスは `src/lib/activityTypeImage.ts` の `getActivityTypeImage(type, { motion })` で組み立てる。
+現在の利用箇所は `ActivityDetailSheet` と `ActivityDetailModal`（どちらも `motion: true`）。

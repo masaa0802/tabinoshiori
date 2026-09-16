@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import ActivityImage from "@/components/ActivityImage";
+import { getActivityTypeImage } from "@/lib/activityTypeImage";
 
 interface Activity {
   id: number;
@@ -26,13 +28,13 @@ interface ActivityDetailSheetProps {
   onDelete: (activity: Activity) => void;
 }
 
-const TYPE_CONFIG: Record<string, { label: string; headerBg: string }> = {
-  transport:   { label: "交通",         headerBg: "bg-blue-500" },
-  sightseeing: { label: "観光スポット",   headerBg: "bg-green-500" },
-  restaurant:  { label: "飲食店",        headerBg: "bg-orange-500" },
-  hotel:       { label: "ホテル",        headerBg: "bg-purple-500" },
-  activity:    { label: "アクティビティ", headerBg: "bg-red-500" },
-  area:        { label: "エリア",        headerBg: "bg-gray-500" },
+const TYPE_CONFIG: Record<string, { label: string }> = {
+  transport:   { label: "交通" },
+  sightseeing: { label: "観光スポット" },
+  restaurant:  { label: "飲食店" },
+  hotel:       { label: "ホテル" },
+  activity:    { label: "アクティビティ" },
+  area:        { label: "エリア" },
 };
 
 function formatDate(dateStr: string) {
@@ -111,12 +113,16 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
             </>
           ) : (
-            <div className={`absolute inset-0 ${config.headerBg} flex items-center justify-center`}>
-              <svg className="w-20 h-20 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </div>
+            <>
+              <Image
+                src={getActivityTypeImage(activity?.type, { motion: true })}
+                alt=""
+                fill
+                unoptimized
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+            </>
           )}
 
           {/* 閉じるボタン */}
