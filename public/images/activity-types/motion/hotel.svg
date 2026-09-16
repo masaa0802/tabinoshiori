@@ -1,17 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="ホテル">
   <style>
-    @keyframes tn-drift { 0%,100% { transform: translateX(0) } 50% { transform: translateX(24px) } }
-    @keyframes tn-bob   { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-4px) } }
-    @keyframes tn-pulse { 0%,100% { transform: scale(1); opacity: .28 } 50% { transform: scale(1.09); opacity: .42 } }
-    @keyframes tn-twinkle { 0%,100% { opacity: .35 } 50% { opacity: .95 } }
-    .tn-drift { animation: tn-drift 26s ease-in-out infinite }
-    .tn-drift-slow { animation: tn-drift 38s ease-in-out infinite reverse }
-    .tn-bob { animation: tn-bob 4s ease-in-out infinite }
-    .tn-pulse { transform-box: fill-box; transform-origin: center; animation: tn-pulse 5s ease-in-out infinite }
-    .tn-twinkle { animation: tn-twinkle 3.2s ease-in-out infinite }
+    @keyframes tn-drift { 0%,100% { transform: translateX(0) } 50% { transform: translateX(34px) } }
+    @keyframes tn-bob   { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
+    @keyframes tn-bob-sm { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+    @keyframes tn-pulse { 0%,100% { transform: scale(1); opacity: .26 } 50% { transform: scale(1.18); opacity: .52 } }
+    @keyframes tn-breathe { 0%,100% { transform: scale(1) } 50% { transform: scale(1.06) } }
+    @keyframes tn-twinkle { 0%,100% { opacity: .15 } 50% { opacity: 1 } }
+    .tn-drift { animation: tn-drift 18s ease-in-out infinite }
+    .tn-drift-slow { animation: tn-drift 26s ease-in-out infinite reverse }
+    .tn-bob { animation: tn-bob 3s ease-in-out infinite }
+    .tn-bob-sm { animation: tn-bob-sm 2.4s ease-in-out infinite }
+    .tn-bob-slow { animation: tn-bob 4.4s ease-in-out infinite }
+    .tn-pulse { transform-box: fill-box; transform-origin: center; animation: tn-pulse 3.6s ease-in-out infinite }
+    .tn-breathe { transform-box: fill-box; transform-origin: center; animation: tn-breathe 4s ease-in-out infinite }
+    .tn-twinkle { animation: tn-twinkle 2.2s ease-in-out infinite }
     @media (prefers-reduced-motion: reduce) {
-      .tn-drift, .tn-drift-slow, .tn-bob, .tn-pulse, .tn-twinkle,
-      .tn-speed, .tn-steam, .tn-float, .tn-drop, .tn-shadow { animation: none }
+      .tn-drift, .tn-drift-slow, .tn-bob, .tn-bob-sm, .tn-bob-slow, .tn-pulse, .tn-breathe,
+      .tn-twinkle, .tn-speed, .tn-rail, .tn-steam, .tn-float, .tn-drop, .tn-shadow,
+      .tn-route { animation: none }
     }
   </style>
   <defs><clipPath id="ht-frame"><rect width="800" height="360"/></clipPath></defs>
@@ -22,7 +28,7 @@
     <!-- 窓と月 -->
     <rect x="556" y="34" width="200" height="150" rx="24" fill="#D5C9F7"/>
     <rect x="576" y="54" width="160" height="110" rx="16" fill="#BFAFF2"/>
-    <circle cx="656" cy="92" r="30" fill="#FFF2C4"/>
+    <circle class="tn-breathe" cx="656" cy="92" r="30" fill="#FFF2C4"/>
     <g class="tn-twinkle" fill="#FFFDF6" opacity="0.9">
       <circle cx="604" cy="132" r="5"/><circle cx="700" cy="70" r="4"/><circle cx="716" cy="126" r="6"/>
     </g>

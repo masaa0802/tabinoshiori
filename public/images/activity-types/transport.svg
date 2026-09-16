@@ -33,7 +33,7 @@
 
     <!-- 線路 -->
     <rect x="0" y="288" width="800" height="12" rx="6" fill="#6C93DC"/>
-    <rect x="0" y="300" width="800" height="12" fill="url(#tr-ties)"/>
+    <rect x="-48" y="300" width="944" height="12" fill="url(#tr-ties)"/>
 
     <!-- 車体 -->
     <g>
