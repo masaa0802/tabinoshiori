@@ -55,4 +55,14 @@ Chromium ヘッドレス・GPU 無効（ソフトウェア描画）での 8 秒�
 - リストカード / 地図カード（同時に 5〜10 枚）→ 静止版を使う
 
 パスは `src/lib/activityTypeImage.ts` の `getActivityTypeImage(type, { motion })` で組み立てる。
-現在の利用箇所は `ActivityDetailSheet` と `ActivityDetailModal`（どちらも `motion: true`）。
+現在の利用箇所は `ActivityDetailSheet`（写真の有無にかかわらず常にイラスト）と
+`ActivityDetailModal`（写真が無い時）。どちらも `motion: true`。
+
+### キャッシュ
+
+`next.config.ts` の `headers()` で `/images/activity-types/:path*` に
+`public, max-age=31536000, immutable` を付けている。既定の `public, max-age=0` だと
+シートを開くたびに 304 の問い合わせが飛ぶため。
+
+**イラストを差し替えたら `activityTypeImage.ts` の `ASSET_VERSION` を上げること。**
+上げない限りブラウザは古い画像を使い続ける。

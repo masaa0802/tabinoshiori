@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import ActivityImage from "@/components/ActivityImage";
 import { getActivityTypeImage } from "@/lib/activityTypeImage";
 
 interface Activity {
@@ -99,31 +98,16 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
           <div className="w-10 h-1 bg-gray-300 rounded-full" />
         </div>
 
-        {/* ヘッダー写真 or カラーヘッダー */}
+        {/* ヘッダーイラスト（種別ごとに固定。写真は使わない） */}
         <div className="relative flex-shrink-0 h-44 md:h-52 overflow-hidden md:rounded-t-2xl">
-          {activity?.photo_url ? (
-            <>
-              <ActivityImage
-                src={activity.photo_url}
-                alt={activity.name ?? ""}
-                placeId={activity.place_id}
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-            </>
-          ) : (
-            <>
-              <Image
-                src={getActivityTypeImage(activity?.type, { motion: true })}
-                alt=""
-                fill
-                unoptimized
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
-            </>
-          )}
+          <Image
+            src={getActivityTypeImage(activity?.type, { motion: true })}
+            alt=""
+            fill
+            unoptimized
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
 
           {/* 閉じるボタン */}
           <button
