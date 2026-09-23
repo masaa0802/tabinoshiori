@@ -26,6 +26,7 @@ import EditItineraryDatesModal from "../components/EditItineraryDatesModal";
 import ActivityDetailSheet from "../components/ActivityDetailSheet";
 import ActivityDetailModal from "../components/ActivityDetailModal";
 import LoadingAirplane from "@/components/LoadingAirplane";
+import { preloadActivityTypeImages } from "@/lib/activityTypeImage";
 import ActivityImage from "@/components/ActivityImage";
 
 interface GroupData {
@@ -397,6 +398,13 @@ export default function TravelPlanner() {
 
   // Load activities from GraphQL (filtered by itinerary_id)
   const allActivities = activitiesData?.activities || [];
+
+  // 詳細シートのヘッダーイラストを先読みしておく（初回タップ時の待ちを無くす）
+  preloadActivityTypeImages(
+    allActivities.map((activity: Activity) => activity.type),
+    { motion: true }
+  );
+
   const activitiesToProcess = allActivities.filter((activity: Activity) =>
     activity.itinerary_id === travelPlan.id
   );

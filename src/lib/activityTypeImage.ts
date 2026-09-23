@@ -1,3 +1,5 @@
+import { preload } from "react-dom";
+
 const ACTIVITY_TYPE_KEYS = [
   "transport",
   "sightseeing",
@@ -31,4 +33,26 @@ export const getActivityTypeImage = (
 ) => {
   const name = isActivityTypeKey(type) ? type : "default";
   return `/images/activity-types/${motion ? "motion/" : ""}${name}.svg?v=${ASSET_VERSION}`;
+};
+
+/**
+ * 渡された種別のヘッダーイラストを先読みする。
+ *
+ * 詳細シートを初めて開く時だけ画像の取得が入るため、一覧を表示した時点で
+ * 出てくる種別ぶんだけ取りに行っておく。2回目以降は immutable キャッシュから
+ * 読まれるので、この関数が実際に通信するのはセッションごとに1回だけ。
+ * 同じ URL への重複呼び出しは React 側で無視される。
+ */
+export const preloadActivityTypeImages = (
+  types: Array<string | undefined>,
+  options: { motion?: boolean } = {}
+) => {
+  const seen = new Set<string>();
+
+  for (const type of types) {
+    const href = getActivityTypeImage(type, options);
+    if (seen.has(href)) continue;
+    seen.add(href);
+    preload(href, { as: "image" });
+  }
 };

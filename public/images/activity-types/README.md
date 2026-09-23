@@ -66,3 +66,7 @@ Chromium ヘッドレス・GPU 無効（ソフトウェア描画）での 8 秒�
 
 **イラストを差し替えたら `activityTypeImage.ts` の `ASSET_VERSION` を上げること。**
 上げない限りブラウザは古い画像を使い続ける。
+
+初回だけは取得が入るので、旅程ページの描画時に `preloadActivityTypeImages()` で
+その旅程に出てくる種別ぶんを先読みしている（`<link rel="preload" as="image">`）。
+先読みする URL は詳細シートが要求するものと同一にすること。ズレるとキャッシュが再利用されない。
