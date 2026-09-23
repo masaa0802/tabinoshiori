@@ -398,15 +398,14 @@ export default function TravelPlanner() {
 
   // Load activities from GraphQL (filtered by itinerary_id)
   const allActivities = activitiesData?.activities || [];
+  const activitiesToProcess = allActivities.filter((activity: Activity) =>
+    activity.itinerary_id === travelPlan.id
+  );
 
   // 詳細シートのヘッダーイラストを先読みしておく（初回タップ時の待ちを無くす）
   preloadActivityTypeImages(
-    allActivities.map((activity: Activity) => activity.type),
+    activitiesToProcess.map((activity: Activity) => activity.type),
     { motion: true }
-  );
-
-  const activitiesToProcess = allActivities.filter((activity: Activity) =>
-    activity.itinerary_id === travelPlan.id
   );
   console.log("Activities to process:", activitiesToProcess.length, "Total activities:", allActivities.length, "Itinerary ID:", travelPlan.id);
 
