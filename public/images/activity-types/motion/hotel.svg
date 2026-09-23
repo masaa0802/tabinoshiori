@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="ホテル">
+  <style>
+    @keyframes tn-drift { 0%,100% { transform: translateX(0) } 50% { transform: translateX(34px) } }
+    @keyframes tn-bob   { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
+    @keyframes tn-bob-sm { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+    @keyframes tn-pulse { 0%,100% { transform: scale(1); opacity: .26 } 50% { transform: scale(1.18); opacity: .52 } }
+    @keyframes tn-breathe { 0%,100% { transform: scale(1) } 50% { transform: scale(1.06) } }
+    @keyframes tn-twinkle { 0%,100% { opacity: .15 } 50% { opacity: 1 } }
+    .tn-drift { animation: tn-drift 18s ease-in-out infinite }
+    .tn-drift-slow { animation: tn-drift 26s ease-in-out infinite reverse }
+    .tn-bob { animation: tn-bob 3s ease-in-out infinite }
+    .tn-bob-sm { animation: tn-bob-sm 2.4s ease-in-out infinite }
+    .tn-bob-slow { animation: tn-bob 4.4s ease-in-out infinite }
+    .tn-pulse { transform-box: fill-box; transform-origin: center; animation: tn-pulse 3.6s ease-in-out infinite }
+    .tn-breathe { transform-box: fill-box; transform-origin: center; animation: tn-breathe 4s ease-in-out infinite }
+    .tn-twinkle { animation: tn-twinkle 2.2s ease-in-out infinite }
+    @media (prefers-reduced-motion: reduce) {
+      .tn-drift, .tn-drift-slow, .tn-bob, .tn-bob-sm, .tn-bob-slow, .tn-pulse, .tn-breathe,
+      .tn-twinkle, .tn-speed, .tn-rail, .tn-steam, .tn-float, .tn-drop, .tn-shadow,
+      .tn-route { animation: none }
+    }
+  </style>
+  <defs><clipPath id="ht-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#ht-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#EAE3FC"/>
+
+    <!-- 窓と月 -->
+    <rect x="556" y="34" width="200" height="150" rx="24" fill="#D5C9F7"/>
+    <rect x="576" y="54" width="160" height="110" rx="16" fill="#BFAFF2"/>
+    <circle class="tn-breathe" cx="656" cy="92" r="30" fill="#FFF2C4"/>
+    <g class="tn-twinkle" fill="#FFFDF6" opacity="0.9">
+      <circle cx="604" cy="132" r="5"/><circle cx="700" cy="70" r="4"/><circle cx="716" cy="126" r="6"/>
+    </g>
+
+    <!-- 星 -->
+    <g class="tn-twinkle" fill="#FFFFFF" opacity="0.8">
+      <path d="M120 66 L127 84 L145 91 L127 98 L120 116 L113 98 L95 91 L113 84 Z"/>
+      <path d="M470 52 L475 65 L488 70 L475 75 L470 88 L465 75 L452 70 L465 65 Z"/>
+    </g>
+
+    <!-- 床 -->
+    <path d="M0 288 L800 278 L800 360 L0 360 Z" fill="#B9A4EE"/>
+    <path d="M0 324 L800 316 L800 360 L0 360 Z" fill="#9F86E4"/>
+
+    <!-- ベッド -->
+    <g>
+      <ellipse cx="400" cy="296" rx="260" ry="16" fill="#7C5CD6" opacity="0.22"/>
+      <rect x="150" y="116" width="40" height="176" rx="14" fill="#7C5CD6"/>
+      <rect x="168" y="200" width="472" height="70" rx="22" fill="#FFFDF6"/>
+      <path d="M382 200 H618 C630 200 640 210 640 222 V248 C640 260 630 270 618 270 H382 Z" fill="#8B5CF6"/>
+      <rect x="382" y="212" width="258" height="12" fill="#FFFDF6" opacity="0.6"/>
+      <g transform="rotate(-6 268 186)">
+        <rect x="204" y="162" width="128" height="48" rx="22" fill="#FFFDF6"/>
+        <rect x="204" y="162" width="128" height="48" rx="22" fill="none" stroke="#E8E0FB" stroke-width="4"/>
+      </g>
+      <rect x="182" y="268" width="18" height="26" rx="6" fill="#7C5CD6"/>
+      <rect x="610" y="268" width="18" height="26" rx="6" fill="#7C5CD6"/>
+    </g>
+
+    <!-- サイドテーブルとランプ -->
+    <g>
+      <rect x="652" y="226" width="104" height="14" rx="7" fill="#7C5CD6"/>
+      <rect x="696" y="240" width="16" height="52" rx="6" fill="#7C5CD6"/>
+      <path d="M676 206 L692 168 L716 168 L732 206 Z" fill="#FFD98A"/>
+      <rect x="698" y="206" width="12" height="22" rx="4" fill="#C7B4F2"/>
+      <circle class="tn-pulse" cx="704" cy="152" r="34" fill="#FFE29A" opacity="0.35"/>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#9F86E4"/>
+  </g>
+</svg>

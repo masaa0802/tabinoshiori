@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="交通">
+  <style>
+    @keyframes tn-drift { 0%,100% { transform: translateX(0) } 50% { transform: translateX(34px) } }
+    @keyframes tn-bob   { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
+    @keyframes tn-bob-sm { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+    @keyframes tn-pulse { 0%,100% { transform: scale(1); opacity: .26 } 50% { transform: scale(1.18); opacity: .52 } }
+    @keyframes tn-breathe { 0%,100% { transform: scale(1) } 50% { transform: scale(1.06) } }
+    @keyframes tn-twinkle { 0%,100% { opacity: .15 } 50% { opacity: 1 } }
+    .tn-drift { animation: tn-drift 18s ease-in-out infinite }
+    .tn-drift-slow { animation: tn-drift 26s ease-in-out infinite reverse }
+    .tn-bob { animation: tn-bob 3s ease-in-out infinite }
+    .tn-bob-sm { animation: tn-bob-sm 2.4s ease-in-out infinite }
+    .tn-bob-slow { animation: tn-bob 4.4s ease-in-out infinite }
+    .tn-pulse { transform-box: fill-box; transform-origin: center; animation: tn-pulse 3.6s ease-in-out infinite }
+    .tn-breathe { transform-box: fill-box; transform-origin: center; animation: tn-breathe 4s ease-in-out infinite }
+    .tn-twinkle { animation: tn-twinkle 2.2s ease-in-out infinite }
+    @keyframes tn-speed { 0% { transform: translateX(56px); opacity: 0 } 20% { opacity: .9 } 100% { transform: translateX(-80px); opacity: 0 } }
+    @keyframes tn-rail { to { transform: translateX(-48px) } }
+    .tn-speed { animation: tn-speed 1.3s linear infinite }
+    .tn-rail { animation: tn-rail 0.7s linear infinite }
+    @media (prefers-reduced-motion: reduce) {
+      .tn-drift, .tn-drift-slow, .tn-bob, .tn-bob-sm, .tn-bob-slow, .tn-pulse, .tn-breathe,
+      .tn-twinkle, .tn-speed, .tn-rail, .tn-steam, .tn-float, .tn-drop, .tn-shadow,
+      .tn-route { animation: none }
+    }
+  </style>
+  <defs>
+    <clipPath id="tr-frame"><rect width="800" height="360"/></clipPath>
+    <pattern id="tr-ties" x="0" y="0" width="48" height="12" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="22" height="12" rx="4" fill="#8FB0EC"/>
+    </pattern>
+  </defs>
+  <g clip-path="url(#tr-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#DDE9FF"/>
+
+    <!-- 遠景の丘 -->
+    <path d="M0 250 C 90 218 170 246 252 242 C 344 237 402 206 502 216 C 612 226 692 252 800 236 L800 360 L0 360 Z" fill="#C6DAFA"/>
+
+    <!-- 雲 -->
+    <g class="tn-drift" fill="#FFFFFF" opacity="0.9">
+      <circle cx="104" cy="82" r="24"/><circle cx="140" cy="70" r="32"/><circle cx="180" cy="84" r="22"/>
+      <rect x="96" y="84" width="96" height="26" rx="13"/>
+    </g>
+    <g class="tn-drift-slow" fill="#FFFFFF" opacity="0.7">
+      <circle cx="596" cy="66" r="18"/><circle cx="624" cy="56" r="26"/><circle cx="654" cy="68" r="17"/>
+      <rect x="590" y="68" width="76" height="20" rx="10"/>
+    </g>
+
+    <!-- 空の飛行機 -->
+    <g class="tn-bob" fill="#FFFDF6" opacity="0.95">
+      <path d="M700 126 L768 104 L760 132 L706 146 Z"/>
+      <path d="M718 134 L724 160 L738 152 L736 130 Z" opacity="0.75"/>
+    </g>
+
+    <!-- 地面 -->
+    <path d="M0 296 C 160 286 300 300 460 296 C 600 292 700 302 800 294 L800 360 L0 360 Z" fill="#AFC9F5"/>
+
+    <!-- 線路 -->
+    <rect x="0" y="288" width="800" height="12" rx="6" fill="#6C93DC"/>
+    <rect class="tn-rail" x="-48" y="300" width="944" height="12" fill="url(#tr-ties)"/>
+
+    <!-- 車体 -->
+    <g class="tn-bob-sm">
+      <path d="M150 144 H548 C614 144 668 166 704 194 C709 197 709 205 704 208 C668 236 614 258 548 258 H150 C132 258 118 244 118 226 V176 C118 158 132 144 150 144 Z" fill="#FFFDF6"/>
+      <rect x="118" y="222" width="560" height="16" fill="#3B6FD8"/>
+      <g fill="#7FA8EE">
+        <rect x="156" y="168" width="46" height="40" rx="14"/>
+        <rect x="218" y="168" width="46" height="40" rx="14"/>
+        <rect x="280" y="168" width="46" height="40" rx="14"/>
+        <rect x="342" y="168" width="46" height="40" rx="14"/>
+        <rect x="404" y="168" width="46" height="40" rx="14"/>
+        <path d="M480 168 H576 C612 174 646 188 668 202 C644 212 610 216 576 208 H480 C472 208 466 202 466 194 V182 C466 174 472 168 480 168 Z"/>
+      </g>
+      <circle cx="678" cy="214" r="11" fill="#FFE29A"/>
+      <!-- 台車と車輪 -->
+      <rect x="168" y="258" width="104" height="14" rx="7" fill="#37589E"/>
+      <rect x="424" y="258" width="104" height="14" rx="7" fill="#37589E"/>
+      <g fill="#4A6FB5">
+        <circle cx="196" cy="274" r="14"/><circle cx="246" cy="274" r="14"/>
+        <circle cx="452" cy="274" r="14"/><circle cx="502" cy="274" r="14"/>
+      </g>
+    </g>
+
+    <!-- スピードライン -->
+    <g class="tn-speed" fill="#FFFFFF" opacity="0.75">
+      <rect x="18" y="164" width="76" height="9" rx="4.5"/>
+      <rect x="44" y="192" width="52" height="9" rx="4.5"/>
+      <rect x="8" y="220" width="64" height="9" rx="4.5"/>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#AFC9F5"/>
+  </g>
+</svg>

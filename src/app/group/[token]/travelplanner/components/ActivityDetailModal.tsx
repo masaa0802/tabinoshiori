@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import { useGoogleMaps } from "@/components/GoogleMapsProvider";
+import { getActivityTypeImage } from "@/lib/activityTypeImage";
 
 interface Activity {
   id: number;
@@ -318,27 +319,14 @@ const ActivityDetailModal: React.FC<ActivityDetailModalProps> = ({
                 )}
               </>
             ) : (
-              /* Gradient fallback */
-              <div
-                className="w-full h-full flex items-center justify-center"
-                style={{
-                  background: `linear-gradient(135deg, ${color}33, ${color}88)`,
-                }}
-              >
-                <span className="text-6xl opacity-30">
-                  {activity.type === "restaurant"
-                    ? "🍽️"
-                    : activity.type === "hotel"
-                    ? "🏨"
-                    : activity.type === "transport"
-                    ? "🚃"
-                    : activity.type === "sightseeing"
-                    ? "🏛️"
-                    : activity.type === "activity"
-                    ? "🎯"
-                    : "📍"}
-                </span>
-              </div>
+              /* 種別イラストのフォールバック */
+              <Image
+                src={getActivityTypeImage(activity.type, { motion: true })}
+                alt=""
+                fill
+                unoptimized
+                className="object-cover"
+              />
             )}
           </div>
 

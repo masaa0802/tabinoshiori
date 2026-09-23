@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="観光スポット">
+  <style>
+    @keyframes tn-drift { 0%,100% { transform: translateX(0) } 50% { transform: translateX(34px) } }
+    @keyframes tn-bob   { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
+    @keyframes tn-bob-sm { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+    @keyframes tn-pulse { 0%,100% { transform: scale(1); opacity: .26 } 50% { transform: scale(1.18); opacity: .52 } }
+    @keyframes tn-breathe { 0%,100% { transform: scale(1) } 50% { transform: scale(1.06) } }
+    @keyframes tn-twinkle { 0%,100% { opacity: .15 } 50% { opacity: 1 } }
+    .tn-drift { animation: tn-drift 18s ease-in-out infinite }
+    .tn-drift-slow { animation: tn-drift 26s ease-in-out infinite reverse }
+    .tn-bob { animation: tn-bob 3s ease-in-out infinite }
+    .tn-bob-sm { animation: tn-bob-sm 2.4s ease-in-out infinite }
+    .tn-bob-slow { animation: tn-bob 4.4s ease-in-out infinite }
+    .tn-pulse { transform-box: fill-box; transform-origin: center; animation: tn-pulse 3.6s ease-in-out infinite }
+    .tn-breathe { transform-box: fill-box; transform-origin: center; animation: tn-breathe 4s ease-in-out infinite }
+    .tn-twinkle { animation: tn-twinkle 2.2s ease-in-out infinite }
+    @media (prefers-reduced-motion: reduce) {
+      .tn-drift, .tn-drift-slow, .tn-bob, .tn-bob-sm, .tn-bob-slow, .tn-pulse, .tn-breathe,
+      .tn-twinkle, .tn-speed, .tn-rail, .tn-steam, .tn-float, .tn-drop, .tn-shadow,
+      .tn-route { animation: none }
+    }
+  </style>
+  <defs><clipPath id="ss-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#ss-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#E3F6EA"/>
+
+    <!-- 太陽 -->
+    <circle cx="656" cy="86" r="44" fill="#FFE29A"/>
+    <circle class="tn-pulse" cx="656" cy="86" r="62" fill="#FFE29A" opacity="0.28"/>
+
+    <!-- 雲 -->
+    <g class="tn-drift" fill="#FFFFFF" opacity="0.85">
+      <circle cx="120" cy="74" r="22"/><circle cx="154" cy="64" r="30"/><circle cx="188" cy="76" r="20"/>
+      <rect x="112" y="76" width="88" height="24" rx="12"/>
+    </g>
+
+    <!-- 遠景の山 -->
+    <path d="M0 256 L128 150 L214 228 L306 138 L430 256 Z" fill="#9FD9BA"/>
+    <path d="M306 138 L360 196 L330 214 L296 178 Z" fill="#FFFDF6" opacity="0.85"/>
+    <path d="M430 256 L546 168 L664 256 Z" fill="#8ED0AE"/>
+
+    <!-- 木 -->
+    <g fill="#57BE8E">
+      <path d="M84 258 L110 200 L136 258 Z"/>
+      <path d="M690 262 L716 206 L742 262 Z"/>
+    </g>
+    <g fill="#3E9E73">
+      <rect x="104" y="252" width="12" height="20" rx="4"/>
+      <rect x="710" y="256" width="12" height="18" rx="4"/>
+    </g>
+
+    <!-- 地面 -->
+    <path d="M0 262 C 140 250 260 270 400 264 C 540 258 680 274 800 262 L800 360 L0 360 Z" fill="#9BDCB8"/>
+    <path d="M0 306 C 180 296 300 314 460 306 C 600 299 700 312 800 304 L800 360 L0 360 Z" fill="#6FC79B"/>
+
+    <!-- カメラ -->
+    <g class="tn-bob">
+      <ellipse cx="400" cy="286" rx="168" ry="18" fill="#3E9E73" opacity="0.22"/>
+      <rect x="326" y="94" width="96" height="30" rx="12" fill="#FFFDF6"/>
+      <rect x="248" y="116" width="304" height="164" rx="30" fill="#FFFDF6"/>
+      <rect x="492" y="98" width="46" height="22" rx="11" fill="#FFC86B"/>
+      <circle cx="292" cy="152" r="11" fill="#FFD98A"/>
+      <circle cx="400" cy="200" r="62" fill="#34A97B"/>
+      <circle cx="400" cy="200" r="44" fill="#7FD6B0"/>
+      <circle cx="400" cy="200" r="24" fill="#2F8F68"/>
+      <circle class="tn-twinkle" cx="384" cy="184" r="9" fill="#FFFFFF" opacity="0.9"/>
+      <rect x="276" y="242" width="64" height="14" rx="7" fill="#DDEFE5"/>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#6FC79B"/>
+  </g>
+</svg>
