@@ -553,13 +553,16 @@ export default function TravelPlanner() {
     setTouchCurrentY(e.touches[0].clientY);
   };
 
-  const handleTouchEnd = (activity: Activity) => {
+  const handleTouchEnd = (e: React.TouchEvent, activity: Activity) => {
     const diffX = Math.abs(touchStart - touchCurrent);
     const diffY = Math.abs(touchStartY - touchCurrentY);
     const elapsed = Date.now() - touchStartTime;
 
     // タップ判定: 移動量が小さく、短時間のタッチ
     if (diffX < 10 && diffY < 10 && elapsed < 300) {
+      // 後から届く click が開いたばかりの詳細シートのバックドロップに当たり、
+      // シートがすぐ閉じてしまうのを防ぐ
+      e.preventDefault();
       setSelectedActivityForDetail(activity);
       setSwipedActivityId(null);
       setTouchStart(0);
@@ -952,7 +955,7 @@ export default function TravelPlanner() {
                               }}
                               onTouchStart={(e) => handleTouchStart(e, activity.id)}
                               onTouchMove={handleTouchMove}
-                              onTouchEnd={() => handleTouchEnd(activity)}
+                              onTouchEnd={(e) => handleTouchEnd(e, activity)}
                               onClick={() => {
                                 if (swipedActivityId === activity.id) {
                                   setSwipedActivityId(null);
