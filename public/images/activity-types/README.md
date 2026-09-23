@@ -58,6 +58,9 @@ Chromium ヘッドレス・GPU 無効（ソフトウェア描画）での 8 秒�
 現在の利用箇所は `ActivityDetailSheet`（写真の有無にかかわらず常にイラスト）と
 `ActivityDetailModal`（写真が無い時）。どちらも `motion: true`。
 
+旅程の一覧カードは `ActivityCardIllustration` でカード右端に静止版を敷き、左へマスクでフェードさせている。
+文字の列には `pr-[min(34%,180px)]` の余白を取り、イラストの濃い部分に文字が入らないようにしている。
+
 ### キャッシュ
 
 `next.config.ts` の `headers()` で `/images/activity-types/:path*` に
