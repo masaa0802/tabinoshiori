@@ -249,17 +249,21 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
     onClose();
   };
 
-  const timelineRow = (a: Activity, label: string) => (
-    <div className="flex items-baseline gap-3 text-sm text-stone-500">
-      <span className="w-12 flex-shrink-0 text-right font-mono tabular-nums">{formatTime(a.time)}</span>
-      <span className="w-3 flex justify-center flex-shrink-0">
-        <span className="w-2 h-2 rounded-full border-2 border-stone-300 bg-[#FBF8F1]" />
+  // 切符の下段に出す前後の予定。別の日なら日付も添える
+  const stubRow = (label: string, a: Activity, emphasis: boolean, note?: string) => (
+    <div className={`flex items-baseline gap-2 ${emphasis ? "text-sm text-stone-800" : "text-xs text-stone-400"}`}>
+      <span
+        className={`flex-shrink-0 rounded px-1.5 py-px text-[10px] font-bold ${emphasis ? "text-white" : "bg-stone-100 text-stone-500"}`}
+        style={emphasis ? { backgroundColor: config.color } : undefined}
+      >
+        {label}
       </span>
-      <span className="flex-1 min-w-0 truncate">
-        {a.date !== activity.date && <span className="mr-1 text-xs">{formatDate(a.date)}</span>}
-        {a.name}
+      <span className="flex-shrink-0 font-mono tabular-nums">
+        {a.date !== activity.date && <span className="mr-1">{formatDate(a.date)}</span>}
+        {formatTime(a.time)}
       </span>
-      <span className="text-[10px] text-stone-400 flex-shrink-0">{label}</span>
+      <span className={`flex-1 min-w-0 truncate ${emphasis ? "font-bold" : ""}`}>{a.name}</span>
+      {note && <span className="flex-shrink-0 text-xs text-stone-500">{note}</span>}
     </div>
   );
 
@@ -338,40 +342,23 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
                 <div className="absolute -right-2 top-0 w-4 h-4 rounded-full bg-[#FBF8F1]" />
               </div>
 
-              <div className="px-5 py-3 text-sm text-stone-600">
-                {untilNext !== undefined && untilNext > 0 ? (
-                  <>次の予定まで <span className="font-bold text-stone-800">{formatDuration(untilNext)}</span></>
-                ) : !next ? (
-                  <>旅の最後の予定です</>
-                ) : next.date !== activity.date ? (
-                  <>この日の最後の予定です</>
+              <div className="px-5 py-3 space-y-1.5">
+                {prev && stubRow("前", prev, false)}
+                {next ? (
+                  stubRow(
+                    "次",
+                    next,
+                    true,
+                    untilNext !== undefined && untilNext > 0 ? `あと${formatDuration(untilNext)}` : undefined
+                  )
                 ) : (
-                  <>次の予定と同じ時刻です</>
+                  <p className="text-sm text-stone-600">旅の最後の予定です</p>
                 )}
               </div>
             </div>
           </div>
 
           <div className="px-4 pt-6 pb-4 space-y-6">
-            {/* 旅の流れ */}
-            {(prev || next) && (
-              <section>
-                <SectionTitle>旅の流れ</SectionTitle>
-                <div className="space-y-2">
-                  {prev && timelineRow(prev, "前")}
-                  <div className="flex items-baseline gap-3 text-sm">
-                    <span className="w-12 flex-shrink-0 text-right font-mono tabular-nums font-bold">{formatTime(activity.time)}</span>
-                    <span className="w-3 flex justify-center flex-shrink-0">
-                      <span className="w-3 h-3 rounded-full" style={{ backgroundColor: config.color }} />
-                    </span>
-                    <span className="flex-1 min-w-0 truncate font-bold">{activity.name}</span>
-                    <span className="text-[10px] font-bold flex-shrink-0" style={{ color: config.color }}>いまここ</span>
-                  </div>
-                  {next && timelineRow(next, "次")}
-                </div>
-              </section>
-            )}
-
             {/* 営業時間チェック */}
             {openStatus !== "unknown" && (
               <section>
