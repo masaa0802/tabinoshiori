@@ -23,7 +23,7 @@
     @media (prefers-reduced-motion: reduce) {
       .tn-drift, .tn-drift-slow, .tn-bob, .tn-bob-sm, .tn-bob-slow, .tn-pulse, .tn-breathe,
       .tn-twinkle, .tn-speed, .tn-rail, .tn-steam, .tn-float, .tn-drop, .tn-shadow,
-      .tn-route { animation: none }
+      .tn-route, .tn-road { animation: none }
     }
   </style>
   <defs>

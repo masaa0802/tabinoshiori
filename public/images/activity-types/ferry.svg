@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="船">
+  <defs><clipPath id="fr-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#fr-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#DAF0FB"/>
+
+    <!-- 太陽 -->
+    <circle class="tn-pulse" cx="140" cy="96" r="56" fill="#FFE29A" opacity="0.3"/>
+    <circle cx="140" cy="96" r="30" fill="#FFD66B"/>
+
+    <!-- 雲 -->
+    <g class="tn-drift" fill="#FFFFFF" opacity="0.9">
+      <circle cx="600" cy="84" r="24"/><circle cx="630" cy="72" r="32"/><circle cx="664" cy="86" r="22"/>
+      <rect x="578" y="84" width="108" height="24" rx="12"/>
+    </g>
+
+    <!-- カモメ -->
+    <g class="tn-drift-slow" stroke="#6B8FB3" stroke-width="5" stroke-linecap="round" fill="none">
+      <path d="M300 88 Q 312 76 324 88 Q 336 76 348 88"/>
+      <path d="M372 118 Q 381 109 390 118 Q 399 109 408 118"/>
+    </g>
+
+    <!-- 島 -->
+    <path d="M560 250 C 590 196 660 180 720 206 C 760 222 790 240 800 250 Z" fill="#8ED3B0"/>
+    <path d="M620 250 C 640 222 690 214 730 232 L760 250 Z" fill="#6CC39A"/>
+
+    <!-- 船 -->
+    <g class="tn-bob-sm">
+      <path d="M230 236 H590 L556 290 H268 Z" fill="#FFFDF6"/>
+      <path d="M240 252 H580 L570 268 H252 Z" fill="#2E86C1"/>
+      <rect x="296" y="180" width="236" height="56" rx="10" fill="#FFFDF6"/>
+      <rect x="296" y="180" width="236" height="56" rx="10" fill="none" stroke="#CFE3F3" stroke-width="4"/>
+      <g fill="#7CC0EA">
+        <rect x="316" y="196" width="30" height="22" rx="6"/><rect x="360" y="196" width="30" height="22" rx="6"/>
+        <rect x="404" y="196" width="30" height="22" rx="6"/><rect x="448" y="196" width="30" height="22" rx="6"/>
+        <rect x="492" y="196" width="24" height="22" rx="6"/>
+      </g>
+      <rect x="352" y="138" width="118" height="42" rx="10" fill="#FFFDF6"/>
+      <rect x="370" y="150" width="82" height="16" rx="6" fill="#7CC0EA"/>
+      <rect x="436" y="100" width="30" height="40" rx="6" fill="#EF6F5E"/>
+      <rect x="436" y="100" width="30" height="10" rx="4" fill="#2E3A4F"/>
+    </g>
+
+    <!-- 海 -->
+    <path d="M0 280 C 100 270 200 290 300 280 C 400 270 500 290 600 280 C 700 270 760 284 800 280 L800 360 L0 360 Z" fill="#7CC5EA"/>
+    <path d="M0 312 C 120 302 220 322 340 312 C 460 302 560 322 680 312 C 740 306 780 314 800 312 L800 360 L0 360 Z" fill="#5AB2E0"/>
+    <g class="tn-drift" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.8">
+      <path d="M90 300 q 14 -8 28 0"/><path d="M620 296 q 14 -8 28 0"/><path d="M380 324 q 14 -8 28 0"/>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#5AB2E0"/>
+  </g>
+</svg>

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="温泉">
+  <defs><clipPath id="os-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#os-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#E3F1EE"/>
+    <!-- 山 -->
+    <path d="M0 230 L150 110 L300 230 Z" fill="#B7DCCF"/>
+    <path d="M200 230 L380 90 L560 230 Z" fill="#A6D3C3"/>
+    <path d="M380 90 L352 114 L370 112 L384 122 L400 110 Z" fill="#FFFFFF"/>
+    <path d="M480 230 L640 120 L800 220 L800 230 Z" fill="#B7DCCF"/>
+    <!-- 紅葉 -->
+    <g>
+      <rect x="668" y="190" width="10" height="70" fill="#8A6A52"/>
+      <circle cx="673" cy="176" r="34" fill="#F2915B"/><circle cx="650" cy="196" r="22" fill="#F4A26B"/><circle cx="698" cy="194" r="24" fill="#E97A48"/>
+    </g>
+    <!-- 岩の縁 -->
+    <path d="M0 236 C 120 226 260 240 400 234 C 540 228 680 240 800 232 L800 360 L0 360 Z" fill="#B6ADA3"/>
+    <g fill="#9E958B">
+      <ellipse cx="80" cy="248" rx="60" ry="22"/><ellipse cx="230" cy="244" rx="52" ry="20"/><ellipse cx="560" cy="246" rx="56" ry="20"/><ellipse cx="720" cy="250" rx="64" ry="22"/>
+    </g>
+    <!-- 湯 -->
+    <path d="M40 272 C 200 262 600 262 760 272 C 760 300 600 318 400 318 C 200 318 40 300 40 272 Z" fill="#8FD6D0"/>
+    <path d="M90 280 C 240 272 560 272 710 280" stroke="#FFFFFF" stroke-width="5" fill="none" opacity="0.6"/>
+    <!-- 湯けむり -->
+    <g stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" fill="none" opacity="0.85">
+      <path class="tn-steam" d="M260 250 C 236 222 284 208 260 176"/>
+      <path class="tn-steam tn-steam-2" d="M400 244 C 376 214 424 200 400 164"/>
+      <path class="tn-steam tn-steam-3" d="M540 250 C 516 222 564 208 540 176"/>
+    </g>
+    <!-- 手ぬぐいと桶 -->
+    <g>
+      <path d="M612 268 H676 L668 300 H620 Z" fill="#D9B38C"/>
+      <rect x="612" y="276" width="64" height="5" fill="#B08A64"/>
+      <rect x="612" y="290" width="64" height="5" fill="#B08A64"/>
+      <rect x="120" y="262" width="80" height="18" rx="6" fill="#FFFDF6"/>
+      <rect x="120" y="266" width="80" height="4" fill="#7CC0EA"/>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#8E857C"/>
+  </g>
+</svg>

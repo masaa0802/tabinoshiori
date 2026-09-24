@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="焼肉">
+  <defs><clipPath id="yk-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#yk-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#FDE4D8"/>
+    <circle cx="112" cy="84" r="46" fill="#F9CDB8" opacity="0.8"/>
+    <circle cx="690" cy="66" r="62" fill="#F9CDB8" opacity="0.6"/>
+    <path d="M0 290 C 170 278 320 296 470 290 C 610 284 700 296 800 288 L800 360 L0 360 Z" fill="#8D5A44"/>
+    <path d="M0 322 C 190 312 330 328 490 320 C 620 314 710 324 800 318 L800 360 L0 360 Z" fill="#7A4B38"/>
+
+    <!-- 煙 -->
+    <g stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" fill="none" opacity="0.75">
+      <path class="tn-steam" d="M340 120 C 320 96 360 84 340 58"/>
+      <path class="tn-steam tn-steam-2" d="M400 108 C 380 84 420 72 400 44"/>
+      <path class="tn-steam tn-steam-3" d="M460 122 C 440 98 480 86 460 60"/>
+    </g>
+
+    <!-- 七輪 -->
+    <ellipse cx="400" cy="300" rx="170" ry="14" fill="#5E3526" opacity="0.3"/>
+    <path d="M262 212 H538 L520 292 H280 Z" fill="#D9B38C"/>
+    <rect x="262" y="212" width="276" height="16" fill="#C39A72"/>
+    <rect x="360" y="246" width="80" height="30" rx="6" fill="#8D5A44"/>
+    <g fill="#F28A4B" opacity="0.9"><circle cx="380" cy="262" r="8"/><circle cx="400" cy="258" r="9"/><circle cx="420" cy="264" r="8"/></g>
+
+    <!-- 網と肉 -->
+    <g class="tn-bob-sm">
+      <ellipse cx="400" cy="200" rx="150" ry="22" fill="#4A4A4A"/>
+      <g stroke="#8A8A8A" stroke-width="3">
+        <path d="M280 194 H520"/><path d="M270 204 H530"/><path d="M290 214 H510"/>
+        <path d="M320 180 V220"/><path d="M360 178 V222"/><path d="M400 178 V222"/><path d="M440 178 V222"/><path d="M480 180 V220"/>
+      </g>
+      <path d="M296 196 C 306 180 350 176 362 190 C 368 200 350 208 326 208 C 304 208 290 206 296 196 Z" fill="#D8674E"/>
+      <path d="M304 194 C 320 186 342 186 352 192" stroke="#F4B9A6" stroke-width="4" fill="none"/>
+      <path d="M384 190 C 394 176 440 174 450 188 C 456 198 438 206 414 206 C 392 206 378 200 384 190 Z" fill="#B34A38"/>
+      <path d="M394 190 C 410 182 430 182 440 188" stroke="#E79B85" stroke-width="4" fill="none"/>
+      <ellipse cx="486" cy="196" rx="24" ry="10" fill="#8BC96A"/>
+    </g>
+
+    <!-- トング -->
+    <g fill="#B0B8C4">
+      <rect x="560" y="120" width="12" height="130" rx="6" transform="rotate(-24 566 185)"/>
+      <rect x="578" y="124" width="12" height="130" rx="6" transform="rotate(-18 584 189)"/>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#7A4B38"/>
+  </g>
+</svg>

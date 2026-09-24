@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="キャンプ">
+  <defs><clipPath id="cp-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#cp-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#E5E2F8"/>
+    <g class="tn-twinkle" fill="#FFFFFF">
+      <circle cx="90" cy="54" r="4"/><circle cx="260" cy="40" r="3"/><circle cx="520" cy="70" r="3"/><circle cx="720" cy="46" r="4"/>
+    </g>
+    <circle cx="640" cy="90" r="26" fill="#FFF2C4"/>
+    <!-- 山と森 -->
+    <path d="M0 250 L120 150 L230 250 Z" fill="#C4B6EE"/>
+    <path d="M560 250 L700 140 L800 220 L800 250 Z" fill="#C4B6EE"/>
+    <g fill="#7F9F8C">
+      <path d="M70 280 L100 200 L130 280 Z"/><path d="M120 284 L156 186 L192 284 Z"/>
+      <path d="M620 280 L652 196 L684 280 Z"/><path d="M670 284 L706 180 L742 284 Z"/>
+    </g>
+    <path d="M0 288 C 180 278 360 294 540 286 C 660 280 740 290 800 286 L800 360 L0 360 Z" fill="#B9A4EE"/>
+    <path d="M0 322 C 200 312 380 328 560 320 C 680 314 750 322 800 318 L800 360 L0 360 Z" fill="#9F86E4"/>
+
+    <!-- テント -->
+    <g>
+      <ellipse cx="380" cy="292" rx="170" ry="12" fill="#5E4A8C" opacity="0.25"/>
+      <path d="M220 290 L380 118 L540 290 Z" fill="#8B5CF6"/>
+      <path d="M380 118 L540 290 H460 Z" fill="#7C4CE6"/>
+      <path d="M380 150 L336 290 H424 Z" fill="#4A3A73"/>
+      <path d="M380 150 L336 290 H372 Z" fill="#FFE29A" opacity="0.5"/>
+      <rect x="376" y="100" width="8" height="24" fill="#5E4A8C"/>
+      <path d="M384 100 L410 108 L384 116 Z" fill="#F2A05B"/>
+    </g>
+
+    <!-- 焚き火 -->
+    <g>
+      <circle class="tn-pulse" cx="600" cy="262" r="48" fill="#FFB36B" opacity="0.26"/>
+      <rect x="568" y="276" width="64" height="12" rx="6" fill="#7A5A44" transform="rotate(14 600 282)"/>
+      <rect x="568" y="276" width="64" height="12" rx="6" fill="#8A6A52" transform="rotate(-14 600 282)"/>
+      <g class="tn-breathe">
+        <path d="M600 214 C 624 240 628 262 600 278 C 572 262 576 240 600 214 Z" fill="#F28A4B"/>
+        <path d="M600 238 C 612 252 614 264 600 274 C 586 264 588 252 600 238 Z" fill="#FFD66B"/>
+      </g>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#9F86E4"/>
+  </g>
+</svg>

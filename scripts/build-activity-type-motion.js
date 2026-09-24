@@ -7,6 +7,11 @@
  * イラストを描き直したら静止版だけ編集して、このスクリプトを流し直す。
  * 動かすのは各イラスト 1〜3 要素だけ。transform / opacity のみを使い、
  * prefers-reduced-motion: reduce では全て停止する。
+ *
+ * 種別イラスト（EDITS に載っているもの）は下の置換表で動かす要素に class を付ける。
+ * シーンイラスト（それ以外の *.svg）は静止版に最初から tn-* の class を書いておき、
+ * ここでは <style> を差し込むだけ。静止版は <style> が無いので動かない。
+ * class を付ける要素に transform 属性を付けないこと（アニメーションで上書きされる）。
  */
 const fs = require("fs");
 const path = require("path");
@@ -35,7 +40,7 @@ const REDUCED = `
     @media (prefers-reduced-motion: reduce) {
       .tn-drift, .tn-drift-slow, .tn-bob, .tn-bob-sm, .tn-bob-slow, .tn-pulse, .tn-breathe,
       .tn-twinkle, .tn-speed, .tn-rail, .tn-steam, .tn-float, .tn-drop, .tn-shadow,
-      .tn-route { animation: none }
+      .tn-route, .tn-road { animation: none }
     }`;
 
 const EXTRA = {
@@ -59,6 +64,11 @@ const EXTRA = {
     .tn-shadow { transform-box: fill-box; transform-origin: center; animation: tn-shadow 2.4s ease-in-out infinite }
     .tn-route { animation: tn-route 2.4s linear infinite }`,
 };
+
+// シーンイラストで使う class 一式（種別ごとの EXTRA から必要なものを集めたもの）
+const SCENE_EXTRA = `${EXTRA.transport}${EXTRA.restaurant}${EXTRA.activity}
+    @keyframes tn-road { to { transform: translateX(-96px) } }
+    .tn-road { animation: tn-road 0.9s linear infinite }`;
 
 // 種別ごとに「どの要素を動かすか」。[検索文字列, 置換文字列]
 const EDITS = {
@@ -108,6 +118,9 @@ const EDITS = {
 
 fs.mkdirSync(OUT, { recursive: true });
 
+const withStyle = (svg, extra) =>
+  svg.replace(/(<svg[^>]*>)/, `$1\n  <style>${COMMON}${extra}${REDUCED}\n  </style>`);
+
 for (const [name, ops] of Object.entries(EDITS)) {
   let svg = fs.readFileSync(path.join(SRC, `${name}.svg`), "utf8");
 
@@ -118,9 +131,21 @@ for (const [name, ops] of Object.entries(EDITS)) {
     svg = svg.replace(find, replace);
   }
 
-  const style = `\n  <style>${COMMON}${EXTRA[name] ?? ""}${REDUCED}\n  </style>`;
-  svg = svg.replace(/(<svg[^>]*>)/, `$1${style}`);
+  svg = withStyle(svg, EXTRA[name] ?? "");
 
   fs.writeFileSync(path.join(OUT, `${name}.svg`), svg);
   console.log(`generated motion/${name}.svg`);
+}
+
+const scenes = fs
+  .readdirSync(SRC)
+  .filter((file) => file.endsWith(".svg") && !(path.basename(file, ".svg") in EDITS));
+
+for (const file of scenes) {
+  const svg = fs.readFileSync(path.join(SRC, file), "utf8");
+  if (!svg.includes('class="tn-')) {
+    throw new Error(`${file}: 動かす要素（class="tn-*"）が無い`);
+  }
+  fs.writeFileSync(path.join(OUT, file), withStyle(svg, SCENE_EXTRA));
+  console.log(`generated motion/${file}`);
 }
