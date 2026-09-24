@@ -1062,7 +1062,14 @@ export default function TravelPlanner() {
       <ActivityDetailSheet
         activity={selectedActivityForDetail}
         isOpen={selectedActivityForDetail !== null}
+        tripActivities={activitiesToProcess}
+        tripStartDate={travelPlan.start_date}
         onClose={() => setSelectedActivityForDetail(null)}
+        onOpenBudget={() => {
+          if (selectedActivityForDetail) setSelectedDay(day(selectedActivityForDetail.date));
+          setSelectedActivityForDetail(null);
+          setActiveTab("budget");
+        }}
         onEdit={(a) => {
           setSelectedActivityForDetail(null);
           startEditActivity(a);
