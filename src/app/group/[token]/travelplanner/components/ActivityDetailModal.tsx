@@ -321,7 +321,7 @@ const ActivityDetailModal: React.FC<ActivityDetailModalProps> = ({
             ) : (
               /* 種別イラストのフォールバック */
               <Image
-                src={getActivityTypeImage(activity.type, { motion: true })}
+                src={getActivityTypeImage(activity, { motion: true })}
                 alt=""
                 fill
                 unoptimized

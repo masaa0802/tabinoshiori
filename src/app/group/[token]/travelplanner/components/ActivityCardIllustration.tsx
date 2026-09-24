@@ -5,12 +5,12 @@ import { getActivityTypeImage } from "@/lib/activityTypeImage";
 const FADE_MASK = "linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.35) 30%, #000 65%)";
 
 /**
- * アクティビティ一覧カードの右端に敷く種別イラスト。
+ * アクティビティ一覧カードの右端に敷く種別イラスト（名前からシーンを選ぶ）。
  *
  * カードは同時に何枚も並ぶので静止版を使う（動き付きは表示枚数に比例して重くなる）。
  * 親要素に `relative overflow-hidden` が必要。
  */
-export default function ActivityCardIllustration({ type }: { type?: string }) {
+export default function ActivityCardIllustration({ type, name }: { type?: string; name?: string }) {
   return (
     <div
       aria-hidden
@@ -18,7 +18,7 @@ export default function ActivityCardIllustration({ type }: { type?: string }) {
       style={{ maskImage: FADE_MASK, WebkitMaskImage: FADE_MASK }}
     >
       <Image
-        src={getActivityTypeImage(type)}
+        src={getActivityTypeImage({ type, name })}
         alt=""
         fill
         unoptimized

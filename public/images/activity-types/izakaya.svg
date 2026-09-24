@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="居酒屋">
+  <defs><clipPath id="iz-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#iz-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#3E3355"/>
+
+    <!-- 星 -->
+    <g class="tn-twinkle" fill="#FFF3C4">
+      <circle cx="90" cy="60" r="3"/><circle cx="700" cy="48" r="4"/><circle cx="600" cy="100" r="3"/><circle cx="170" cy="120" r="3"/>
+    </g>
+
+    <!-- 提灯 -->
+    <g class="tn-bob-slow">
+      <rect x="148" y="0" width="4" height="60" fill="#2A2238"/>
+      <circle class="tn-pulse" cx="150" cy="118" r="70" fill="#FFB36B" opacity="0.26"/>
+      <ellipse cx="150" cy="118" rx="46" ry="60" fill="#E4534A"/>
+      <g stroke="#B8352E" stroke-width="4" fill="none"><path d="M106 96 H194"/><path d="M104 118 H196"/><path d="M106 140 H194"/></g>
+      <rect x="126" y="54" width="48" height="10" rx="4" fill="#2A2238"/><rect x="126" y="172" width="48" height="10" rx="4" fill="#2A2238"/>
+    </g>
+    <g class="tn-bob">
+      <rect x="648" y="0" width="4" height="50" fill="#2A2238"/>
+      <circle class="tn-pulse" cx="650" cy="104" r="62" fill="#FFB36B" opacity="0.26"/>
+      <ellipse cx="650" cy="104" rx="40" ry="52" fill="#E4534A"/>
+      <g stroke="#B8352E" stroke-width="4" fill="none"><path d="M612 86 H688"/><path d="M610 104 H690"/><path d="M612 122 H688"/></g>
+      <rect x="628" y="46" width="44" height="10" rx="4" fill="#2A2238"/><rect x="628" y="152" width="44" height="10" rx="4" fill="#2A2238"/>
+    </g>
+
+    <!-- カウンター -->
+    <path d="M0 280 L800 272 L800 360 L0 360 Z" fill="#9B6A45"/>
+    <path d="M0 318 L800 312 L800 360 L0 360 Z" fill="#855937"/>
+
+    <!-- ジョッキ -->
+    <g>
+      <ellipse cx="330" cy="288" rx="84" ry="10" fill="#1F1830" opacity="0.4"/>
+      <rect x="270" y="150" width="120" height="136" rx="14" fill="#F5B83D"/>
+      <path d="M390 180 H414 C 428 180 436 190 436 204 V236 C 436 250 428 260 414 260 H390" stroke="#E8EEF6" stroke-width="14" fill="none"/>
+      <g fill="#FFFFFF" opacity="0.5"><rect x="288" y="176" width="10" height="92" rx="5"/></g>
+      <g fill="#FFD98A" opacity="0.8"><circle cx="320" cy="230" r="4"/><circle cx="350" cy="210" r="3"/><circle cx="336" cy="256" r="3"/></g>
+      <path d="M262 150 C 262 120 290 116 300 126 C 312 108 344 108 352 124 C 366 112 398 118 398 150 Z" fill="#FFFDF6"/>
+    </g>
+    <!-- 焼き鳥 -->
+    <g>
+      <ellipse cx="530" cy="276" rx="92" ry="14" fill="#FFFDF6"/>
+      <g transform="rotate(-10 530 246)">
+        <rect x="452" y="244" width="160" height="5" rx="2" fill="#E6C89A"/>
+        <circle cx="486" cy="246" r="15" fill="#C77846"/><circle cx="516" cy="246" r="15" fill="#B96A3A"/><circle cx="546" cy="246" r="15" fill="#C77846"/>
+        <rect x="560" y="236" width="18" height="20" rx="6" fill="#8BC96A"/>
+      </g>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#855937"/>
+  </g>
+</svg>

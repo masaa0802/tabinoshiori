@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="水族館">
+  <style>
+    @keyframes tn-drift { 0%,100% { transform: translateX(0) } 50% { transform: translateX(34px) } }
+    @keyframes tn-bob   { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
+    @keyframes tn-bob-sm { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+    @keyframes tn-pulse { 0%,100% { transform: scale(1); opacity: .26 } 50% { transform: scale(1.18); opacity: .52 } }
+    @keyframes tn-breathe { 0%,100% { transform: scale(1) } 50% { transform: scale(1.06) } }
+    @keyframes tn-twinkle { 0%,100% { opacity: .15 } 50% { opacity: 1 } }
+    .tn-drift { animation: tn-drift 18s ease-in-out infinite }
+    .tn-drift-slow { animation: tn-drift 26s ease-in-out infinite reverse }
+    .tn-bob { animation: tn-bob 3s ease-in-out infinite }
+    .tn-bob-sm { animation: tn-bob-sm 2.4s ease-in-out infinite }
+    .tn-bob-slow { animation: tn-bob 4.4s ease-in-out infinite }
+    .tn-pulse { transform-box: fill-box; transform-origin: center; animation: tn-pulse 3.6s ease-in-out infinite }
+    .tn-breathe { transform-box: fill-box; transform-origin: center; animation: tn-breathe 4s ease-in-out infinite }
+    .tn-twinkle { animation: tn-twinkle 2.2s ease-in-out infinite }
+    @keyframes tn-speed { 0% { transform: translateX(56px); opacity: 0 } 20% { opacity: .9 } 100% { transform: translateX(-80px); opacity: 0 } }
+    @keyframes tn-rail { to { transform: translateX(-48px) } }
+    .tn-speed { animation: tn-speed 1.3s linear infinite }
+    .tn-rail { animation: tn-rail 0.7s linear infinite }
+    @keyframes tn-steam { 0% { transform: translateY(14px); opacity: 0 } 22% { opacity: .95 } 100% { transform: translateY(-38px); opacity: 0 } }
+    .tn-steam { animation: tn-steam 2.4s ease-out infinite }
+    .tn-steam-2 { animation-delay: .8s } .tn-steam-3 { animation-delay: 1.6s }
+    @keyframes tn-float { 0%,100% { transform: translateY(0) rotate(-1.8deg) } 50% { transform: translateY(-18px) rotate(1.8deg) } }
+    .tn-float { transform-box: fill-box; transform-origin: 400px 300px; animation: tn-float 4.6s ease-in-out infinite }
+    @keyframes tn-road { to { transform: translateX(-96px) } }
+    .tn-road { animation: tn-road 0.9s linear infinite }
+    @media (prefers-reduced-motion: reduce) {
+      .tn-drift, .tn-drift-slow, .tn-bob, .tn-bob-sm, .tn-bob-slow, .tn-pulse, .tn-breathe,
+      .tn-twinkle, .tn-speed, .tn-rail, .tn-steam, .tn-float, .tn-drop, .tn-shadow,
+      .tn-route, .tn-road { animation: none }
+    }
+  </style>
+  <defs><clipPath id="aq-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#aq-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#CDEBF7"/>
+    <rect width="800" height="120" fill="#E4F4FB"/>
+    <!-- 光 -->
+    <g fill="#FFFFFF" opacity="0.35">
+      <path d="M120 0 L180 0 L120 300 L60 300 Z"/><path d="M420 0 L460 0 L420 300 L380 300 Z"/><path d="M640 0 L690 0 L660 300 L610 300 Z"/>
+    </g>
+    <!-- 泡 -->
+    <g class="tn-steam" fill="none" stroke="#FFFFFF" stroke-width="3">
+      <circle cx="210" cy="180" r="8"/><circle cx="226" cy="150" r="5"/><circle cx="604" cy="170" r="7"/>
+    </g>
+    <g class="tn-steam tn-steam-2" fill="none" stroke="#FFFFFF" stroke-width="3">
+      <circle cx="590" cy="130" r="5"/><circle cx="196" cy="120" r="4"/>
+    </g>
+    <!-- クジラ -->
+    <g class="tn-bob-slow">
+      <path d="M250 180 C 250 120 330 96 420 104 C 500 112 548 150 556 176 C 572 170 596 150 618 150 C 612 172 600 186 590 194 C 600 204 612 220 616 240 C 594 238 572 222 556 206 C 540 236 490 260 410 260 C 320 260 250 236 250 180 Z" fill="#5B8FD6"/>
+      <path d="M262 206 C 300 244 380 252 440 246 C 400 262 320 260 280 232 Z" fill="#DDEBFB"/>
+      <circle cx="310" cy="170" r="8" fill="#2E3A4F"/>
+      <path d="M380 214 C 400 234 430 236 446 222" stroke="#4A7AC0" stroke-width="6" fill="none" stroke-linecap="round"/>
+    </g>
+    <!-- 小魚 -->
+    <g class="tn-drift">
+      <path d="M140 250 C 150 238 174 238 182 250 C 174 262 150 262 140 250 Z M182 250 L196 240 V260 Z" fill="#F5B94E"/>
+      <path d="M646 230 C 656 218 680 218 688 230 C 680 242 656 242 646 230 Z M688 230 L702 220 V240 Z" fill="#EF6F5E"/>
+      <path d="M666 270 C 674 262 692 262 698 270 C 692 278 674 278 666 270 Z M698 270 L708 262 V278 Z" fill="#F5B94E"/>
+    </g>
+    <!-- 砂と海藻 -->
+    <path d="M0 290 C 180 280 360 296 540 288 C 660 282 740 292 800 288 L800 360 L0 360 Z" fill="#F2DDB0"/>
+    <path d="M0 322 C 200 312 380 328 560 320 C 680 314 750 322 800 318 L800 360 L0 360 Z" fill="#E6CC98"/>
+    <g fill="#6CC39A">
+      <path d="M70 292 C 50 250 90 230 70 190 C 100 220 90 260 90 292 Z"/>
+      <path d="M720 292 C 700 256 740 236 724 200 C 752 230 744 264 742 292 Z"/>
+    </g>
+    <g fill="#F29C9C"><circle cx="110" cy="286" r="10"/><circle cx="126" cy="280" r="8"/></g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#E6CC98"/>
+  </g>
+</svg>

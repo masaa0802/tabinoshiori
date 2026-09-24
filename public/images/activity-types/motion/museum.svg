@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="美術館・博物館">
+  <style>
+    @keyframes tn-drift { 0%,100% { transform: translateX(0) } 50% { transform: translateX(34px) } }
+    @keyframes tn-bob   { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
+    @keyframes tn-bob-sm { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+    @keyframes tn-pulse { 0%,100% { transform: scale(1); opacity: .26 } 50% { transform: scale(1.18); opacity: .52 } }
+    @keyframes tn-breathe { 0%,100% { transform: scale(1) } 50% { transform: scale(1.06) } }
+    @keyframes tn-twinkle { 0%,100% { opacity: .15 } 50% { opacity: 1 } }
+    .tn-drift { animation: tn-drift 18s ease-in-out infinite }
+    .tn-drift-slow { animation: tn-drift 26s ease-in-out infinite reverse }
+    .tn-bob { animation: tn-bob 3s ease-in-out infinite }
+    .tn-bob-sm { animation: tn-bob-sm 2.4s ease-in-out infinite }
+    .tn-bob-slow { animation: tn-bob 4.4s ease-in-out infinite }
+    .tn-pulse { transform-box: fill-box; transform-origin: center; animation: tn-pulse 3.6s ease-in-out infinite }
+    .tn-breathe { transform-box: fill-box; transform-origin: center; animation: tn-breathe 4s ease-in-out infinite }
+    .tn-twinkle { animation: tn-twinkle 2.2s ease-in-out infinite }
+    @keyframes tn-speed { 0% { transform: translateX(56px); opacity: 0 } 20% { opacity: .9 } 100% { transform: translateX(-80px); opacity: 0 } }
+    @keyframes tn-rail { to { transform: translateX(-48px) } }
+    .tn-speed { animation: tn-speed 1.3s linear infinite }
+    .tn-rail { animation: tn-rail 0.7s linear infinite }
+    @keyframes tn-steam { 0% { transform: translateY(14px); opacity: 0 } 22% { opacity: .95 } 100% { transform: translateY(-38px); opacity: 0 } }
+    .tn-steam { animation: tn-steam 2.4s ease-out infinite }
+    .tn-steam-2 { animation-delay: .8s } .tn-steam-3 { animation-delay: 1.6s }
+    @keyframes tn-float { 0%,100% { transform: translateY(0) rotate(-1.8deg) } 50% { transform: translateY(-18px) rotate(1.8deg) } }
+    .tn-float { transform-box: fill-box; transform-origin: 400px 300px; animation: tn-float 4.6s ease-in-out infinite }
+    @keyframes tn-road { to { transform: translateX(-96px) } }
+    .tn-road { animation: tn-road 0.9s linear infinite }
+    @media (prefers-reduced-motion: reduce) {
+      .tn-drift, .tn-drift-slow, .tn-bob, .tn-bob-sm, .tn-bob-slow, .tn-pulse, .tn-breathe,
+      .tn-twinkle, .tn-speed, .tn-rail, .tn-steam, .tn-float, .tn-drop, .tn-shadow,
+      .tn-route, .tn-road { animation: none }
+    }
+  </style>
+  <defs><clipPath id="ms-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#ms-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#EEF1E8"/>
+    <circle class="tn-pulse" cx="660" cy="76" r="54" fill="#FFE29A" opacity="0.28"/>
+    <circle cx="660" cy="76" r="28" fill="#FFD66B"/>
+    <g class="tn-drift" fill="#FFFFFF" opacity="0.9">
+      <circle cx="110" cy="88" r="24"/><circle cx="140" cy="76" r="32"/><circle cx="174" cy="90" r="22"/>
+      <rect x="88" y="88" width="108" height="24" rx="12"/>
+    </g>
+    <path d="M0 288 C 180 278 360 294 540 286 C 660 280 740 290 800 286 L800 360 L0 360 Z" fill="#C9D8B6"/>
+    <path d="M0 322 C 200 312 380 328 560 320 C 680 314 750 322 800 318 L800 360 L0 360 Z" fill="#B2C79C"/>
+    <!-- 建物 -->
+    <g>
+      <ellipse cx="400" cy="294" rx="220" ry="10" fill="#6E7F58" opacity="0.25"/>
+      <path d="M196 132 L400 60 L604 132 Z" fill="#E8E0D0"/>
+      <path d="M244 124 L400 72 L556 124 Z" fill="#D8CDB8"/>
+      <circle cx="400" cy="104" r="14" fill="#E8E0D0"/>
+      <rect x="196" y="132" width="408" height="18" fill="#D8CDB8"/>
+      <g fill="#FFFDF6">
+        <rect x="222" y="150" width="26" height="112"/><rect x="290" y="150" width="26" height="112"/><rect x="358" y="150" width="26" height="112"/>
+        <rect x="416" y="150" width="26" height="112"/><rect x="484" y="150" width="26" height="112"/><rect x="552" y="150" width="26" height="112"/>
+      </g>
+      <g fill="#EDE5D4" opacity="0.8">
+        <rect x="258" y="150" width="22" height="112"/><rect x="326" y="150" width="22" height="112"/><rect x="452" y="150" width="22" height="112"/><rect x="520" y="150" width="22" height="112"/>
+      </g>
+      <rect x="384" y="190" width="32" height="72" fill="#8C7A60"/>
+      <rect x="180" y="262" width="440" height="12" fill="#D8CDB8"/><rect x="164" y="274" width="472" height="14" fill="#C9BDA4"/>
+    </g>
+    <!-- 旗 -->
+    <g class="tn-bob-sm"><rect x="640" y="160" width="6" height="130" fill="#8C7A60"/><rect x="646" y="164" width="44" height="60" fill="#E4534A"/></g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#B2C79C"/>
+  </g>
+</svg>

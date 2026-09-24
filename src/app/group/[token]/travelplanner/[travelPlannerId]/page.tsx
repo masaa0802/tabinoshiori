@@ -403,10 +403,7 @@ export default function TravelPlanner() {
   );
 
   // 詳細シートのヘッダーイラストを先読みしておく（初回タップ時の待ちを無くす）
-  preloadActivityTypeImages(
-    activitiesToProcess.map((activity: Activity) => activity.type),
-    { motion: true }
-  );
+  preloadActivityTypeImages(activitiesToProcess, { motion: true });
   console.log("Activities to process:", activitiesToProcess.length, "Total activities:", allActivities.length, "Itinerary ID:", travelPlan.id);
 
   activitiesToProcess.forEach((activity: Activity) => {
@@ -965,7 +962,7 @@ export default function TravelPlanner() {
                               }}
                             >
                               {/* 背景の種別イラスト（右端に敷いて左へフェード） */}
-                              <ActivityCardIllustration type={activity.type} />
+                              <ActivityCardIllustration type={activity.type} name={activity.name} />
                               <div className="relative z-10 p-4">
                                 <div className="flex justify-between items-center">
                                   <div className="flex items-start flex-1">

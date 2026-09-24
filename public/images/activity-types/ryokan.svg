@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="旅館">
+  <defs><clipPath id="ry-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#ry-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#EDE6FB"/>
+    <!-- 月 -->
+    <circle class="tn-pulse" cx="660" cy="80" r="52" fill="#FFF2C4" opacity="0.3"/>
+    <circle class="tn-breathe" cx="660" cy="80" r="28" fill="#FFF2C4"/>
+    <g class="tn-twinkle" fill="#FFFFFF" opacity="0.8">
+      <circle cx="110" cy="60" r="4"/><circle cx="220" cy="100" r="3"/><circle cx="560" cy="50" r="3"/>
+    </g>
+    <path d="M0 288 C 180 278 360 294 540 286 C 660 280 740 290 800 286 L800 360 L0 360 Z" fill="#B9A4EE"/>
+    <path d="M0 322 C 200 312 380 328 560 320 C 680 314 750 322 800 318 L800 360 L0 360 Z" fill="#9F86E4"/>
+
+    <!-- 松 -->
+    <g fill="#6C9C7E">
+      <rect x="116" y="200" width="12" height="90" fill="#7A6250"/>
+      <ellipse cx="122" cy="196" rx="54" ry="18"/><ellipse cx="104" cy="226" rx="40" ry="14"/><ellipse cx="146" cy="170" rx="36" ry="14"/>
+    </g>
+
+    <!-- 旅館 -->
+    <g>
+      <rect x="236" y="190" width="340" height="100" fill="#FFF6E6"/>
+      <path d="M208 196 L406 136 L604 196 Z" fill="#5E4A8C"/>
+      <rect x="208" y="190" width="396" height="12" rx="4" fill="#4A3A73"/>
+      <rect x="276" y="124" width="260" height="56" fill="#FFF6E6"/>
+      <path d="M252 130 L406 86 L560 130 Z" fill="#5E4A8C"/>
+      <rect x="252" y="124" width="308" height="10" rx="4" fill="#4A3A73"/>
+      <!-- 障子 -->
+      <g fill="#FFE8A8">
+        <rect x="296" y="140" width="50" height="32"/><rect x="356" y="140" width="50" height="32"/>
+        <rect x="416" y="140" width="50" height="32"/><rect x="476" y="140" width="40" height="32"/>
+      </g>
+      <g fill="#FFE8A8" class="tn-twinkle">
+        <rect x="256" y="214" width="60" height="44"/><rect x="496" y="214" width="60" height="44"/>
+      </g>
+      <g stroke="#C9B27A" stroke-width="2"><path d="M286 214 V258"/><path d="M256 236 H316"/><path d="M526 214 V258"/><path d="M496 236 H556"/></g>
+      <!-- 入口とのれん -->
+      <rect x="360" y="212" width="92" height="78" fill="#5E4A8C"/>
+      <rect x="360" y="212" width="92" height="34" fill="#8B5CF6"/>
+      <path d="M390 212 V246 M422 212 V246" stroke="#5E4A8C" stroke-width="3"/>
+      <circle cx="406" cy="229" r="9" fill="#FFF6E6"/>
+      <!-- 提灯 -->
+      <ellipse cx="340" cy="232" rx="10" ry="14" fill="#F2A05B"/><ellipse cx="472" cy="232" rx="10" ry="14" fill="#F2A05B"/>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#9F86E4"/>
+  </g>
+</svg>

@@ -264,7 +264,7 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
           {/* ヘッダーイラスト（種別ごとに固定。写真は使わない） */}
           <div className="relative h-56 md:h-52 overflow-hidden">
             <Image
-              src={getActivityTypeImage(activity.type, { motion: true })}
+              src={getActivityTypeImage(activity, { motion: true })}
               alt=""
               fill
               unoptimized
