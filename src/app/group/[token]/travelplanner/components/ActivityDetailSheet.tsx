@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
-import { GoogleMap, Marker } from "@react-google-maps/api";
+import { useQuery } from "@apollo/client";
 import { useGoogleMaps } from "@/components/GoogleMapsProvider";
 import { getActivityTypeImage } from "@/lib/activityTypeImage";
+import { checkOpenAt, hoursTextFor, parseLocalDate, type OpenStatus } from "@/lib/openingHours";
+import { GET_BUDGETS } from "@/graphql/queries";
 
 interface Activity {
   id: number;
@@ -21,33 +23,56 @@ interface Activity {
   place_id?: string;
 }
 
+interface Budget {
+  id: number;
+  activity_id?: number | null;
+  category: string;
+  amount: number;
+  description?: string;
+  currency?: string;
+}
+
 interface PlaceDetails {
   formatted_address?: string;
   formatted_phone_number?: string;
   opening_hours?: google.maps.places.PlaceOpeningHours;
-  rating?: number;
-  user_ratings_total?: number;
   website?: string;
   url?: string;
-  price_level?: number;
-  reviews?: google.maps.places.PlaceReview[];
 }
 
 interface ActivityDetailSheetProps {
   activity: Activity | null;
   isOpen: boolean;
+  /** 旅程のアクティビティ全件（前後の予定を出すのに使う） */
+  tripActivities: Activity[];
+  /** 旅行の初日（「◯日目」の計算に使う） */
+  tripStartDate?: string;
   onClose: () => void;
   onEdit: (activity: Activity) => void;
   onDelete: (activity: Activity) => void;
+  /** 「予算で追加・編集」を押した時。予算タブへ移る */
+  onOpenBudget?: () => void;
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
-  transport:   { label: "交通",           color: "#3B82F6" },
-  sightseeing: { label: "観光スポット",   color: "#10B981" },
-  restaurant:  { label: "飲食店",         color: "#F59E0B" },
-  hotel:       { label: "ホテル",         color: "#8B5CF6" },
-  activity:    { label: "アクティビティ", color: "#EF4444" },
-  area:        { label: "エリア",         color: "#6B7280" },
+  transport:   { label: "交通",   color: "#3B82F6" },
+  sightseeing: { label: "観光",   color: "#10B981" },
+  restaurant:  { label: "ごはん", color: "#F59E0B" },
+  hotel:       { label: "宿",     color: "#8B5CF6" },
+  activity:    { label: "あそび", color: "#EF4444" },
+  area:        { label: "エリア", color: "#6B7280" },
+};
+
+const BUDGET_CATEGORY_LABELS: Record<string, string> = {
+  transport: "交通費",
+  sightseeing: "観光",
+  restaurant: "食事",
+  food: "食事",
+  hotel: "宿泊",
+  activity: "アクティビティ",
+  shopping: "買い物",
+  area: "その他",
+  other: "その他",
 };
 
 /**
@@ -57,58 +82,65 @@ const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
  */
 const BACKDROP_GUARD_MS = 400;
 
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric", weekday: "short" });
-}
+const formatDate = (dateStr: string) =>
+  parseLocalDate(dateStr).toLocaleDateString("ja-JP", { month: "numeric", day: "numeric", weekday: "short" });
 
-function formatTime(timeStr: string) {
-  return timeStr?.substring(0, 5) ?? "";
-}
+const formatTime = (timeStr: string) => timeStr?.substring(0, 5) ?? "";
 
-function Stars({ rating, className }: { rating: number; className: string }) {
+const toMinutes = (timeStr: string) => {
+  const [h, m] = timeStr.split(":").map(Number);
+  return h * 60 + (m || 0);
+};
+
+const formatDuration = (minutes: number) => {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m}分`;
+  return m === 0 ? `${h}時間` : `${h}時間${m}分`;
+};
+
+const formatYen = (amount: number, currency?: string) =>
+  !currency || currency === "JPY" ? `¥${amount.toLocaleString()}` : `${amount.toLocaleString()} ${currency}`;
+
+const sortKey = (a: Activity) => `${a.date} ${a.time}`;
+
+const OPEN_STATUS_VIEW: Record<Exclude<OpenStatus, "unknown">, { text: string; tone: string; mark: string }> = {
+  open:        { text: "予定の時間は営業中です",     tone: "bg-emerald-50 text-emerald-800 border-emerald-200", mark: "✓" },
+  closed_time: { text: "予定の時間は営業時間外です", tone: "bg-amber-50 text-amber-800 border-amber-200",       mark: "!" },
+  closed_day:  { text: "この日は定休日のようです",   tone: "bg-rose-50 text-rose-800 border-rose-200",          mark: "!" },
+};
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <svg
-          key={star}
-          className={`${className} ${star <= Math.round(rating) ? "text-yellow-400" : "text-gray-200"}`}
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      ))}
-    </div>
-  );
-}
-
-function InfoRow({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
-  return (
-    <div className="flex items-start gap-3 py-3">
-      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 text-gray-500">
-        {icon}
-      </div>
-      <div className="flex-1 min-w-0 text-sm text-gray-700 leading-relaxed pt-1.5">{children}</div>
-    </div>
+    <h3 className="flex items-center gap-2 text-xs font-bold tracking-widest text-stone-500 mb-2">
+      <span className="w-1 h-3.5 rounded-full bg-stone-400" />
+      {children}
+    </h3>
   );
 }
 
 const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
   activity,
   isOpen,
+  tripActivities,
+  tripStartDate,
   onClose,
   onEdit,
   onDelete,
+  onOpenBudget,
 }) => {
   const [visible, setVisible] = useState(false);
   const [placeDetails, setPlaceDetails] = useState<PlaceDetails | null>(null);
-  const [placeLoading, setPlaceLoading] = useState(false);
-  const [hoursExpanded, setHoursExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const openedAtRef = useRef(0);
   const placesService = useRef<google.maps.places.PlacesService | null>(null);
   const { isLoaded } = useGoogleMaps();
+
+  const { data: budgetsData } = useQuery(GET_BUDGETS, {
+    variables: { itinerary_id: activity?.itinerary_id },
+    skip: !isOpen || !activity,
+    fetchPolicy: "cache-and-network",
+  });
 
   useEffect(() => {
     if (!isOpen) {
@@ -138,7 +170,6 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
-    setHoursExpanded(false);
   }, [activity?.id]);
 
   useEffect(() => {
@@ -147,47 +178,27 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
     }
   }, [isLoaded]);
 
-  // Google の場所情報（評価・営業時間・電話など）を取得
+  // 営業時間の照合とスポット情報に使う分だけ Google から取る
   useEffect(() => {
     setPlaceDetails(null);
-    if (!isOpen || !activity?.place_id || !isLoaded || !placesService.current) {
-      setPlaceLoading(false);
-      return;
-    }
+    if (!isOpen || !activity?.place_id || !isLoaded || !placesService.current) return;
 
     let cancelled = false;
-    setPlaceLoading(true);
     placesService.current.getDetails(
       {
         placeId: activity.place_id,
-        fields: [
-          "formatted_address",
-          "formatted_phone_number",
-          "opening_hours",
-          "utc_offset_minutes",
-          "rating",
-          "user_ratings_total",
-          "website",
-          "url",
-          "price_level",
-          "reviews",
-        ],
+        fields: ["formatted_address", "formatted_phone_number", "opening_hours", "utc_offset_minutes", "website", "url"],
         language: "ja",
       },
       (place, status) => {
         if (cancelled) return;
-        setPlaceLoading(false);
         if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
           setPlaceDetails({
             formatted_address: place.formatted_address,
             formatted_phone_number: place.formatted_phone_number,
             opening_hours: place.opening_hours,
-            rating: place.rating,
-            user_ratings_total: place.user_ratings_total,
             website: place.website,
             url: place.url,
-            price_level: place.price_level,
-            reviews: place.reviews,
           });
         }
       }
@@ -197,38 +208,60 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
     };
   }, [isOpen, activity?.place_id, isLoaded]);
 
+  // 旅程全体を日時順に並べ、前後の予定を探す
+  const { prev, next } = useMemo(() => {
+    if (!activity) return { prev: undefined, next: undefined };
+    const sorted = tripActivities.slice().sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
+    const index = sorted.findIndex((a) => a.id === activity.id);
+    if (index === -1) return { prev: undefined, next: undefined };
+    return { prev: sorted[index - 1], next: sorted[index + 1] };
+  }, [tripActivities, activity]);
+
   if (!isOpen || !activity) return null;
 
   const config = TYPE_CONFIG[activity.type] ?? TYPE_CONFIG.area;
+
+  const dayNumber = tripStartDate && activity.date
+    ? Math.round((parseLocalDate(activity.date).getTime() - parseLocalDate(tripStartDate).getTime()) / 86_400_000) + 1
+    : undefined;
+
+  const untilNext = next && next.date === activity.date && next.time && activity.time
+    ? toMinutes(next.time) - toMinutes(activity.time)
+    : undefined;
+
+  const budgets: Budget[] = (budgetsData?.budgets ?? []).filter((b: Budget) => b.activity_id === activity.id);
+  const budgetTotal = budgets.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
+
+  const openStatus = checkOpenAt(placeDetails?.opening_hours?.periods, activity.date, activity.time);
+  const hoursText = hoursTextFor(placeDetails?.opening_hours?.weekday_text, activity.date);
 
   const googleMapsUrl = placeDetails?.url
     ?? (activity.lat && activity.lng
       ? `https://www.google.com/maps/search/?api=1&query=${activity.lat},${activity.lng}${activity.place_id ? `&query_place_id=${activity.place_id}` : ""}`
       : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activity.location || activity.name)}`);
 
-  const address = placeDetails?.formatted_address || activity.location;
-
-  // Google の weekday_text は月曜始まり、getDay() は日曜始まり
-  const todayIndex = new Date().getDay();
-  const todayWeekdayTextIndex = todayIndex === 0 ? 6 : todayIndex - 1;
-  const weekdayText = placeDetails?.opening_hours?.weekday_text;
-  const todayHours = weekdayText?.[todayWeekdayTextIndex];
-  let isOpenNow: boolean | undefined;
-  try {
-    isOpenNow = placeDetails?.opening_hours?.isOpen?.();
-  } catch {
-    isOpenNow = undefined;
-  }
-  const priceLevelStr = placeDetails?.price_level ? "¥".repeat(placeDetails.price_level) : null;
+  // Google の住所は「日本、〒…」で始まるので国名を落とす
+  const address = placeDetails?.formatted_address?.replace(/^日本、\s*/, "") || activity.location;
+  const hasSpotInfo = address || placeDetails?.formatted_phone_number || placeDetails?.website;
 
   const handleBackdropClick = () => {
     if (Date.now() - openedAtRef.current < BACKDROP_GUARD_MS) return;
     onClose();
   };
 
-  const markerIcon = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
-    `<svg width="30" height="40" viewBox="0 0 30 40" xmlns="http://www.w3.org/2000/svg"><path d="M15 0C6.716 0 0 6.716 0 15c0 8.284 15 25 15 25s15-16.716 15-25C30 6.716 23.284 0 15 0z" fill="${config.color}"/><circle cx="15" cy="15" r="6" fill="white"/></svg>`
-  )}`;
+  const timelineRow = (a: Activity, label: string) => (
+    <div className="flex items-baseline gap-3 text-sm text-stone-500">
+      <span className="w-12 flex-shrink-0 text-right font-mono tabular-nums">{formatTime(a.time)}</span>
+      <span className="w-3 flex justify-center flex-shrink-0">
+        <span className="w-2 h-2 rounded-full border-2 border-stone-300 bg-[#FBF8F1]" />
+      </span>
+      <span className="flex-1 min-w-0 truncate">
+        {a.date !== activity.date && <span className="mr-1 text-xs">{formatDate(a.date)}</span>}
+        {a.name}
+      </span>
+      <span className="text-[10px] text-stone-400 flex-shrink-0">{label}</span>
+    </div>
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center md:justify-center" role="dialog" aria-modal="true" aria-label={activity.name}>
@@ -241,8 +274,8 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
       {/* シート（モバイルは全画面） / モーダル */}
       <div
         className={`
-          relative w-full bg-white flex flex-col overflow-hidden
-          h-[100dvh] md:h-auto md:max-h-[85vh] md:max-w-lg md:mx-4 md:rounded-2xl
+          relative w-full bg-[#FBF8F1] text-stone-800 flex flex-col overflow-hidden
+          h-[100dvh] md:h-auto md:max-h-[88vh] md:max-w-lg md:mx-4 md:rounded-2xl
           transition-all duration-300 ease-out
           ${visible ? "translate-y-0 md:scale-100 md:opacity-100" : "translate-y-full md:translate-y-0 md:scale-95 md:opacity-0"}
         `}
@@ -252,17 +285,16 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
           type="button"
           onClick={onClose}
           aria-label="閉じる"
-          className="absolute right-3 top-[calc(env(safe-area-inset-top)+0.75rem)] z-20 w-10 h-10 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
+          className="absolute right-3 top-[calc(env(safe-area-inset-top)+0.75rem)] z-20 w-10 h-10 bg-black/35 hover:bg-black/55 text-white rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
-        {/* スクロール可能なコンテンツ */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain">
           {/* ヘッダーイラスト（種別ごとに固定。写真は使わない） */}
-          <div className="relative h-56 md:h-52 overflow-hidden">
+          <div className="relative h-48 md:h-44 overflow-hidden">
             <Image
               src={getActivityTypeImage(activity.type, { motion: true })}
               alt=""
@@ -270,232 +302,208 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
               unoptimized
               className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+          </div>
 
-            {/* タイプバッジ + 名前 */}
-            <div className="absolute bottom-0 left-0 right-0 p-4">
-              <span className="inline-block text-xs font-semibold px-2.5 py-0.5 mb-1.5 rounded-full bg-white/20 backdrop-blur-sm text-white border border-white/30">
-                {config.label}
-              </span>
-              <h2 className="text-xl font-bold text-white leading-tight drop-shadow break-words">
-                {activity.name}
-              </h2>
+          {/* 切符 */}
+          <div className="relative -mt-8 mx-4">
+            <div className="relative bg-white rounded-2xl shadow-[0_6px_20px_-8px_rgba(60,50,30,0.35)]">
+              <div className="p-5 pb-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium tracking-wide text-stone-500">
+                      {dayNumber !== undefined && <span className="mr-2 font-bold" style={{ color: config.color }}>{dayNumber}日目</span>}
+                      {activity.date && formatDate(activity.date)}
+                    </p>
+                    <p className="mt-1 text-4xl font-bold font-mono tabular-nums leading-none tracking-tight">
+                      {formatTime(activity.time)}
+                    </p>
+                  </div>
+                  {/* スタンプ */}
+                  <div
+                    className="flex-shrink-0 w-16 h-16 rounded-full border-2 border-dashed flex items-center justify-center -rotate-12"
+                    style={{ borderColor: config.color, color: config.color }}
+                  >
+                    <div className="w-12 h-12 rounded-full border flex items-center justify-center text-xs font-bold" style={{ borderColor: config.color }}>
+                      {config.label}
+                    </div>
+                  </div>
+                </div>
+                <h2 className="mt-3 text-xl font-bold leading-snug break-words">{activity.name}</h2>
+              </div>
+
+              {/* 切り取り線 */}
+              <div className="relative h-4">
+                <div className="absolute left-4 right-4 top-1/2 border-t-2 border-dashed border-stone-200" />
+                <div className="absolute -left-2 top-0 w-4 h-4 rounded-full bg-[#FBF8F1]" />
+                <div className="absolute -right-2 top-0 w-4 h-4 rounded-full bg-[#FBF8F1]" />
+              </div>
+
+              <div className="px-5 py-3 text-sm text-stone-600">
+                {untilNext !== undefined && untilNext > 0 ? (
+                  <>次の予定まで <span className="font-bold text-stone-800">{formatDuration(untilNext)}</span></>
+                ) : !next ? (
+                  <>旅の最後の予定です</>
+                ) : next.date !== activity.date ? (
+                  <>この日の最後の予定です</>
+                ) : (
+                  <>次の予定と同じ時刻です</>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="px-4 pb-4">
-            {/* 評価・価格帯・営業中 */}
-            {placeDetails && (placeDetails.rating != null || priceLevelStr || isOpenNow !== undefined) && (
-              <div className="flex items-center gap-3 flex-wrap pt-3">
-                {placeDetails.rating != null && (
-                  <div className="flex items-center gap-1">
-                    <Stars rating={placeDetails.rating} className="w-4 h-4" />
-                    <span className="text-sm font-medium text-gray-700">{placeDetails.rating}</span>
-                    {placeDetails.user_ratings_total != null && (
-                      <span className="text-xs text-gray-400">({placeDetails.user_ratings_total})</span>
+          <div className="px-4 pt-6 pb-4 space-y-6">
+            {/* 旅の流れ */}
+            {(prev || next) && (
+              <section>
+                <SectionTitle>旅の流れ</SectionTitle>
+                <div className="space-y-2">
+                  {prev && timelineRow(prev, "前")}
+                  <div className="flex items-baseline gap-3 text-sm">
+                    <span className="w-12 flex-shrink-0 text-right font-mono tabular-nums font-bold">{formatTime(activity.time)}</span>
+                    <span className="w-3 flex justify-center flex-shrink-0">
+                      <span className="w-3 h-3 rounded-full" style={{ backgroundColor: config.color }} />
+                    </span>
+                    <span className="flex-1 min-w-0 truncate font-bold">{activity.name}</span>
+                    <span className="text-[10px] font-bold flex-shrink-0" style={{ color: config.color }}>いまここ</span>
+                  </div>
+                  {next && timelineRow(next, "次")}
+                </div>
+              </section>
+            )}
+
+            {/* 営業時間チェック */}
+            {openStatus !== "unknown" && (
+              <section>
+                <SectionTitle>営業時間チェック</SectionTitle>
+                <div className={`flex items-start gap-3 rounded-xl border px-3 py-2.5 ${OPEN_STATUS_VIEW[openStatus].tone}`}>
+                  <span className="w-5 h-5 mt-0.5 flex-shrink-0 rounded-full border border-current flex items-center justify-center text-xs font-bold">
+                    {OPEN_STATUS_VIEW[openStatus].mark}
+                  </span>
+                  <div className="text-sm">
+                    <p className="font-bold">{OPEN_STATUS_VIEW[openStatus].text}</p>
+                    {hoursText && (
+                      <p className="mt-0.5 text-xs opacity-80">
+                        {activity.date && formatDate(activity.date)}の営業時間: {hoursText}
+                      </p>
                     )}
                   </div>
-                )}
-                {priceLevelStr && <span className="text-sm font-medium text-gray-600">{priceLevelStr}</span>}
-                {isOpenNow !== undefined && (
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${isOpenNow ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                    {isOpenNow ? "営業中" : "営業時間外"}
-                  </span>
-                )}
-              </div>
+                </div>
+                <p className="mt-1.5 text-[11px] text-stone-400">Google の現在の営業時間をもとに判定しています。臨時休業などは反映されません。</p>
+              </section>
             )}
 
-            <div className="divide-y divide-gray-100">
-              {/* 日時 */}
-              {(activity.date || activity.time) && (
-                <InfoRow
-                  icon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  }
-                >
-                  {activity.date && formatDate(activity.date)}
-                  {activity.time && <span className="ml-2 font-medium text-gray-900">{formatTime(activity.time)}</span>}
-                </InfoRow>
-              )}
-
-              {/* 場所 */}
-              {address && (
-                <InfoRow
-                  icon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  }
-                >
-                  <p className="break-words">{address}</p>
-                </InfoRow>
-              )}
-
-              {/* 営業時間 */}
-              {weekdayText && weekdayText.length > 0 && (
-                <InfoRow
-                  icon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  }
-                >
-                  {!hoursExpanded ? (
-                    <button type="button" onClick={() => setHoursExpanded(true)} className="text-left">
-                      <span className="text-gray-900">{todayHours ?? "営業時間"}</span>
-                      <span className="block text-xs text-blue-600 mt-0.5">すべての営業時間を表示</span>
-                    </button>
-                  ) : (
-                    <div className="space-y-0.5">
-                      {weekdayText.map((text, i) => (
-                        <p key={i} className={i === todayWeekdayTextIndex ? "text-gray-900 font-medium" : "text-gray-600"}>
-                          {text}
-                        </p>
-                      ))}
-                      <button type="button" onClick={() => setHoursExpanded(false)} className="text-xs text-blue-600 mt-1">
-                        閉じる
-                      </button>
+            {/* 費用 */}
+            <section>
+              <SectionTitle>この予定の費用</SectionTitle>
+              {budgets.length > 0 ? (
+                <div className="bg-white rounded-xl px-4 py-3">
+                  <ul className="space-y-1.5">
+                    {budgets.map((b) => (
+                      <li key={b.id} className="flex items-baseline gap-2 text-sm">
+                        <span className="min-w-0 truncate text-stone-600">
+                          {b.description || BUDGET_CATEGORY_LABELS[b.category] || b.category}
+                        </span>
+                        <span className="flex-1 border-b border-dotted border-stone-300" />
+                        <span className="font-mono tabular-nums">{formatYen(Number(b.amount) || 0, b.currency)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {budgets.length > 1 && (
+                    <div className="mt-2 pt-2 border-t border-stone-200 flex justify-between text-sm font-bold">
+                      <span>合計</span>
+                      <span className="font-mono tabular-nums">{formatYen(budgetTotal, budgets[0].currency)}</span>
                     </div>
                   )}
-                </InfoRow>
+                </div>
+              ) : (
+                <p className="text-sm text-stone-400">まだ登録されていません。</p>
               )}
-
-              {/* 電話 */}
-              {placeDetails?.formatted_phone_number && (
-                <InfoRow
-                  icon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                  }
-                >
-                  <a href={`tel:${placeDetails.formatted_phone_number}`} className="text-blue-600">
-                    {placeDetails.formatted_phone_number}
-                  </a>
-                </InfoRow>
+              {onOpenBudget && (
+                <button type="button" onClick={onOpenBudget} className="mt-2 text-xs font-medium text-blue-600">
+                  予算で追加・編集する →
+                </button>
               )}
-
-              {/* ウェブサイト */}
-              {placeDetails?.website && (
-                <InfoRow
-                  icon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                    </svg>
-                  }
-                >
-                  <a href={placeDetails.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 break-all">
-                    {placeDetails.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
-                  </a>
-                </InfoRow>
-              )}
-            </div>
-
-            {placeLoading && (
-              <div className="flex items-center gap-2 text-sm text-gray-400 py-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400" />
-                Google の情報を取得中...
-              </div>
-            )}
+            </section>
 
             {/* メモ */}
             {activity.notes && (
-              <div className="mt-2 bg-gray-50 rounded-xl p-3">
-                <p className="text-xs font-semibold text-gray-500 mb-1">メモ</p>
-                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed break-words">{activity.notes}</p>
-              </div>
-            )}
-
-            {/* ミニ地図 */}
-            {activity.lat && activity.lng && isLoaded && (
-              <a
-                href={googleMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block mt-4 rounded-xl overflow-hidden border border-gray-200"
-              >
-                <div className="h-40 pointer-events-none">
-                  <GoogleMap
-                    mapContainerStyle={{ width: "100%", height: "100%" }}
-                    center={{ lat: activity.lat, lng: activity.lng }}
-                    zoom={15}
-                    options={{ disableDefaultUI: true, gestureHandling: "none", clickableIcons: false }}
-                  >
-                    <Marker position={{ lat: activity.lat, lng: activity.lng }} icon={markerIcon} />
-                  </GoogleMap>
+              <section>
+                <SectionTitle>メモ</SectionTitle>
+                <div className="relative bg-[#FFF6D8] rounded-lg px-4 py-3 shadow-sm -rotate-[0.6deg]">
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-14 h-4 bg-white/70 rotate-2" />
+                  <p className="text-sm text-stone-700 whitespace-pre-wrap leading-relaxed break-words">{activity.notes}</p>
                 </div>
-              </a>
+              </section>
             )}
 
-            {/* レビュー */}
-            {placeDetails?.reviews && placeDetails.reviews.length > 0 && (
-              <div className="mt-4">
-                <p className="text-xs font-semibold text-gray-500 mb-2">レビュー</p>
-                <div className="space-y-3">
-                  {placeDetails.reviews.slice(0, 3).map((review, i) => (
-                    <div key={i} className="bg-gray-50 rounded-xl p-3">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        {review.profile_photo_url && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={review.profile_photo_url} alt="" className="w-6 h-6 rounded-full" />
-                        )}
-                        <span className="text-sm font-medium text-gray-800 truncate">{review.author_name}</span>
-                        <div className="ml-auto flex-shrink-0">
-                          <Stars rating={review.rating || 0} className="w-3 h-3" />
-                        </div>
-                      </div>
-                      <p className="text-sm text-gray-600 line-clamp-4">{review.text}</p>
-                      {review.relative_time_description && (
-                        <p className="text-xs text-gray-400 mt-1">{review.relative_time_description}</p>
-                      )}
+            {/* スポット情報（控えめに） */}
+            {hasSpotInfo && (
+              <section>
+                <SectionTitle>スポット情報</SectionTitle>
+                <dl className="text-sm space-y-1.5">
+                  {address && (
+                    <div className="flex gap-3">
+                      <dt className="w-12 flex-shrink-0 text-stone-400 text-xs pt-0.5">住所</dt>
+                      <dd className="flex-1 min-w-0 break-words text-stone-700">{address}</dd>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  )}
+                  {placeDetails?.formatted_phone_number && (
+                    <div className="flex gap-3">
+                      <dt className="w-12 flex-shrink-0 text-stone-400 text-xs pt-0.5">電話</dt>
+                      <dd><a href={`tel:${placeDetails.formatted_phone_number}`} className="text-blue-600">{placeDetails.formatted_phone_number}</a></dd>
+                    </div>
+                  )}
+                  {placeDetails?.website && (
+                    <div className="flex gap-3">
+                      <dt className="w-12 flex-shrink-0 text-stone-400 text-xs pt-0.5">サイト</dt>
+                      <dd className="flex-1 min-w-0">
+                        <a href={placeDetails.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 break-all">
+                          {placeDetails.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                        </a>
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+              </section>
             )}
           </div>
         </div>
 
         {/* アクションボタン（下部に固定） */}
-        <div className="flex-shrink-0 border-t border-gray-100 bg-white px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] space-y-2">
+        <div className="flex-shrink-0 border-t border-stone-200 bg-[#FBF8F1] px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] flex gap-2">
           <a
             href={googleMapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium text-sm transition-colors"
+            className="flex-[2] flex items-center justify-center gap-2 py-3 bg-stone-800 hover:bg-stone-900 text-white rounded-xl font-medium text-sm transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            Google マップで開く
+            地図で開く
           </a>
-
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => onEdit(activity)}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-medium text-sm transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-              編集
-            </button>
-            <button
-              type="button"
-              onClick={() => onDelete(activity)}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-red-100 hover:bg-red-50 text-red-500 rounded-xl font-medium text-sm transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-              削除
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => onEdit(activity)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-3 border border-stone-300 bg-white hover:bg-stone-50 text-stone-700 rounded-xl font-medium text-sm transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            編集
+          </button>
+          <button
+            type="button"
+            onClick={() => onDelete(activity)}
+            aria-label="削除"
+            className="w-12 flex items-center justify-center border border-rose-200 bg-white hover:bg-rose-50 text-rose-500 rounded-xl transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
