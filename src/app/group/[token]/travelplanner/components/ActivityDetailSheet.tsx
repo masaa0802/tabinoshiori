@@ -7,6 +7,7 @@ import { useGoogleMaps } from "@/components/GoogleMapsProvider";
 import { getActivityTypeImage } from "@/lib/activityTypeImage";
 import { checkOpenAt, hoursTextFor, parseLocalDate, type OpenStatus } from "@/lib/openingHours";
 import { GET_BUDGETS } from "@/graphql/queries";
+import { activityEventParams, trackIllustrationEvent, useIllustrationVariant } from "@/lib/illustrationExperiment";
 
 interface Activity {
   id: number;
@@ -82,6 +83,9 @@ const BUDGET_CATEGORY_LABELS: Record<string, string> = {
  */
 const BACKDROP_GUARD_MS = 400;
 
+/** 開いていた時間の上限。タブを開きっぱなしにした分で平均が歪まないようにする */
+const MAX_OPEN_SECONDS = 1800;
+
 const formatDate = (dateStr: string) =>
   parseLocalDate(dateStr).toLocaleDateString("ja-JP", { month: "numeric", day: "numeric", weekday: "short" });
 
@@ -135,6 +139,7 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
   const openedAtRef = useRef(0);
   const placesService = useRef<google.maps.places.PlacesService | null>(null);
   const { isLoaded } = useGoogleMaps();
+  const illustrationVariant = useIllustrationVariant();
 
   const { data: budgetsData } = useQuery(GET_BUDGETS, {
     variables: { itinerary_id: activity?.itinerary_id },
@@ -171,6 +176,35 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, [activity?.id]);
+
+  // イラストの効果測定: 開いた回数と、開いていた時間を送る（docs/ILLUSTRATION_EXPERIMENT.md）
+  const activityRef = useRef(activity);
+  useEffect(() => {
+    activityRef.current = activity;
+  });
+  const activityId = activity?.id;
+  useEffect(() => {
+    const current = activityRef.current;
+    if (!isOpen || activityId === undefined || !current) return;
+
+    const params = activityEventParams(current);
+    const startedAt = Date.now();
+    let closed = false;
+    trackIllustrationEvent("activity_detail_open", params);
+
+    // 閉じた時に加えて、開いたままタブを閉じた時も送る
+    const sendClose = () => {
+      if (closed) return;
+      closed = true;
+      const seconds = Math.min((Date.now() - startedAt) / 1000, MAX_OPEN_SECONDS);
+      trackIllustrationEvent("activity_detail_close", { ...params, open_seconds: Math.round(seconds * 10) / 10 });
+    };
+    window.addEventListener("pagehide", sendClose);
+    return () => {
+      window.removeEventListener("pagehide", sendClose);
+      sendClose();
+    };
+  }, [isOpen, activityId]);
 
   useEffect(() => {
     if (isLoaded && window.google?.maps?.places && !placesService.current) {
@@ -244,6 +278,9 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
   const address = placeDetails?.formatted_address?.replace(/^日本、\s*/, "") || activity.location;
   const hasSpotInfo = address || placeDetails?.formatted_phone_number || placeDetails?.website;
 
+  const trackAction = (action: "map" | "edit" | "delete" | "budget") =>
+    trackIllustrationEvent("activity_detail_action", { ...activityEventParams(activity), action });
+
   const handleBackdropClick = () => {
     if (Date.now() - openedAtRef.current < BACKDROP_GUARD_MS) return;
     onClose();
@@ -297,16 +334,23 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
         </button>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain">
-          {/* ヘッダーイラスト（種別ごとに固定。写真は使わない） */}
-          <div className="relative h-48 md:h-44 overflow-hidden">
-            <Image
-              src={getActivityTypeImage(activity, { motion: true })}
-              alt=""
-              fill
-              unoptimized
-              className="object-cover"
+          {/* ヘッダーイラスト（写真は使わない）。A/B テストの対照群には出さず、種別の色の帯だけにする */}
+          {illustrationVariant === "with" ? (
+            <div className="relative h-48 md:h-44 overflow-hidden">
+              <Image
+                src={getActivityTypeImage(activity, { motion: true })}
+                alt=""
+                fill
+                unoptimized
+                className="object-cover"
+              />
+            </div>
+          ) : (
+            <div
+              className="h-28 md:h-24"
+              style={{ background: `linear-gradient(135deg, ${config.color}33, ${config.color}14)` }}
             />
-          </div>
+          )}
 
           {/* 切符 */}
           <div className="relative -mt-8 mx-4">
@@ -407,7 +451,14 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
                 <p className="text-sm text-stone-400">まだ登録されていません。</p>
               )}
               {onOpenBudget && (
-                <button type="button" onClick={onOpenBudget} className="mt-2 text-xs font-medium text-blue-600">
+                <button
+                  type="button"
+                  onClick={() => {
+                    trackAction("budget");
+                    onOpenBudget();
+                  }}
+                  className="mt-2 text-xs font-medium text-blue-600"
+                >
                   予算で追加・編集する →
                 </button>
               )}
@@ -463,6 +514,7 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
             href={googleMapsUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackAction("map")}
             className="flex-[2] flex items-center justify-center gap-2 py-3 bg-stone-800 hover:bg-stone-900 text-white rounded-xl font-medium text-sm transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -473,7 +525,10 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
           </a>
           <button
             type="button"
-            onClick={() => onEdit(activity)}
+            onClick={() => {
+              trackAction("edit");
+              onEdit(activity);
+            }}
             className="flex-1 flex items-center justify-center gap-1.5 py-3 border border-stone-300 bg-white hover:bg-stone-50 text-stone-700 rounded-xl font-medium text-sm transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -483,7 +538,10 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => onDelete(activity)}
+            onClick={() => {
+              trackAction("delete");
+              onDelete(activity);
+            }}
             aria-label="削除"
             className="w-12 flex items-center justify-center border border-rose-200 bg-white hover:bg-rose-50 text-rose-500 rounded-xl transition-colors"
           >

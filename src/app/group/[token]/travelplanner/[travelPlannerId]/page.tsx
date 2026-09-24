@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -27,6 +27,12 @@ import ActivityDetailSheet from "../components/ActivityDetailSheet";
 import ActivityDetailModal from "../components/ActivityDetailModal";
 import LoadingAirplane from "@/components/LoadingAirplane";
 import { preloadActivityTypeImages } from "@/lib/activityTypeImage";
+import {
+  activityEventParams,
+  reportIllustrationVariant,
+  trackIllustrationEvent,
+  useIllustrationVariant,
+} from "@/lib/illustrationExperiment";
 import ActivityCardIllustration from "../components/ActivityCardIllustration";
 
 interface GroupData {
@@ -252,6 +258,21 @@ export default function TravelPlanner() {
     createItinerary();
   }, [isNewGroup, groupData, createdGroupId, createdItineraryId, groupToken, insertItinerary]);
 
+  // イラストの A/B テスト（docs/ILLUSTRATION_EXPERIMENT.md）。null の間はまだ群が決まっていない
+  const illustrationVariant = useIllustrationVariant();
+
+  // 効果測定の分母: アクティビティが1件以上あるしおりを表示したら、しおりごとに1回送る
+  const reportedItineraryRef = useRef<number | null>(null);
+  const itineraryIdForMetrics = createdItineraryId || parseInt(travelPlannerId);
+  const activityCountForMetrics = activitiesData?.activities?.length ?? 0;
+  useEffect(() => {
+    if (illustrationVariant === null || !itineraryIdForMetrics || activityCountForMetrics === 0) return;
+    if (reportedItineraryRef.current === itineraryIdForMetrics) return;
+    reportedItineraryRef.current = itineraryIdForMetrics;
+    reportIllustrationVariant();
+    trackIllustrationEvent("itinerary_view", { activity_count: activityCountForMetrics });
+  }, [illustrationVariant, itineraryIdForMetrics, activityCountForMetrics]);
+
 
   if ((loading || itineraryLoading) && !isNewGroup) {
     return (
@@ -402,8 +423,8 @@ export default function TravelPlanner() {
     activity.itinerary_id === travelPlan.id
   );
 
-  // 詳細シートのヘッダーイラストを先読みしておく（初回タップ時の待ちを無くす）
-  preloadActivityTypeImages(activitiesToProcess, { motion: true });
+  // 詳細シートのヘッダーイラストを先読みしておく（初回タップ時の待ちを無くす）。対照群はイラストを出さないので不要
+  if (illustrationVariant === "with") preloadActivityTypeImages(activitiesToProcess, { motion: true });
   console.log("Activities to process:", activitiesToProcess.length, "Total activities:", allActivities.length, "Itinerary ID:", travelPlan.id);
 
   activitiesToProcess.forEach((activity: Activity) => {
@@ -961,15 +982,17 @@ export default function TravelPlanner() {
                                 setSelectedActivityForDetail(activity);
                               }}
                             >
-                              {/* 背景の種別イラスト（右端に敷いて左へフェード） */}
-                              <ActivityCardIllustration type={activity.type} name={activity.name} />
+                              {/* 背景の種別イラスト（右端に敷いて左へフェード）。A/B テストの対照群には出さない */}
+                              {illustrationVariant === "with" && (
+                                <ActivityCardIllustration type={activity.type} name={activity.name} />
+                              )}
                               <div className="relative z-10 p-4">
                                 <div className="flex justify-between items-center">
                                   <div className="flex items-start flex-1">
                                     <div className="mr-3">
                                       {getActivityIcon(activity.type)}
                                     </div>
-                                    <div className="flex-1 min-w-0 pr-[min(34%,180px)]">
+                                    <div className={`flex-1 min-w-0 ${illustrationVariant === "with" ? "pr-[min(34%,180px)]" : ""}`}>
                                       <h3 className="font-medium text-gray-800">
                                         {activity.name}
                                       </h3>
@@ -1045,7 +1068,8 @@ export default function TravelPlanner() {
         defaultDate={selectedDateForModal || travelPlan.start_date}
         startDate={travelPlan.start_date}
         endDate={travelPlan.end_date}
-        onActivityAdded={() => {
+        onActivityAdded={(added) => {
+          trackIllustrationEvent("activity_add", activityEventParams(added));
           console.log('Refetching activities...');
           refetchActivities();
         }}

@@ -9,7 +9,8 @@ interface AddActivityModalProps {
   onClose: () => void;
   itinerary_id: number;
   defaultDate?: string;
-  onActivityAdded?: () => void;
+  /** 追加したアクティビティの名前と種別を渡す（効果測定のイベントに使う） */
+  onActivityAdded?: (activity: { name: string; type: string }) => void;
   startDate?: string;
   endDate?: string;
 }
@@ -207,7 +208,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
       setPlaceId("");
       sessionToken.current = null;
 
-      if (onActivityAdded) onActivityAdded();
+      if (onActivityAdded) onActivityAdded({ name: activityName, type });
       onClose();
     } catch (e) {
       console.error('Error inserting activity:', e);
