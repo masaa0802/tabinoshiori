@@ -7,8 +7,8 @@ import AdSlot from '@/components/AdSlot';
 // import AdSlotInFeed from '@/components/AdSlotInFeed'; // 効果検証後に有効化予定
 
 export const metadata: Metadata = {
-  title: "旅行しおりを無料で作成・共有 | 旅のしおり",
-  description: "旅行しおりが無料で簡単に作れるアプリ「旅のしおり」。日程・予算・ホテル・フライトの予約情報をまとめて管理し、URLひとつでグループ全員に共有。アカウント登録不要ですぐ使えます。",
+  title: "旅行しおりを無料で作成・共有 | スマしおり",
+  description: "次世代の旅のしおり「スマしおり」。旅行しおりが無料で簡単に作れます。日程・予算・ホテル・フライトの予約情報をまとめて管理し、URLひとつでグループ全員に共有。アカウント登録不要ですぐ使えます。",
   alternates: {
     canonical: '/',
   },
@@ -20,10 +20,10 @@ const faqJsonLd = {
   mainEntity: [
     {
       "@type": "Question",
-      name: "旅のしおりとは何ですか？",
+      name: "スマしおりとは何ですか？",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "旅のしおりは、旅行しおりを無料で簡単に作成・共有できるアプリです。日程・予算・予約情報をまとめて管理でき、URLひとつで家族や友人とプランを共有。Googleマップで行き先を確認することもできます。",
+        text: "スマしおりは、紙の「旅のしおり」をスマホ時代にアップデートした次世代の旅のしおりアプリです。旅行しおりを無料で簡単に作成・共有できます。日程・予算・予約情報をまとめて管理でき、URLひとつで家族や友人とプランを共有。Googleマップで行き先を確認することもできます。",
       },
     },
     {
@@ -122,8 +122,11 @@ const page: React.FC = () => {
         {/* メインコンテンツ */}
         <div className="relative z-10 text-center text-white px-6 max-w-4xl mx-auto">
           <div className="mb-8 animate-fade-in">
+            <p className="text-sm md:text-base font-semibold tracking-[0.3em] text-blue-100/90 mb-4">
+              次世代の旅のしおり
+            </p>
             <h1 className="text-6xl md:text-8xl font-black mb-6 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-              旅のしおり
+              スマしおり
             </h1>
             <div className="w-24 h-1 bg-gradient-to-r from-pink-400 to-yellow-400 mx-auto rounded-full mb-8"></div>
           </div>
@@ -318,7 +321,7 @@ const page: React.FC = () => {
       <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
-            旅行しおり作成アプリなら「旅のしおり」
+            旅行しおり作成アプリなら「スマしおり」
           </h2>
           <p className="text-center text-gray-500 mb-12 text-sm">よくある質問</p>
 
@@ -366,7 +369,8 @@ const page: React.FC = () => {
               旅行しおり作成に必要な機能がすべて揃っています
             </h3>
             <p className="text-gray-600 leading-relaxed mb-6">
-              「旅のしおり」は、グループ旅行の計画から当日の案内まで使える無料の旅行しおり作成アプリです。
+              「スマしおり」は、紙の旅のしおりをスマホ時代にアップデートした次世代の旅のしおりです。
+              グループ旅行の計画から当日の案内まで使える無料の旅行しおり作成アプリで、
               日程・予算・ホテル・フライトの予約情報を1か所にまとめて管理できるため、
               複数のメモアプリやスプレッドシートを行き来する手間がありません。
               作成した旅行しおりはURLひとつで共有でき、受け取った相手はアカウント登録不要でそのまま閲覧・編集できます。
@@ -404,9 +408,9 @@ const page: React.FC = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center">
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-              旅のしおり
+              スマしおり
             </h2>
-            <p className="text-gray-400 text-lg mb-8">あなたの旅をもっと楽しく、もっと便利に</p>
+            <p className="text-gray-400 text-lg mb-8">次世代の旅のしおり。あなたの旅をもっと楽しく、もっと便利に</p>
 
             <div className="flex justify-center space-x-8 mb-8">
               <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
@@ -422,7 +426,7 @@ const page: React.FC = () => {
           </div>
 
           <div className="border-t border-gray-800 pt-8 mt-8 text-center">
-            <p className="text-gray-500">© {new Date().getFullYear()} 旅のしおり All rights reserved.</p>
+            <p className="text-gray-500">© {new Date().getFullYear()} スマしおり All rights reserved.</p>
           </div>
         </div>
       </footer>

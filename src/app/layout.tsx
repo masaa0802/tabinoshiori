@@ -18,18 +18,18 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "旅のしおり - 無料の旅行しおり作成アプリ",
-    template: "%s | 旅のしおり"
+    default: "スマしおり - 次世代の旅のしおり｜無料の旅行しおり作成アプリ",
+    template: "%s | スマしおり"
   },
-  description: "旅行しおりを無料で簡単に作成・共有できるアプリ。日程・予算・ホテル・フライトの予約情報をひとまとめに管理。URLひとつで家族や友人にしおりを共有でき、Googleマップで行き先を確認。アカウント登録不要。",
+  description: "次世代の旅のしおり「スマしおり」。旅行しおりを無料で簡単に作成・共有できるアプリ。日程・予算・ホテル・フライトの予約情報をひとまとめに管理。URLひとつで家族や友人にしおりを共有でき、Googleマップで行き先を確認。アカウント登録不要。",
   keywords: [
     "旅行しおり", "旅行しおり作成", "しおり作成アプリ", "旅行しおり無料", "無料しおり作成",
-    "旅のしおり", "旅行計画", "旅行プラン", "旅行スケジュール", "グループ旅行",
+    "スマしおり", "次世代の旅のしおり", "旅のしおり", "旅行計画", "旅行プラン", "旅行スケジュール", "グループ旅行",
     "旅行共有", "予算管理", "旅程表", "ルート作成", "観光", "旅行"
   ],
-  authors: [{ name: "旅のしおり" }],
-  creator: "旅のしおり",
-  publisher: "旅のしおり",
+  authors: [{ name: "スマしおり" }],
+  creator: "スマしおり",
+  publisher: "スマしおり",
   formatDetection: {
     email: false,
     address: false,
@@ -44,17 +44,17 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
-    title: "旅のしおり - 無料の旅行しおり作成アプリ",
-    description: "旅行しおりを無料で簡単に作成・共有できるアプリ。日程・予算・ホテル・フライトの予約情報をひとまとめに管理。URLひとつで家族や友人にしおりを共有。アカウント登録不要。",
+    title: "スマしおり - 次世代の旅のしおり｜無料の旅行しおり作成アプリ",
+    description: "次世代の旅のしおり「スマしおり」。旅行しおりを無料で簡単に作成・共有できるアプリ。日程・予算・ホテル・フライトの予約情報をひとまとめに管理。URLひとつで家族や友人にしおりを共有。アカウント登録不要。",
     url: '/',
-    siteName: "旅のしおり",
+    siteName: "スマしおり",
     locale: 'ja_JP',
     type: 'website',
     images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: "旅のしおり - 無料の旅行しおり作成アプリ",
+    title: "スマしおり - 次世代の旅のしおり｜無料の旅行しおり作成アプリ",
     description: "旅行しおりを無料で簡単に作成・共有。日程・予算・予約情報をひとまとめに管理できます。アカウント登録不要。",
     images: ['/og-image.jpg'],
   },
@@ -114,10 +114,10 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
-              name: "旅のしおり",
-              alternateName: ["旅行しおり作成アプリ", "旅行しおり", "しおり作成アプリ"],
+              name: "スマしおり",
+              alternateName: ["Smart Shiori", "次世代の旅のしおり", "旅のしおり", "旅行しおり作成アプリ", "旅行しおり", "しおり作成アプリ"],
               description:
-                "旅行しおりを無料で作成・共有できるアプリ。日程・予算・ホテル・フライトの予約情報をひとまとめに管理し、URLひとつで家族や友人とプランを共有。Googleマップで行き先を確認できます。",
+                "紙の旅のしおりをスマホ時代にアップデートした、次世代の旅のしおり。旅行しおりを無料で作成・共有できるアプリ。日程・予算・ホテル・フライトの予約情報をひとまとめに管理し、URLひとつで家族や友人とプランを共有。Googleマップで行き先を確認できます。",
               url:
                 process.env.NEXT_PUBLIC_BASE_URL ||
                 "https://tabinoshiori.jp",
@@ -141,7 +141,7 @@ export default function RootLayout({
               },
               publisher: {
                 "@type": "Organization",
-                name: "旅のしおり",
+                name: "スマしおり",
               },
             }),
           }}

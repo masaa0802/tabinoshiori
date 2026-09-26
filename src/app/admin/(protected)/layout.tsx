@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: '管理画面 | 旅のしおり',
+  title: '管理画面 | スマしおり',
   robots: { index: false, follow: false },
 };
 
@@ -9,7 +9,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <h1 className="text-lg font-bold text-gray-800">旅のしおり 管理画面</h1>
+        <h1 className="text-lg font-bold text-gray-800">スマしおり 管理画面</h1>
         <LogoutButton />
       </header>
       <main className="p-6">{children}</main>

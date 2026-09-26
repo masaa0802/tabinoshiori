@@ -3,13 +3,13 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "お問い合わせ",
-  description: "旅のしおりへのご質問・ご要望はこちらからお問い合わせください。",
+  description: "スマしおりへのご質問・ご要望はこちらからお問い合わせください。",
   alternates: {
     canonical: '/contact',
   },
   openGraph: {
-    title: "お問い合わせ | 旅のしおり",
-    description: "旅のしおりへのご質問・ご要望はこちらからお問い合わせください。",
+    title: "お問い合わせ | スマしおり",
+    description: "スマしおりへのご質問・ご要望はこちらからお問い合わせください。",
   },
   robots: {
     index: true,
@@ -25,7 +25,7 @@ const ContactPage = () => {
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <Link href="/" className="text-2xl font-bold text-transparent bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text">
-              旅のしおり
+              スマしおり
             </Link>
             <Link href="/" className="text-gray-600 hover:text-gray-800 transition-colors">
               ← トップに戻る
@@ -62,9 +62,9 @@ const ContactPage = () => {
       <footer className="bg-gray-900 text-white py-8 px-4 mt-16">
         <div className="max-w-4xl mx-auto text-center">
           <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-            旅のしおり
+            スマしおり
           </Link>
-          <p className="text-gray-400 mt-2">© {new Date().getFullYear()} 旅のしおり All rights reserved.</p>
+          <p className="text-gray-400 mt-2">© {new Date().getFullYear()} スマしおり All rights reserved.</p>
         </div>
       </footer>
     </div>

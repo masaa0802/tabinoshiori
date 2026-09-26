@@ -3,13 +3,13 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "プライバシーポリシー",
-  description: "旅のしおりのプライバシーポリシー。個人情報の取り扱いについて説明しています。",
+  description: "スマしおりのプライバシーポリシー。個人情報の取り扱いについて説明しています。",
   alternates: {
     canonical: '/privacy',
   },
   openGraph: {
-    title: "プライバシーポリシー | 旅のしおり",
-    description: "旅のしおりのプライバシーポリシー。個人情報の取り扱いについて説明しています。",
+    title: "プライバシーポリシー | スマしおり",
+    description: "スマしおりのプライバシーポリシー。個人情報の取り扱いについて説明しています。",
   },
   robots: {
     index: true,
@@ -25,7 +25,7 @@ const PrivacyPage = () => {
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <Link href="/" className="text-2xl font-bold text-transparent bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text">
-              旅のしおり
+              スマしおり
             </Link>
             <Link href="/" className="text-gray-600 hover:text-gray-800 transition-colors">
               ← トップに戻る
@@ -44,7 +44,7 @@ const PrivacyPage = () => {
 
             <section className="mb-8">
               <p className="mb-4">
-                旅のしおり（以下「当社」といいます。）は、本ウェブサイト上で提供するサービス（以下「本サービス」といいます。）における、ユーザーの個人情報の取扱いについて、以下のとおりプライバシーポリシー（以下「本ポリシー」といいます。）を定めます。
+                スマしおり（以下「当社」といいます。）は、本ウェブサイト上で提供するサービス（以下「本サービス」といいます。）における、ユーザーの個人情報の取扱いについて、以下のとおりプライバシーポリシー（以下「本ポリシー」といいます。）を定めます。
               </p>
             </section>
 
@@ -177,7 +177,7 @@ const PrivacyPage = () => {
                 本ポリシーに関するお問い合わせは、下記の窓口までお願いいたします。
               </p>
               <div className="bg-gray-50 p-6 rounded-lg">
-                <p className="font-semibold mb-2">旅のしおり</p>
+                <p className="font-semibold mb-2">スマしおり</p>
                 <p className="mb-2">個人情報保護担当者</p>
                 <p className="mb-2">
                   <Link href="/contact" className="text-emerald-600 hover:text-emerald-700 underline">
@@ -205,9 +205,9 @@ const PrivacyPage = () => {
       <footer className="bg-gray-900 text-white py-8 px-4 mt-16">
         <div className="max-w-4xl mx-auto text-center">
           <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-            旅のしおり
+            スマしおり
           </Link>
-          <p className="text-gray-400 mt-2">© {new Date().getFullYear()} 旅のしおり All rights reserved.</p>
+          <p className="text-gray-400 mt-2">© {new Date().getFullYear()} スマしおり All rights reserved.</p>
         </div>
       </footer>
     </div>

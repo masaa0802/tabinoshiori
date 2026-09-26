@@ -3,13 +3,13 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "利用規約",
-  description: "旅のしおりの利用規約。サービスのご利用条件について説明しています。",
+  description: "スマしおりの利用規約。サービスのご利用条件について説明しています。",
   alternates: {
     canonical: '/terms',
   },
   openGraph: {
-    title: "利用規約 | 旅のしおり",
-    description: "旅のしおりの利用規約。サービスのご利用条件について説明しています。",
+    title: "利用規約 | スマしおり",
+    description: "スマしおりの利用規約。サービスのご利用条件について説明しています。",
   },
   robots: {
     index: true,
@@ -25,7 +25,7 @@ const TermsPage = () => {
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <Link href="/" className="text-2xl font-bold text-transparent bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text">
-              旅のしおり
+              スマしおり
             </Link>
             <Link href="/" className="text-gray-600 hover:text-gray-800 transition-colors">
               ← トップに戻る
@@ -45,7 +45,7 @@ const TermsPage = () => {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">第1条（適用）</h2>
               <ol className="list-decimal pl-6 mb-4 space-y-2">
-                <li>本規約は、後藤 雅尭（以下「運営者」といいます。）が提供する「旅のしおり」サービス（以下「本サービス」といいます。）の利用条件を定めるものです。</li>
+                <li>本規約は、後藤 雅尭（以下「運営者」といいます。）が提供する「スマしおり」サービス（以下「本サービス」といいます。）の利用条件を定めるものです。</li>
                 <li>利用者は、本サービスを利用することにより、本規約のすべての条項に同意したものとみなされます。</li>
               </ol>
             </section>
@@ -157,9 +157,9 @@ const TermsPage = () => {
       <footer className="bg-gray-900 text-white py-8 px-4 mt-16">
         <div className="max-w-4xl mx-auto text-center">
           <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-            旅のしおり
+            スマしおり
           </Link>
-          <p className="text-gray-400 mt-2">© {new Date().getFullYear()} 旅のしおり All rights reserved.</p>
+          <p className="text-gray-400 mt-2">© {new Date().getFullYear()} スマしおり All rights reserved.</p>
         </div>
       </footer>
     </div>

@@ -2,10 +2,10 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "旅のしおり - 無料の旅行しおり作成アプリ",
-    short_name: "旅のしおり",
+    name: "スマしおり - 次世代の旅のしおり",
+    short_name: "スマしおり",
     description:
-      "旅行しおりを無料で簡単に作成・共有できるアプリ。日程・予算・ホテル・フライトの予約情報をひとまとめに管理。",
+      "次世代の旅のしおり。旅行しおりを無料で簡単に作成・共有できるアプリ。日程・予算・ホテル・フライトの予約情報をひとまとめに管理。",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",
