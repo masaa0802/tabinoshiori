@@ -8,7 +8,7 @@
 |---|---|---|
 | [Artifact](https://claude.ai/artifact/7N3PrVv91SkUWTfgKMPXxc) | 日報の全体。スマホで読む形 | 毎朝これを見る |
 | `docs/team/reports/` | 全文。各部門の生報告つき | 掘るとき |
-| `docs/team/digests/` → Obsidian | 要点だけ。1,500字 | 後から振り返るとき |
+| `docs/team/digests/` からVaultへコピー | 要点だけ。1,500字 | Obsidianで後から振り返るとき |
 
 Artifact は毎朝**同じURLに上書き**される。ブックマークかピン留めしておけば、朝それを開くだけで最新が出る。
 
@@ -39,17 +39,21 @@ Artifact は毎朝**同じURLに上書き**される。ブックマークかピ�
 
 ## セットアップ（Mac側で一度だけ）
 
-### 1. Obsidian の保存先を「要点」につなぐ
+### 1. Obsidian の保存先を用意する
 
-Obsidian はシンボリックリンクを辿るので、要点ノートがそのまま見える。**全文ではなく要点のディレクトリを指すこと。**
+Vault に次のディレクトリがあれば、それだけでよい。**ふつうのディレクトリで構わない。** スクリプトが毎朝ここへ要点ノートをコピーする。
 
-```bash
-cd "$HOME/Documents/Obsidian Vault/旅のしおり"
-mv 日時報告 日時報告.bak 2>/dev/null   # 既存の中身があれば退避
-ln -s "$HOME/path/to/tabinoshiori/docs/team/digests" 日時報告
+```
+~/Documents/Obsidian Vault/旅のしおり/日時報告/
 ```
 
-リンクを張らず実ファイルとして置きたい場合は、この手順を飛ばしてよい。スクリプトが Vault のディレクトリへ要点をコピーする。
+別の場所に置きたい場合は、環境変数で指定する。
+
+```bash
+export TABINOSHIORI_VAULT="$HOME/Documents/Obsidian Vault/別の場所"
+```
+
+シンボリックリンクで `docs/team/digests` を指す方法もあるが、その場合は新しいノートを見るたび `git pull` が必要になる。**実ディレクトリのほうが手間がない。**
 
 要点ノートのフロントマターには `重要度` `判断待ち` `稼働部門` が入る。Obsidian 側で「判断待ちが残っている日」「保守運用が動いた日」を Dataview や検索で引ける。判断待ちは `- [ ]` のチェックリストなので、決めたらその場で消せる。
 
