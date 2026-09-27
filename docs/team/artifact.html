@@ -1,0 +1,1116 @@
+<title>旅のしおり 運営日報</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f8f7;
+    --surface: #ffffff;
+    --surface-2: #f0f4f3;
+    --ink: #14221e;
+    --ink-2: #566762;
+    --ink-3: #85968f;
+    --line: #dbe5e2;
+    --line-strong: #c3d1cd;
+    --accent: #0f766e;
+    --accent-ink: #0b5952;
+    --accent-soft: #e4f0ee;
+    --crit: #b02730;
+    --crit-soft: #fcebeb;
+    --high: #9a5804;
+    --high-soft: #fbf2e2;
+    --mid: #465972;
+    --mid-soft: #edf1f6;
+    --ok: #2f6d4f;
+    --ok-soft: #e8f2ec;
+    --code-bg: #101c19;
+    --code-ink: #d6e4e0;
+
+    --display: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    --body: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0d1513;
+      --surface: #15201d;
+      --surface-2: #1b2723;
+      --ink: #e8efec;
+      --ink-2: #9aaca7;
+      --ink-3: #74867f;
+      --line: #263330;
+      --line-strong: #35443f;
+      --accent: #4fb8a5;
+      --accent-ink: #7fd2c2;
+      --accent-soft: #16302b;
+      --crit: #f08d8d;
+      --crit-soft: #35191b;
+      --high: #e2ae6b;
+      --high-soft: #322517;
+      --mid: #9bb2ca;
+      --mid-soft: #1d2631;
+      --ok: #79c79c;
+      --ok-soft: #17291f;
+      --code-bg: #0a1210;
+      --code-ink: #cfe0db;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0d1513;
+    --surface: #15201d;
+    --surface-2: #1b2723;
+    --ink: #e8efec;
+    --ink-2: #9aaca7;
+    --ink-3: #74867f;
+    --line: #263330;
+    --line-strong: #35443f;
+    --accent: #4fb8a5;
+    --accent-ink: #7fd2c2;
+    --accent-soft: #16302b;
+    --crit: #f08d8d;
+    --crit-soft: #35191b;
+    --high: #e2ae6b;
+    --high-soft: #322517;
+    --mid: #9bb2ca;
+    --mid-soft: #1d2631;
+    --ok: #79c79c;
+    --ok-soft: #17291f;
+    --code-bg: #0a1210;
+    --code-ink: #cfe0db;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.75;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .wrap {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding-inline: 18px;
+    padding-block: 0 56px;
+  }
+
+  .topbar {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-in {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding: 10px 18px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .brand {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 15px;
+    color: var(--accent-ink);
+  }
+  .topbar .date {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lede { padding-block: 26px 4px; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: clamp(1.6rem, 6vw, 2.1rem);
+    line-height: 1.25;
+    margin: 6px 0 0;
+    text-wrap: balance;
+    letter-spacing: -.01em;
+  }
+  .summary { margin: 16px 0 0; font-size: 16px; line-height: 1.9; }
+  .summary b { color: var(--crit); font-weight: 700; }
+
+  .statline { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .stat {
+    display: flex; align-items: baseline; gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 13px;
+    font-size: 12.5px;
+    color: var(--ink-2);
+  }
+  .stat .n {
+    font-family: var(--mono); font-weight: 500; font-size: 14px;
+    color: var(--ink); font-variant-numeric: tabular-nums;
+  }
+  a.stat { text-decoration: none; border-color: var(--accent); color: var(--accent-ink); }
+  a.stat .n { color: var(--accent-ink); }
+  a.stat.warn { border-color: var(--crit); color: var(--crit); }
+  a.stat.warn .n { color: var(--crit); }
+
+  h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: .1em;
+    color: var(--ink-3);
+    margin: 46px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  h2 .count {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-3);
+    margin-left: auto; font-variant-numeric: tabular-nums;
+  }
+
+  .stack { display: flex; flex-direction: column; gap: 12px; }
+
+  .item {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--line-strong);
+    border-radius: 3px 10px 10px 3px;
+    padding: 15px 16px;
+  }
+  .item.crit { border-left-color: var(--crit); }
+  .item.high { border-left-color: var(--high); }
+
+  .item-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+  .rank { font-family: var(--mono); font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .sev {
+    font-family: var(--display); font-weight: 700; font-size: 11px;
+    letter-spacing: .06em; padding: 2px 8px; border-radius: 4px;
+  }
+  .sev.crit { background: var(--crit-soft); color: var(--crit); }
+  .sev.high { background: var(--high-soft); color: var(--high); }
+
+  .item h3 {
+    font-family: var(--display); font-weight: 700; font-size: 16.5px;
+    line-height: 1.5; margin: 9px 0 0; text-wrap: balance;
+  }
+  .item p { margin: 9px 0 0; color: var(--ink-2); font-size: 14.5px; }
+
+  code, .path {
+    font-family: var(--mono); font-size: .86em;
+    background: var(--surface-2); border: 1px solid var(--line);
+    border-radius: 4px; padding: 1px 5px; color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+
+  /* ---------- 根拠ブロック ---------- */
+  .ev {
+    margin-top: 13px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface-2);
+  }
+  .ev-head {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 8px 11px;
+    border-bottom: 1px solid var(--line);
+  }
+  .ev-kind {
+    font-family: var(--display); font-weight: 700;
+    font-size: 10.5px; letter-spacing: .07em;
+    padding: 2px 7px; border-radius: 4px;
+    flex: none;
+  }
+  .ev-kind.code { background: var(--accent-soft); color: var(--accent-ink); }
+  .ev-kind.run { background: var(--mid-soft); color: var(--mid); }
+  .ev-kind.repro { background: var(--high-soft); color: var(--high); }
+  .ev-kind.none { background: var(--crit-soft); color: var(--crit); }
+  .ev-src {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-2);
+    overflow-wrap: anywhere; line-height: 1.5;
+  }
+  .ev pre {
+    margin: 0;
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 11px 12px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    line-height: 1.7;
+    white-space: pre;
+  }
+  .ev pre .c { color: #7f9c95; }
+  .ev pre .hl { color: #ffb4a8; }
+  .ev-note {
+    padding: 9px 11px;
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.7;
+  }
+  .ev-note + pre { border-top: 1px solid var(--line); }
+  .ev ol { margin: 0; padding: 9px 11px 10px 2em; }
+  .ev ol li { font-size: 13.5px; color: var(--ink-2); margin-bottom: 5px; }
+  .ev ol li b { color: var(--ink); }
+
+  .action {
+    margin-top: 12px; padding-top: 11px;
+    border-top: 1px dashed var(--line-strong);
+    font-size: 14px;
+  }
+  .action .lbl {
+    font-family: var(--display); font-weight: 700;
+    color: var(--accent-ink); font-size: 12px; letter-spacing: .04em;
+    display: block;
+  }
+
+  /* ---------- 判断待ち ---------- */
+  .decide {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 10px; padding: 14px 15px;
+  }
+  .decide.done { opacity: .5; }
+  .decide-top { display: flex; gap: 11px; align-items: flex-start; }
+  .decide-top label { display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1; }
+  .decide input[type="checkbox"] {
+    width: 20px; height: 20px; flex: none;
+    accent-color: var(--accent); cursor: pointer; margin: 0;
+  }
+  .decide h3 {
+    font-family: var(--display); font-weight: 700; font-size: 15.5px;
+    line-height: 1.5; margin: 0;
+  }
+  .decide.done h3 { text-decoration: line-through; }
+  .opts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 11px; padding-left: 28px; }
+  .opt {
+    font-size: 12.5px; border: 1px solid var(--line-strong);
+    border-radius: 999px; padding: 3px 11px; color: var(--ink-2);
+  }
+  .opt.rec { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-ink); font-weight: 700; }
+  .risk { margin: 10px 0 0 28px; font-size: 13px; color: var(--ink-2); }
+  .risk .lbl { color: var(--crit); font-weight: 700; }
+  .basis {
+    margin: 8px 0 0 28px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    overflow-wrap: anywhere;
+  }
+
+  /* ---------- 部門 ---------- */
+  details.dept {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 10px; overflow: hidden;
+  }
+  details.dept + details.dept { margin-top: 10px; }
+  details.dept > summary {
+    list-style: none; cursor: pointer; padding: 14px 15px;
+    display: grid; grid-template-columns: auto 1fr auto;
+    gap: 4px 11px; align-items: center;
+  }
+  details.dept > summary::-webkit-details-marker { display: none; }
+  .dept-mark {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: grid; place-items: center; font-size: 15px;
+    background: var(--accent-soft); grid-row: span 2;
+  }
+  .dept-name { font-family: var(--display); font-weight: 700; font-size: 15px; }
+  .dept-chev { font-family: var(--mono); color: var(--ink-3); font-size: 12px; grid-row: span 2; }
+  details[open] .dept-chev { transform: rotate(90deg); }
+  .dept-line { grid-column: 2; font-size: 13px; color: var(--ink-2); line-height: 1.6; }
+  .dept-body {
+    padding: 2px 15px 16px;
+    border-top: 1px solid var(--line);
+    margin-top: 2px;
+  }
+  .dept-body h4 {
+    font-family: var(--display); font-weight: 700; font-size: 13px;
+    color: var(--ink-3); letter-spacing: .04em; margin: 16px 0 8px;
+  }
+  .finding {
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+    margin-top: 12px;
+  }
+  .finding:first-of-type { border-top: 0; padding-top: 0; }
+  .finding > p {
+    margin: 0; font-size: 14px; color: var(--ink-2);
+  }
+  .finding > p b { color: var(--ink); font-weight: 700; }
+
+  .tally { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; }
+  .chip {
+    font-family: var(--mono); font-size: 11.5px;
+    padding: 3px 9px; border-radius: 5px; font-variant-numeric: tabular-nums;
+  }
+  .chip.crit { background: var(--crit-soft); color: var(--crit); }
+  .chip.high { background: var(--high-soft); color: var(--high); }
+  .chip.mid { background: var(--mid-soft); color: var(--mid); }
+  .chip.low { background: var(--surface-2); color: var(--ink-2); }
+  .chip.ok { background: var(--ok-soft); color: var(--ok); }
+
+  /* ---------- 未取得 ---------- */
+  .gap {
+    background: var(--surface);
+    border: 1px solid var(--crit);
+    border-radius: 10px;
+    padding: 14px 15px;
+  }
+  .gap + .gap { margin-top: 10px; }
+  .gap h3 {
+    font-family: var(--display); font-weight: 700; font-size: 15.5px;
+    margin: 0; line-height: 1.5;
+  }
+  .gap .what { margin: 8px 0 0; font-size: 14px; color: var(--ink-2); }
+  .gap .how {
+    margin: 11px 0 0; padding: 10px 12px;
+    background: var(--accent-soft); border-radius: 7px;
+    font-size: 13.5px; color: var(--accent-ink); line-height: 1.75;
+  }
+  .gap .how b { font-weight: 700; }
+
+  /* ---------- 記録 ---------- */
+  .log { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 6px 15px; }
+  .log-row { display: flex; gap: 12px; align-items: baseline; padding: 11px 0; font-size: 14px; }
+  .log-row + .log-row { border-top: 1px solid var(--line); }
+  .log-row .d {
+    font-family: var(--mono); font-size: 12.5px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; flex: none;
+  }
+  .log-row .t { color: var(--ink-2); }
+  .log-row .t b { color: var(--ink); font-weight: 700; }
+
+  .note {
+    margin-top: 14px;
+    background: var(--high-soft);
+    border: 1px solid color-mix(in srgb, var(--high) 30%, transparent);
+    border-radius: 10px;
+    padding: 13px 15px;
+    font-size: 13.5px;
+    color: var(--ink-2);
+    line-height: 1.8;
+  }
+  .note b { color: var(--high); }
+  .note.fix {
+    background: var(--mid-soft);
+    border-color: color-mix(in srgb, var(--mid) 30%, transparent);
+  }
+  .note.fix b { color: var(--mid); }
+
+  footer {
+    margin-top: 44px; padding-top: 18px;
+    border-top: 1px solid var(--line);
+    font-size: 12px; color: var(--ink-3); line-height: 1.9;
+  }
+  footer .path { font-size: 11px; }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <span class="brand">旅のしおり</span>
+    <span class="date">2026-09-11 金 / 証拠更新 09-27</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="lede">
+    <div class="eyebrow">運営日報 / 初回稼働日</div>
+    <h1>全件棚卸しの結果、先に塞ぐべき穴が2つ</h1>
+    <p class="summary">
+      本番アプリに、<b>認証なしで全ユーザーのデータを閲覧・改ざん・削除できる経路が2つ</b>ある。<br>
+      LPで最も大きく訴求している「URLひとつで共有」の機能が、アプリ本体に存在しない。<br>
+      プライバシーポリシーが実装と大きく食い違っており、取得していない情報を取ると書き、取得している情報を書いていない。
+    </p>
+    <div class="statline">
+      <a class="stat" href="#decide"><span class="n">6</span> 判断待ち</a>
+      <span class="stat"><span class="n">14</span> 件が実物の証拠つき</span>
+      <a class="stat warn" href="#gap"><span class="n">3</span> 種類の証拠が未取得</a>
+    </div>
+  </div>
+
+  <div class="note fix">
+    <b>9月27日の訂正。</b>証拠を取り直したところ、Next.js の Critical 脆弱性が9月11日の報告と別物でした。当時は Image Optimization API の AVIF 処理による未認証RCEと報告しましたが、本日の <code>npm audit</code> が返すのは <b>HTTP request smuggling in rewrites（GHSA-ggv3-7p47-pfv8）</b>です。脆弱性情報が更新されたためで、報告が間違っていたわけではありませんが、判断に使う値は今日のものを見てください。件数は11件で変わらず、すべて破壊的変更なしで修正できます。
+  </div>
+
+  <h2>今日の最重要3件<span class="count">重要度順</span></h2>
+  <div class="stack">
+
+    <div class="item crit">
+      <div class="item-head">
+        <span class="rank">01</span>
+        <span class="sev crit">CRITICAL</span>
+        <span class="rank">保守運用</span>
+      </div>
+      <h3>GraphQL APIの認可が、クライアントの自称だけで判定されている</h3>
+      <p>認可の判定に使っているのは、リクエストが自分で名乗った <code>operationName</code> という文字列だけです。<code>query</code> の本文は一切検査されず、そのままHasuraへ管理者権限で転送されます。</p>
+
+      <div class="ev">
+        <div class="ev-head">
+          <span class="ev-kind code">実コード</span>
+          <span class="ev-src">src/app/api/graphql/route.ts:12, 69-70, 88-92</span>
+        </div>
+        <pre><span class="c">// 12行目: この2つの名前ならトークン検証を飛ばす</span>
+const PUBLIC_OPERATIONS = new Set(['InsertGroup', 'InsertItinerary']);
+
+<span class="c">// 69行目: 判定しているのは名前だけ。query本文は見ていない</span>
+if (!operationName || !PUBLIC_OPERATIONS.has(operationName)) {
+  const groupToken = req.headers.get('x-group-token');
+  <span class="c">// ... ここでトークン検証 ...</span>
+}
+
+<span class="c">// 88-92行目: 受け取ったbodyをそのまま管理者権限で転送</span>
+headers: {
+  'x-hasura-admin-secret': HASURA_ADMIN_SECRET,
+},
+<span class="hl">body,</span>  <span class="c">// ← 検査なし</span></pre>
+      </div>
+
+      <div class="ev">
+        <div class="ev-head">
+          <span class="ev-kind repro">再現手順</span>
+          <span class="ev-src">ローカルで起動して確認すること。本番には実行しない</span>
+        </div>
+        <pre><span class="c"># 名前だけ InsertGroup にした「query」を送る</span>
+curl -s http://localhost:3000/api/graphql \
+  -H 'content-type: application/json' \
+  -d '{"operationName":"InsertGroup",
+       "query":"query InsertGroup { groups { id name token } }"}'</pre>
+        <div class="ev-note"><b>期待される結果</b>（本来の設計）… <code>401 Unauthorized</code><br><b>実際に起きること</b> … 全グループの <code>id</code> <code>name</code> <code>token</code> が返る。同じ要領で <code>delete_groups</code> も通る。</div>
+      </div>
+
+      <div class="action"><span class="lbl">推奨アクション</span>本日中に着手。<code>graphql</code> パッケージで文書を <code>parse()</code> し、operation の種別とフィールドをサーバ側で検証する許可リスト方式へ。パブリック経路は事前定義クエリとの完全一致に限定する。</div>
+    </div>
+
+    <div class="item crit">
+      <div class="item-head">
+        <span class="rank">02</span>
+        <span class="sev crit">CRITICAL</span>
+        <span class="rank">保守運用</span>
+      </div>
+      <h3>削除APIだけ、認証コードが1行もない</h3>
+      <p>他の2つのAPIにはトークン検証があるのに、削除APIには存在しません。実装の抜け漏れであることが、同じリポジトリ内の比較で分かります。</p>
+
+      <div class="ev">
+        <div class="ev-head">
+          <span class="ev-kind run">grep の実行結果</span>
+          <span class="ev-src">検証: validateGroupToken の出現箇所を3ルートで比較</span>
+        </div>
+        <pre><span class="c">$ grep -n "validateGroupToken" src/app/api/upload/route.ts</span>
+6:import { validateGroupToken } from '@/lib/validate-group-token';
+41:    const isValid = await validateGroupToken(groupToken);
+
+<span class="c">$ grep -n "validateGroupToken" src/app/api/cache-image/route.ts</span>
+5:import { validateGroupToken } from '@/lib/validate-group-token';
+45:    const isValid = await validateGroupToken(groupToken);
+
+<span class="c">$ grep -n "validateGroupToken" src/app/api/delete/route.ts</span>
+<span class="hl">（0件）</span></pre>
+        <div class="ev-note">削除APIは <code>DELETE</code> ハンドラ（19行目）から <code>cloudinary.uploader.destroy</code>（32行目）まで、認証を挟まず直行している。</div>
+      </div>
+
+      <div class="ev">
+        <div class="ev-head">
+          <span class="ev-kind repro">再現手順</span>
+          <span class="ev-src">自分でアップロードしたファイルのURLで試すこと</span>
+        </div>
+        <pre><span class="c"># 認証ヘッダを1つも付けずに削除を要求する</span>
+curl -s -X DELETE http://localhost:3000/api/delete \
+  -H 'content-type: application/json' \
+  -d '{"file_url":"https://res.cloudinary.com/&lt;cloud&gt;/raw/upload/
+       v1/travel-planner/documents/&lt;id&gt;.pdf"}'</pre>
+        <div class="ev-note"><b>実際に起きること</b> … <code>{"success":true}</code> が返り、Cloudinary からファイルが消える。復旧手段はない。<br>01と連鎖する。01で全トークンとファイルURLを列挙し、02で全削除まで到達できる。</div>
+      </div>
+
+      <div class="action"><span class="lbl">推奨アクション</span>upload と同じガードを冒頭に追加し、さらにそのトークンのグループがそのファイルを所有しているかをDBで確認してから削除する。暫定措置として 503 で塞ぐ選択肢もある。</div>
+    </div>
+
+    <div class="item high">
+      <div class="item-head">
+        <span class="rank">03</span>
+        <span class="sev high">HIGH</span>
+        <span class="rank">サポート・企画開発</span>
+      </div>
+      <h3>LPが約束している共有機能が、アプリ本体に存在しない</h3>
+      <p>LPは同じ約束を7か所で繰り返しています。一方で共有UIはアプリ画面から呼ばれておらず、コンポーネントごと孤立しています。</p>
+
+      <div class="ev">
+        <div class="ev-head">
+          <span class="ev-kind code">LPの実文言</span>
+          <span class="ev-src">src/app/page.tsx:11, 66, 227, 341, 377 ほか計7か所</span>
+        </div>
+        <pre>227: <span class="hl">「URLひとつで全員に共有」</span>（機能カードの見出し）
+229: 「作成したしおりのURLを送るだけで、家族や友人と
+      旅行プランを共有できます」
+ 66: 構造化データ（JSON-LD）にも同じ文
+341: FAQ「作成した旅行しおりのURLを家族や友人に
+      送るだけで共有できます」
+ 11: metadata の description にも記載</pre>
+      </div>
+
+      <div class="ev">
+        <div class="ev-head">
+          <span class="ev-kind run">grep の実行結果</span>
+          <span class="ev-src">検証: 共有UIの呼び出し元をsrc全体で追跡</span>
+        </div>
+        <pre><span class="c">$ grep -rn "navigator.share\|clipboard" src/</span>
+src/components/SharePreview.jsx:24:  navigator.clipboard.writeText(...)
+<span class="c"># → 1件だけ。しおり画面には存在しない</span>
+
+<span class="c">$ grep -rn "SharePreview" src/</span>
+src/components/SharePreview.jsx:14:  const SharePreview = ...
+src/components/ItineraryCard.jsx:7:   import SharePreview from './SharePreview';
+<span class="c"># → 呼んでいるのは ItineraryCard だけ</span>
+
+<span class="c">$ grep -rn "ItineraryCard" src/</span>
+src/components/ItineraryCard.jsx:11:  const ItineraryCard = ...
+<span class="hl"># → 自分自身しか出てこない = どこからも使われていない</span></pre>
+        <div class="ev-note">共有UIは作られているが、呼び出し元の <code>ItineraryCard</code> ごと死にコードになっている。ユーザーはアドレスバーを手動コピーするしかない。</div>
+      </div>
+
+      <div class="ev">
+        <div class="ev-head">
+          <span class="ev-kind repro">再現手順</span>
+          <span class="ev-src">スマホで実機確認するのが早い</span>
+        </div>
+        <ol>
+          <li>トップページから<b>しおりを新規作成</b>する</li>
+          <li>しおり画面のヘッダー、各タブ、フッターを見る</li>
+          <li><b>共有・コピー・送信にあたるボタンが1つもない</b>ことを確認する</li>
+          <li>共有するにはアドレスバーの長いURLを手で選択してコピーするしかない</li>
+        </ol>
+      </div>
+
+      <div class="action"><span class="lbl">推奨アクション</span>規模S、半日。ヘッダーに共有ボタンを1つ追加し、Web Share APIとクリップボードのフォールバックを入れる。同時に <code>share_click</code> のGAイベントを仕込み、効果を測れるようにする。</div>
+    </div>
+
+  </div>
+
+  <h2 id="gap">証拠が取れていないもの<span class="count">3種類</span></h2>
+  <p style="margin:0 0 13px;font-size:14px;color:var(--ink-2)">判断に使えない箇所です。ここを埋めるまで、該当する指摘は「コードから推測した予測」であって事実ではありません。</p>
+
+  <div class="gap">
+    <h3>実際のお問い合わせ本文が1件もない</h3>
+    <p class="what">窓口は <code>src/app/contact/page.tsx</code> に埋め込まれた Google フォームだけで、回答はGoogleのサーバにあります。リポジトリ側から参照できないため、<b>サポートの指摘はすべてコードから予測したもの</b>です。実際に何件来ているか、何に困っているかは分かりません。GitHub Issue も0件でした。</p>
+    <div class="how"><b>証拠を取るには</b> … Google フォームの回答スプレッドシートを共有いただければ、翌日から実際の本文を引用して報告できます。件数と内容の傾向も出せます。開発が必要な方法として、回答をGitHub Issueに自動起票する手もあります。</div>
+  </div>
+
+  <div class="gap">
+    <h3>バグの挙動を撮った動画がない</h3>
+    <p class="what">クラウド上のコンテナからは本番アプリを操作できないため、画面録画が作れません。代替として<b>再現手順と該当コードの引用</b>を全件に付けています。予算タブの表記のように、画面を見ないと伝わりにくいものが残ります。</p>
+    <div class="how"><b>証拠を取るには</b> … 後藤さんのMacでローカル実行に切り替えたあと、Playwright（Chromiumは導入済み）で再現操作を自動で撮り、GIFか連続スクリーンショットとして日報に貼れます。着手してよければ言ってください。</div>
+  </div>
+
+  <div class="gap">
+    <h3>利用状況の数値がない</h3>
+    <p class="what">管理画面（<code>src/app/admin/</code>）に目的地別・目的別・月別の集計チャートは実装済みですが、<b>そこへアクセスできていないため実数が0件</b>です。ユーザー数、作成されたしおり数、離脱箇所が分からないため、企画の優先順位づけが「コードを読んだ印象」に依存しています。</p>
+    <div class="how"><b>証拠を取るには</b> … 管理画面の読み取り専用アクセス（<code>ADMIN_SESSION_TOKEN</code> を渡すか、集計だけをエクスポートしたJSON）をいただければ、日報に実数を載せられます。Google Analytics の閲覧権限でも代替できます。</div>
+  </div>
+
+  <h2 id="decide">後藤さんの判断待ち<span class="count">6件</span></h2>
+  <div class="stack" id="decide-list">
+
+    <div class="decide" data-id="d1">
+      <div class="decide-top"><label><input type="checkbox" id="chk-d1"><h3>無認証経路を塞ぐ</h3></label></div>
+      <div class="opts">
+        <span class="opt rec">A 今すぐ修正に着手</span>
+        <span class="opt">B 削除APIを503で暫定封鎖してから修正</span>
+        <span class="opt">C 保留</span>
+      </div>
+      <p class="risk"><span class="lbl">放置すると</span> 誰でも全ユーザーの旅程・予約書類を取得・削除できる状態が続く。再現コマンドが書ける状態で放置する理由がない。</p>
+      <p class="basis">根拠: 最重要3件の01・02（実コード＋再現手順）</p>
+    </div>
+
+    <div class="decide" data-id="d2">
+      <div class="decide-top"><label><input type="checkbox" id="chk-d2"><h3>Hasuraシークレットのローテーション</h3></label></div>
+      <div class="opts">
+        <span class="opt rec">A 本日中に実施</span>
+        <span class="opt">B 今週中</span>
+        <span class="opt">C privateなので現状維持</span>
+      </div>
+      <p class="risk"><span class="lbl">放置すると</span> 権限を持つ人と連携サービスの数だけ露出面が増え続ける。作業自体は数分で終わる。</p>
+      <p class="basis">根拠: git管理下の7ファイルに同一シークレットを検出（保守運用セクション）／リポジトリはprivate・フォーク0件をAPIで確認</p>
+    </div>
+
+    <div class="decide" data-id="d3">
+      <div class="decide-top"><label><input type="checkbox" id="chk-d3"><h3>npm audit fix の適用</h3></label></div>
+      <div class="opts">
+        <span class="opt rec">A 適用してビルド確認</span>
+        <span class="opt">B Next.jsのみ先行</span>
+        <span class="opt">C 保留</span>
+      </div>
+      <p class="risk"><span class="lbl">放置すると</span> HTTP request smuggling の脆弱性を抱えたまま運用が続く。本番11件はすべて破壊的変更なしで直る。</p>
+      <p class="basis">根拠: 09-27 実測の <code>npm audit --omit=dev</code> 出力（保守運用セクション）</p>
+    </div>
+
+    <div class="decide" data-id="d4">
+      <div class="decide-top"><label><input type="checkbox" id="chk-d4"><h3>共有ボタンの実装</h3></label></div>
+      <div class="opts">
+        <span class="opt rec">A 最優先で実装</span>
+        <span class="opt">B 他の修正の後</span>
+        <span class="opt">C 保留</span>
+      </div>
+      <p class="risk"><span class="lbl">放置すると</span> LPの訴求と実物の乖離が続く。登録不要のアプリなので、幹事が送るURLが唯一の新規ユーザー流入経路。</p>
+      <p class="basis">根拠: 最重要3件の03（LP7か所の実文言＋grep 3本＋再現手順）</p>
+    </div>
+
+    <div class="decide" data-id="d5">
+      <div class="decide-top"><label><input type="checkbox" id="chk-d5"><h3>プライバシーポリシーの全面改訂</h3></label></div>
+      <div class="opts">
+        <span class="opt rec">A 法務の条文案で改訂を進める</span>
+        <span class="opt">B 弁護士確認を先に取る</span>
+        <span class="opt">C 保留</span>
+      </div>
+      <p class="risk"><span class="lbl">放置すると</span>「無料と書いてカード番号を取るのか」という不信を招き、外部送信規律の不備も残る。明白な誤記の是正は弁護士確認を待つ必要がない。</p>
+      <p class="basis">根拠: 法務セクション（規約とポリシーの原文引用＋grep 2本）</p>
+    </div>
+
+    <div class="decide" data-id="d6">
+      <div class="decide-top"><label><input type="checkbox" id="chk-d6"><h3>証拠の供給元を渡す（問い合わせ・利用状況）</h3></label></div>
+      <div class="opts">
+        <span class="opt rec">A フォーム回答と管理画面の両方</span>
+        <span class="opt">B フォーム回答だけ</span>
+        <span class="opt">C 当面なしで続ける</span>
+      </div>
+      <p class="risk"><span class="lbl">放置すると</span> サポートと企画の指摘が「コードからの予測」のままで、判断材料にならない。あわせて公表する住所とデータ保管国（Cloudinary・Hasura・Vercelのリージョン）も法務が条文を確定できず止まっている。</p>
+      <p class="basis">根拠: 「証拠が取れていないもの」の3件</p>
+    </div>
+
+  </div>
+
+  <h2>部門別<span class="count">開いて根拠つきの詳細</span></h2>
+
+  <details class="dept">
+    <summary>
+      <span class="dept-mark">🛡</span>
+      <span class="dept-name">保守運用・セキュリティ</span>
+      <span class="dept-chev">›</span>
+      <span class="dept-line">実行結果で裏付け。lintは実行不能のまま放置され、品質ゲートが無効化されていた。</span>
+    </summary>
+    <div class="dept-body">
+      <div class="tally">
+        <span class="chip crit">Critical 4</span>
+        <span class="chip high">High 3</span>
+        <span class="chip mid">Medium 8</span>
+        <span class="chip low">Low 4</span>
+      </div>
+
+      <div class="finding" style="margin-top:16px">
+        <p><b>lint が実行できていない。</b>「通っている」のではなく「実行されていない」状態。Next.js 16 で <code>next lint</code> が廃止され、<code>lint</code> がディレクトリ名として解釈されている。</p>
+        <div class="ev">
+          <div class="ev-head">
+            <span class="ev-kind run">実行結果</span>
+            <span class="ev-src">09-27 に実行。package.json:8 の "lint": "next lint"</span>
+          </div>
+          <pre><span class="c">$ npm run lint</span>
+Invalid project directory provided, no such directory:
+  /home/user/tabinoshiori/<span class="hl">lint</span>
+<span class="c">EXIT=1</span>
+
+<span class="c">$ npx eslint .   # 直接実行すると</span>
+<span class="hl">✖ 24 problems (21 errors, 3 warnings)</span>
+
+<span class="c">$ npx tsc --noEmit</span>
+<span class="c">EXIT=0  # 型チェックは通る</span></pre>
+          <div class="ev-note">修正は <code>"lint": "eslint ."</code> の1行。<code>npx eslint .</code> が正常に動くことは確認済み。</div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <p><b>本番依存の脆弱性が11件。すべて破壊的変更なしで直る。</b></p>
+        <div class="ev">
+          <div class="ev-head">
+            <span class="ev-kind run">実行結果</span>
+            <span class="ev-src">09-27 実測。9月11日時点とCritical の内容が変わっている</span>
+          </div>
+          <pre><span class="c">$ npm audit --omit=dev</span>
+<span class="hl">11 vulnerabilities (1 low, 5 moderate, 4 high, 1 critical)</span>
+To address all issues, run: npm audit fix
+
+<span class="c"># critical / high の内訳</span>
+critical next     HTTP request smuggling in rewrites
+                  GHSA-ggv3-7p47-pfv8
+high     lodash   Code Injection via _.template
+high     nanoid   非セキュアな生成器が無限ループしうる
+high     postcss  XSS via Unescaped &lt;/style&gt;
+high     sharp    libvips の CVE-2026-33327 ほか4件
+
+<span class="c"># 破壊的変更を伴う修正: なし（全件 isSemVerMajor=false）</span></pre>
+        </div>
+      </div>
+
+      <div class="finding">
+        <p><b>本番Hasuraの管理シークレットが平文でコミットされている。</b>git管理下の7ファイルに同一の64文字シークレットが定数として直書きされ、履歴にも残っている。</p>
+        <div class="ev">
+          <div class="ev-head">
+            <span class="ev-kind run">実行結果</span>
+            <span class="ev-src">値そのものは記載しない。場所と件数のみ</span>
+          </div>
+          <pre><span class="c">$ grep -rln "ADMIN_SECRET = '" --include=*.js . | wc -l</span>
+<span class="hl">7</span>
+<span class="c">$ git ls-files | grep -cE "^(apply-|check-production|reload-production)"</span>
+<span class="hl">7</span>   <span class="c"># すべてgit管理下</span>
+
+<span class="c"># 該当ファイル</span>
+apply-to-production.js:5       check-production-data.js:4
+apply-itineraries-migration.js:4  check-production-groups.js:4
+check-production-itineraries.js:4 check-production-schema.js:4
+reload-production-metadata.js:4</pre>
+          <div class="ev-note">統括による補足。GitHub APIでリポジトリを確認したところ <code>private</code>、フォーク0件だった。全世界への露出ではないため保守運用の Critical から High に落としている。ただし履歴に残り、アクセス権を持つ人と連携サービスには渡っている。</div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <p><b>共有トークンが <code>Math.random()</code> でクライアント生成されている。</b>このトークンが旅程の唯一の認証情報。</p>
+        <div class="ev">
+          <div class="ev-head">
+            <span class="ev-kind code">実コード</span>
+            <span class="ev-src">src/app/group/new/page.tsx:71-73</span>
+          </div>
+          <pre>const generateGroupToken = () =&gt; {
+  return <span class="hl">Math.random()</span>.toString(36).substring(2, 15)
+       + <span class="hl">Math.random()</span>.toString(36).substring(2, 15);
+};</pre>
+          <div class="ev-note">暗号論的に安全でないうえ、クライアント側で生成しているため攻撃者が値を任意に指定できる。<code>substring(2,15)</code> は末尾ゼロ落ちで短くなる場合があり、実効エントロピーも不安定。<code>crypto.randomUUID()</code> をサーバ側で使うべき。</div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <p><b>トークンに所有スコープがない。</b>自分で1つ旅程を作れば有効なトークンが手に入るため、01を直しても全ユーザーのデータへ横断アクセスできる。</p>
+        <div class="ev">
+          <div class="ev-head">
+            <span class="ev-kind code">実コード</span>
+            <span class="ev-src">src/lib/validate-group-token.ts:31-33</span>
+          </div>
+          <pre>query ValidateToken($token: String!) {
+  groups(where: { token: { _eq: $token } }) { id }
+}
+<span class="c">// 「存在するか」だけを見て真偽を返す。</span>
+<span class="c">// どのグループのトークンかは呼び出し側に伝えていない。</span></pre>
+        </div>
+      </div>
+
+      <div class="finding">
+        <p><b>Medium 8件の要点。</b>プロキシAPIが cloud_name を検証せず他人のCloudinaryのファイルを自社ドメインから配信できる。画像キャッシュAPIのSSRFガードが <code>endsWith('.googleapis.com')</code> と広すぎ、公開GCSバケットの任意ファイルを取得できる。レート制限が1ルートにしかなく <code>x-forwarded-for</code> を信用するため偽装で回避できる。管理シークレットの環境変数名が <code>NEXT_PUBLIC_</code> にフォールバックしており、クライアントから1行参照されただけでJSバンドルに埋め込まれる。</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="dept">
+    <summary>
+      <span class="dept-mark">🎧</span>
+      <span class="dept-name">カスタマーサポート</span>
+      <span class="dept-chev">›</span>
+      <span class="dept-line">実際の問い合わせは0件。以下はすべてコードから予測したもので、事実ではない。</span>
+    </summary>
+    <div class="dept-body">
+      <div class="ev" style="margin-top:14px">
+        <div class="ev-head">
+          <span class="ev-kind none">証拠なし</span>
+          <span class="ev-src">Googleフォームの回答はリポジトリから参照不可。GitHub Issue も0件</span>
+        </div>
+        <div class="ev-note">この部門の指摘は<b>すべてコードから予測したもの</b>です。実際に問い合わせが来ているかどうかも分かりません。フォーム回答スプレッドシートの共有をいただければ、翌日から実物を引用できます。</div>
+      </div>
+
+      <div class="finding">
+        <p><b>URLを失うと二度と戻れない（予測・高）。</b>「最近見たしおり」は localStorage を読むだけなので、履歴削除・シークレットウィンドウ・機種変更・別端末で空になる。運営側にも復旧手段がなく、本人確認の材料もない。</p>
+        <div class="ev">
+          <div class="ev-head">
+            <span class="ev-kind code">実コード</span>
+            <span class="ev-src">src/components/RecentPlans.tsx / [travelPlannerId]/page.tsx:145</span>
+          </div>
+          <pre><span class="c">// localStorage の shiori_* を読むだけ。サーバに控えはない</span>
+<span class="c">// 作成直後に「URLを保存してください」と促す文言もない</span>
+<span class="c">// （group/new/page.tsx と作成後画面をgrepして0件）</span></pre>
+        </div>
+      </div>
+
+      <div class="finding">
+        <p><b>削除する手段がユーザーにも運営にもないのに、ポリシーでは削除に応じると約束している（予測・高）。</b>旅程には宿泊先とフライト予約書類が入るため、依頼は必ず来る。</p>
+        <div class="ev">
+          <div class="ev-head">
+            <span class="ev-kind code">実コードと原文</span>
+            <span class="ev-src">src/app/privacy/page.tsx 第7条 / 削除UIは存在しない</span>
+          </div>
+          <pre><span class="c">ポリシー第7条（原文）</span>
+「ユーザーは…個人情報の訂正、追加または削除を
+  求めることができます」
+
+<span class="c">実装</span>
+しおり削除のUI: <span class="hl">なし</span>
+/api/delete: Cloudinaryのファイル1件を消すだけ、
+             かつどこからも呼ばれていない</pre>
+        </div>
+      </div>
+
+      <div class="finding">
+        <p><b>予算タブの「本日までの支出」が、本日の金額ではない（予測・中）。</b>実装は選択中の日までの累計。旅行前でも「本日」と表示され、残予算もこの値から引かれる。</p>
+        <div class="ev">
+          <div class="ev-head">
+            <span class="ev-kind code">実コード</span>
+            <span class="ev-src">budget/components/BudgetContent.tsx:198（表示）と 106（計算）</span>
+          </div>
+          <pre>198: &lt;div&gt;<span class="hl">本日までの支出</span>&lt;/div&gt;
+
+106: .filter(budget =&gt; budget.date <span class="hl">&lt;= selectedDate</span>)
+<span class="c">// selectedDate は画面で選んでいる日。「本日」ではない</span></pre>
+        </div>
+        <div class="ev">
+          <div class="ev-head">
+            <span class="ev-kind repro">再現手順</span>
+            <span class="ev-src">出発日を未来にすると分かりやすい</span>
+          </div>
+          <ol>
+            <li>出発日を<b>来月</b>にしてしおりを作る</li>
+            <li>予算タブを開き、<b>3日目</b>のタブを選ぶ</li>
+            <li>1〜3日目に支出を登録する</li>
+            <li>「本日までの支出」に<b>3日間の合計</b>が出る。旅行はまだ始まっていない</li>
+          </ol>
+        </div>
+        <div class="action"><span class="lbl">修正案</span>見出しを「{N}日目までの累計支出」に変える。計算は変えなくてよい。</div>
+      </div>
+
+      <div class="finding">
+        <p><b>使いにくい箇所（予測・中〜低）。</b>入力エラーが全部 <code>alert()</code>（<code>group/new/page.tsx:80,84,88</code>）で、閉じるとどの欄が悪いか消える。エラー画面に「指定されたトークンに対応する旅行プランは存在しません」とユーザーが知らない言葉が出る（<code>:327,330</code>）。専用の <code>DeleteConfirmDialog.jsx</code> があるのに削除確認はブラウザ標準の <code>confirm()</code>（<code>:483,505</code>）。お問い合わせページがiframe1枚だけで、読み込まれないと無言で止まり代替の連絡先も返信の目安もない。</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="dept">
+    <summary>
+      <span class="dept-mark">⚖️</span>
+      <span class="dept-name">法務</span>
+      <span class="dept-chev">›</span>
+      <span class="dept-line">実装と規約のズレ17件。原文とgrepで裏付け済み。高リスク7件。</span>
+    </summary>
+    <div class="dept-body">
+      <div class="tally">
+        <span class="chip crit">高 7</span>
+        <span class="chip high">中 8</span>
+        <span class="chip low">低 2</span>
+      </div>
+
+      <div class="finding" style="margin-top:16px">
+        <p><b>やっていないことが書かれている。</b>取得しない情報を取得すると書き、実際に取得している情報を書いていない二重のズレ。</p>
+        <div class="ev">
+          <div class="ev-head">
+            <span class="ev-kind code">規約とポリシーの原文</span>
+            <span class="ev-src">privacy/page.tsx:61, 75 と terms/page.tsx:56, 123</span>
+          </div>
+          <pre><span class="c">ポリシー第2条（61行目・原文）</span>
+「ユーザーが<span class="hl">利用登録をする際に</span>氏名、生年月日、住所、
+  電話番号、メールアドレス、<span class="hl">銀行口座番号、
+  クレジットカード番号、運転免許証番号</span>などの
+  個人情報をお尋ねすることがあります」
+
+<span class="c">ポリシー第3条（75行目・原文）</span>
+「<span class="hl">有料サービス</span>において、ユーザーに利用料金を
+  請求するため」
+
+<span class="c">──── 一方、利用規約では ────</span>
+
+<span class="c">第2条（56行目・原文）</span>
+「本サービスは、<span class="hl">アカウント登録を必要とせず</span>、
+  利用者は登録なしで即時に利用を開始できます」
+
+<span class="c">第8条（123行目・原文）</span>
+「本サービスは、<span class="hl">すべての機能を無料で提供します</span>」</pre>
+        </div>
+      </div>
+
+      <div class="finding">
+        <p><b>Google Analytics の記載がポリシーに1文字もない。</b>実装では全ページで無条件に読み込んでいる。</p>
+        <div class="ev">
+          <div class="ev-head">
+            <span class="ev-kind run">grep の実行結果</span>
+            <span class="ev-src">検証: ポリシー本文と実装を突き合わせ</span>
+          </div>
+          <pre><span class="c">$ grep -c "アナリティクス\|Analytics\|解析" \
+    src/app/privacy/page.tsx</span>
+<span class="hl">0</span>
+
+<span class="c"># 一方、実装（src/app/layout.tsx:97,100,105）</span>
+&lt;Script src="https://www.googletagmanager.com/gtag/js
+             ?id={gtag.GA_MEASUREMENT_ID}" /&gt;
+gtag('js', new Date());
+
+<span class="c"># gtag.ts が送るもの: page_path, Cookie, IP, リファラ, UA</span></pre>
+          <div class="ev-note">個人情報保護法21条の利用目的の公表に加え、電気通信事業法27条の12の外部送信規律に関わる。オプトアウト手段の案内も必要。</div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <p><b>アップロード画像・PDFがCloudinary（国外）に保存されることも未記載。</b>予約票は氏名・予約番号・搭乗者名を含みうる個人データそのもの。</p>
+        <div class="ev">
+          <div class="ev-head">
+            <span class="ev-kind run">grep の実行結果</span>
+            <span class="ev-src">検証: ポリシー本文と保存先の実装を突き合わせ</span>
+          </div>
+          <pre><span class="c">$ grep -c "Cloudinary\|外国\|国外" src/app/privacy/page.tsx</span>
+<span class="hl">0</span>
+
+<span class="c"># 一方、実装（src/app/api/upload/route.ts:93-95）</span>
+cloudinary.uploader.upload_stream(
+  { folder: '<span class="hl">travel-planner/documents</span>',
+    resource_type: resourceType }, ...)</pre>
+          <div class="ev-note">Cloudinaryを「委託」と整理するか「外国にある第三者への提供」と整理するかで、事前同意取得の要否が変わる。この整理は弁護士確認が必要。</div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <p><b>法定公表事項が欠落。</b>利用規約は運営者を個人名で明記しているのに、ポリシーは終始「当社」で氏名も住所もない。個人情報保護法32条1項が求める氏名・住所、開示等請求の手続、安全管理措置の記載がない。<b>最も是正が容易で指摘されやすい箇所。</b></p>
+      </div>
+
+      <div class="finding">
+        <p><b>その他の高リスク。</b>外部送信規律に対応した公表が存在しない（Google 4系統とCloudinaryへ送信がある）。共有リンクの性質、つまりURLを知る者は誰でも閲覧・編集・削除できるという事実がどこにも説明されていない。削除APIに認証がないこと自体が安全管理措置の不備にあたる。</p>
+      </div>
+
+      <div class="finding">
+        <p><b>中リスクの要点。</b>位置情報を地図画面の表示と同時に無条件で取得しているが未記載。保存期間と削除方法が未定義でアップロードファイルは無期限保存。全部免責条項が消費者契約法により無効となるおそれがあり3か所に但書がない。規約変更が「通知することなくいつでも」で定型約款の変更要件を満たさない。</p>
+      </div>
+
+      <div class="finding">
+        <p><b>事前アラート。</b>ブログ機能の仕様書にアフィリエイトとタイアップ記事が明記されている。収益化開始前に、ステマ規制の表示位置を仕様として確定させ、旅行業法上の「媒介」該当性について弁護士確認を取る必要がある。無登録営業は罰則の対象。</p>
+      </div>
+
+      <div class="finding">
+        <p style="color:var(--ink-3);font-size:13px">法務担当は弁護士ではなく、この報告は法的助言ではない。実装と規約文言の突合に基づく確認事項の整理と条文案の提示。高リスク項目は条文確定前に弁護士の確認を受けること。差し替え可能な条文案は全件作成済みで、全文は <span class="path">docs/team/reports/2026-09-11.md</span> にある。</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="dept">
+    <summary>
+      <span class="dept-mark">💡</span>
+      <span class="dept-name">企画開発</span>
+      <span class="dept-chev">›</span>
+      <span class="dept-line">3案を提案。利用状況の数値がないため優先順位はコードからの推測。</span>
+    </summary>
+    <div class="dept-body">
+      <div class="ev" style="margin-top:14px">
+        <div class="ev-head">
+          <span class="ev-kind none">証拠が一部なし</span>
+          <span class="ev-src">管理画面の実数と問い合わせがないため、優先順位に根拠が薄い</span>
+        </div>
+        <div class="ev-note">実装の事実（未使用のカラム、欠けている機能）は確認済み。ただし<b>どの案が効くかの判断材料が揃っていません</b>。利用状況の数値をいただければ、次回から根拠つきで順位を付けられます。</div>
+      </div>
+
+      <div class="finding">
+        <p><b>割り勘の精算（規模M）。受け皿がDBに最初からある。</b>予算タブに支払者の概念が一切なく、精算はアプリの外に漏れている。設計時に想定されていて作られなかった機能。</p>
+        <div class="ev">
+          <div class="ev-head">
+            <span class="ev-kind run">スキーマとクエリの突き合わせ</span>
+            <span class="ev-src">hasura-project/migrations/*/1_init_schema/up.sql:69,93</span>
+          </div>
+          <pre><span class="c">-- マイグレーションには最初から存在する</span>
+paid_by VARCHAR(255),
+COMMENT ON COLUMN budgets.paid_by IS
+  '<span class="hl">Name of the person who paid for this expense</span>';
+
+<span class="c"># ところがクエリでは選択されていない</span>
+$ grep -n "paid_by" src/graphql/queries.ts src/graphql/mutates.ts
+<span class="hl">（0件 = 未使用）</span>
+
+<span class="c"># users と group_members テーブルも同様に未使用</span></pre>
+          <div class="ev-note">v1は登録メンバー全員で均等割りに割り切る。新規テーブルは作らず <code>budgets</code> に <code>paid_by_member_id</code> を1本足すだけで、既存クエリへの追加も破壊的変更にならない。精算計算は <code>src/lib/settlement.ts</code> の純粋関数に置く。旅行後にアプリを開く理由を作る唯一の候補でもある。</div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <p><b>共有ボタン（規模S）。</b>最重要3件の03。新機能ではなく、宣伝している機能の導線欠落。</p>
+      </div>
+
+      <div class="finding">
+        <p><b>しおりの公開によるSEO受け皿（規模L）。</b>SEOチェックリスト自身が「検索流入の入口が実質トップページ1枚のみ」「ロングテールキーワードの受け皿がない」と書いている。個人情報を除いた読み取り専用ページを生成し、そこだけ noindex を外す。法務確認が前提で、効果が出る期間は読めないため数字の約束はしない。</p>
+      </div>
+
+      <div class="finding">
+        <p><b>棚卸しで分かったこと。</b>ブログ機能は仕様書が完成しているのに実装が一行もない。新案ではなく着手待ちの承認済み設計として別枠で扱うべき。京都のサンプルデータをハードコードした未使用画面も残っており、削除可否の判断が必要。</p>
+      </div>
+    </div>
+  </details>
+
+  <h2>記録<span class="count">日報の履歴</span></h2>
+  <div class="log">
+    <div class="log-row">
+      <span class="d">09-27</span>
+      <span class="t">全指摘に<b>根拠を実物で付与</b>。実コード引用、コマンド出力、再現手順。証拠が取れない3種類を明示。Next.js の Critical の内容が変わっていたため訂正。</span>
+    </div>
+    <div class="log-row">
+      <span class="d">09-11 金</span>
+      <span class="t"><b>初回稼働日</b>。4部門で全件棚卸し。Critical 2経路、指摘28件、判断待ち6件。</span>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>9月12日から26日の日報はありません。</b>クラウドの定期実行は毎朝発火していましたが、起動されるセッションにリポジトリが渡っておらず、エージェント定義も手順書も読めないまま空振りしていました。定期実行は停止済みです。現在はMac上で毎朝8時に走らせる方式に切り替えており、そちらが動き出すと日付が並びます。
+  </div>
+
+  <footer>
+    全体統括が4部門の報告を束ね、根拠を実物で検証して作成。証拠のうち実コードとコマンド出力は統括が該当ファイルを直接読み、コマンドを実行して確認したもの。再現手順は未実行で、確認は後藤さんの環境で行うこと。<br>
+    全文は <span class="path">docs/team/reports/2026-09-11.md</span>、要点は Obsidian の「旅のしおり / 日時報告」にあります。判断待ちのチェックは、この端末のブラウザにのみ残ります。
+  </footer>
+
+</div>
+
+<script>
+  // 判断待ちのチェック状態を、この端末にだけ残す
+  (function () {
+    var KEY = 'tabinoshiori-nippou-2026-09-11';
+
+    function load() {
+      try {
+        var raw = localStorage.getItem(KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function save(state) {
+      try {
+        localStorage.setItem(KEY, JSON.stringify(state));
+      } catch (e) {
+        /* 保存できない環境では画面表示だけ更新する */
+      }
+    }
+
+    var state = load();
+    var cards = document.querySelectorAll('#decide-list .decide');
+
+    cards.forEach(function (card) {
+      var id = card.getAttribute('data-id');
+      var box = card.querySelector('input[type="checkbox"]');
+      if (!box) return;
+
+      if (state[id]) {
+        box.checked = true;
+        card.classList.add('done');
+      }
+
+      box.addEventListener('change', function () {
+        card.classList.toggle('done', box.checked);
+        state[id] = box.checked;
+        save(state);
+      });
+    });
+  })();
+</script>
