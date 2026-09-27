@@ -1,6 +1,16 @@
 # 旅のしおり 運営チーム（AIエージェント体制）
 
-「旅のしおり」を5つの役割のエージェントで日々運営し、**後藤さんのMacで毎朝8時に日報を作り、Obsidianに保存する**ための仕組み。
+「旅のしおり」を5つの役割のエージェントで日々運営し、**後藤さんのMacで毎朝8時に日報を作る**ための仕組み。
+
+日報は3か所に出る。役割が違うので中身も違う。
+
+| 出口 | 中身 | 読む場面 |
+|---|---|---|
+| [Artifact](https://claude.ai/artifact/7N3PrVv91SkUWTfgKMPXxc) | 日報の全体。スマホで読む形 | 毎朝これを見る |
+| `docs/team/reports/` | 全文。各部門の生報告つき | 掘るとき |
+| `docs/team/digests/` → Obsidian | 要点だけ。1,500字 | 後から振り返るとき |
+
+Artifact は毎朝**同じURLに上書き**される。ブックマークかピン留めしておけば、朝それを開くだけで最新が出る。
 
 ## 体制図
 
@@ -29,17 +39,19 @@
 
 ## セットアップ（Mac側で一度だけ）
 
-### 1. Obsidian の保存先をリポジトリにつなぐ
+### 1. Obsidian の保存先を「要点」につなぐ
 
-Obsidian はシンボリックリンクを辿るので、日報がそのままノートとして見える。
+Obsidian はシンボリックリンクを辿るので、要点ノートがそのまま見える。**全文ではなく要点のディレクトリを指すこと。**
 
 ```bash
 cd "$HOME/Documents/Obsidian Vault/旅のしおり"
 mv 日時報告 日時報告.bak 2>/dev/null   # 既存の中身があれば退避
-ln -s "$HOME/path/to/tabinoshiori/docs/team/reports" 日時報告
+ln -s "$HOME/path/to/tabinoshiori/docs/team/digests" 日時報告
 ```
 
-リンクを張らず実ファイルとして置きたい場合は、この手順を飛ばしてよい。スクリプトが Vault のディレクトリへコピーする。
+リンクを張らず実ファイルとして置きたい場合は、この手順を飛ばしてよい。スクリプトが Vault のディレクトリへ要点をコピーする。
+
+要点ノートのフロントマターには `重要度` `判断待ち` `稼働部門` が入る。Obsidian 側で「判断待ちが残っている日」「保守運用が動いた日」を Dataview や検索で引ける。判断待ちは `- [ ]` のチェックリストなので、決めたらその場で消せる。
 
 ### 2. launchd に毎朝8時の実行を登録する
 
@@ -100,7 +112,10 @@ legal エージェントで、AdSense導入にともなう規約の不足を洗�
 
 | ファイル | 内容 | 更新する担当 |
 |---|---|---|
-| `docs/team/reports/YYYY-MM-DD.md` | 日報（統括サマリ＋各部門の全文）。Obsidian の `旅のしおり/日時報告` に現れる | gm-chief |
+| `docs/team/reports/YYYY-MM-DD.md` | 日報の全文（統括サマリ＋各部門の生報告） | gm-chief |
+| `docs/team/digests/YYYY-MM-DD.md` | 要点1,500字。Obsidian の `旅のしおり/日時報告` に現れる | gm-chief |
+| `docs/team/artifact.html` | スマホ向け日報の見た目。毎朝これを差し替えて再公開する | gm-chief |
+| `docs/team/artifact-url.txt` | 上書き先の Artifact URL。変えない | — |
 | `docs/team/ideas.md` | 新機能アイデアの台帳（提案中/採用/保留/却下） | product-planner |
 | `docs/team/faq-draft.md` | FAQ・返信テンプレートの下書き | cs-support |
 | `docs/team/legal-log.md` | 規約改定の検討記録 | legal |

@@ -19,6 +19,7 @@ MODEL="${TABINOSHIORI_MODEL:-opus}"
 TODAY="$(date +%F)"
 BRANCH="claude/daily-report-$(date +%Y%m%d)"
 REPORT="docs/team/reports/$TODAY.md"
+DIGEST="docs/team/digests/$TODAY.md"
 
 mkdir -p "$LOG_DIR"
 exec >> "$LOG_DIR/$TODAY.log" 2>&1
@@ -54,12 +55,14 @@ if [ ! -f "$REPORT" ]; then
   exit 1
 fi
 
-echo "生成: $REPORT（$(wc -c < "$REPORT") バイト）"
+echo "全文: $REPORT（$(wc -c < "$REPORT") バイト）"
 
-# Obsidian Vault へコピー
-if [ -d "$VAULT_DIR" ]; then
-  cp "$REPORT" "$VAULT_DIR/"
-  echo "Vault にコピー: $VAULT_DIR/$TODAY.md"
+# Obsidian Vault へは「要点」だけを置く。全文はリポジトリに残す
+if [ ! -f "$DIGEST" ]; then
+  echo "要点ノートが生成されなかった: $DIGEST"
+elif [ -d "$VAULT_DIR" ]; then
+  cp "$DIGEST" "$VAULT_DIR/"
+  echo "Vault に要点をコピー: $VAULT_DIR/$TODAY.md（$(wc -c < "$DIGEST") バイト）"
 else
   echo "Vault が見つからない: $VAULT_DIR（リポジトリ側にのみ保存した）"
 fi
