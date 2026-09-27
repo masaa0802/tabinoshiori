@@ -28,5 +28,7 @@ npx tsc --noEmit  # 型チェック
 
 - `cs-support` カスタマーサポート / `ops-security` 保守運用 / `product-planner` 企画開発 / `legal` 法務 / `gm-chief` 全体統括
 - 日次報告は `/daily-standup` で実行し、`docs/team/reports/` に保存する
+- 毎朝8時の自動実行は `scripts/daily-standup.sh` を launchd から呼ぶ（後藤さんのMac上）。日報はObsidianへ保存される
+- トークン消費を抑えるため、平日は曜日ごとに1部門だけ深掘りする。4部門そろうのは土曜のみ
 
 エージェントは `src/` 配下の変更、`main` への直接コミット、本番環境への操作を承認なしに行わない。

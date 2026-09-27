@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  旅のしおり 日次報告を毎朝8時に実行する launchd の設定。
+  __REPO__ を、このリポジトリの絶対パスに置き換えてから
+  ~/Library/LaunchAgents/ へ置く。手順は docs/team/README.md を参照。
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.tabinoshiori.daily-standup</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-lc</string>
+    <string>__REPO__/scripts/daily-standup.sh</string>
+  </array>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>8</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <false/>
+
+  <key>StandardOutPath</key>
+  <string>/tmp/tabinoshiori-standup.out</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/tabinoshiori-standup.err</string>
+</dict>
+</plist>
