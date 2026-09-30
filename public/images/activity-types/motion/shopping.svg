@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="ショッピング">
+  <style>
+    @keyframes tn-drift { 0%,100% { transform: translateX(0) } 50% { transform: translateX(34px) } }
+    @keyframes tn-bob   { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
+    @keyframes tn-bob-sm { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+    @keyframes tn-pulse { 0%,100% { transform: scale(1); opacity: .26 } 50% { transform: scale(1.18); opacity: .52 } }
+    @keyframes tn-breathe { 0%,100% { transform: scale(1) } 50% { transform: scale(1.06) } }
+    @keyframes tn-twinkle { 0%,100% { opacity: .15 } 50% { opacity: 1 } }
+    .tn-drift { animation: tn-drift 18s ease-in-out infinite }
+    .tn-drift-slow { animation: tn-drift 26s ease-in-out infinite reverse }
+    .tn-bob { animation: tn-bob 3s ease-in-out infinite }
+    .tn-bob-sm { animation: tn-bob-sm 2.4s ease-in-out infinite }
+    .tn-bob-slow { animation: tn-bob 4.4s ease-in-out infinite }
+    .tn-pulse { transform-box: fill-box; transform-origin: center; animation: tn-pulse 3.6s ease-in-out infinite }
+    .tn-breathe { transform-box: fill-box; transform-origin: center; animation: tn-breathe 4s ease-in-out infinite }
+    .tn-twinkle { animation: tn-twinkle 2.2s ease-in-out infinite }
+    @keyframes tn-speed { 0% { transform: translateX(56px); opacity: 0 } 20% { opacity: .9 } 100% { transform: translateX(-80px); opacity: 0 } }
+    @keyframes tn-rail { to { transform: translateX(-48px) } }
+    .tn-speed { animation: tn-speed 1.3s linear infinite }
+    .tn-rail { animation: tn-rail 0.7s linear infinite }
+    @keyframes tn-steam { 0% { transform: translateY(14px); opacity: 0 } 22% { opacity: .95 } 100% { transform: translateY(-38px); opacity: 0 } }
+    .tn-steam { animation: tn-steam 2.4s ease-out infinite }
+    .tn-steam-2 { animation-delay: .8s } .tn-steam-3 { animation-delay: 1.6s }
+    @keyframes tn-float { 0%,100% { transform: translateY(0) rotate(-1.8deg) } 50% { transform: translateY(-18px) rotate(1.8deg) } }
+    .tn-float { transform-box: fill-box; transform-origin: 400px 300px; animation: tn-float 4.6s ease-in-out infinite }
+    @keyframes tn-road { to { transform: translateX(-96px) } }
+    .tn-road { animation: tn-road 0.9s linear infinite }
+    @media (prefers-reduced-motion: reduce) {
+      .tn-drift, .tn-drift-slow, .tn-bob, .tn-bob-sm, .tn-bob-slow, .tn-pulse, .tn-breathe,
+      .tn-twinkle, .tn-speed, .tn-rail, .tn-steam, .tn-float, .tn-drop, .tn-shadow,
+      .tn-route, .tn-road { animation: none }
+    }
+  </style>
+  <defs><clipPath id="sp-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#sp-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#FCE6E4"/>
+    <circle cx="112" cy="84" r="46" fill="#F9D0CC" opacity="0.8"/>
+    <circle cx="690" cy="66" r="62" fill="#F9D0CC" opacity="0.6"/>
+    <!-- 店のひさし -->
+    <g>
+      <rect x="120" y="110" width="560" height="180" fill="#FFFDF6"/>
+      <path d="M100 110 H700 V150 H100 Z" fill="#EF6F5E"/>
+      <g fill="#FFFDF6"><rect x="160" y="110" width="40" height="40"/><rect x="240" y="110" width="40" height="40"/><rect x="320" y="110" width="40" height="40"/><rect x="400" y="110" width="40" height="40"/><rect x="480" y="110" width="40" height="40"/><rect x="560" y="110" width="40" height="40"/><rect x="640" y="110" width="40" height="40"/></g>
+      <path d="M100 150 C 120 170 140 170 160 150 C 180 170 200 170 220 150 C 240 170 260 170 280 150 C 300 170 320 170 340 150 C 360 170 380 170 400 150 C 420 170 440 170 460 150 C 480 170 500 170 520 150 C 540 170 560 170 580 150 C 600 170 620 170 640 150 C 660 170 680 170 700 150 Z" fill="#EF6F5E"/>
+      <rect x="150" y="186" width="160" height="90" rx="8" fill="#D8ECF8"/>
+      <rect x="490" y="186" width="160" height="90" rx="8" fill="#D8ECF8"/>
+      <rect x="350" y="190" width="100" height="100" fill="#F2B45F"/>
+      <circle cx="432" cy="244" r="5" fill="#8A5A3A"/>
+    </g>
+    <path d="M0 288 C 180 278 360 294 540 286 C 660 280 740 290 800 286 L800 360 L0 360 Z" fill="#F2B2AE"/>
+    <path d="M0 322 C 200 312 380 328 560 320 C 680 314 750 322 800 318 L800 360 L0 360 Z" fill="#E89A95"/>
+    <!-- 紙袋 -->
+    <g class="tn-bob-sm">
+      <path d="M196 246 C 196 222 236 222 236 246" stroke="#8A5A3A" stroke-width="5" fill="none"/>
+      <rect x="180" y="244" width="72" height="64" rx="4" fill="#F5B94E"/>
+      <path d="M268 232 C 268 206 312 206 312 232" stroke="#8A5A3A" stroke-width="5" fill="none"/>
+      <rect x="250" y="230" width="80" height="78" rx="4" fill="#6FB6E8"/>
+      <circle cx="290" cy="270" r="12" fill="#FFFDF6"/>
+    </g>
+    <g class="tn-bob">
+      <path d="M520 232 C 520 206 564 206 564 232" stroke="#8A5A3A" stroke-width="5" fill="none"/>
+      <rect x="500" y="230" width="84" height="78" rx="4" fill="#EF6F8B"/>
+      <rect x="500" y="250" width="84" height="10" fill="#FFFDF6" opacity="0.7"/>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#E89A95"/>
+  </g>
+</svg>

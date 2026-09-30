@@ -461,7 +461,7 @@ export const DELETE_TRAVEL_DOCUMENT = gql`
 
 export const INSERT_DOCUMENT_FILE = gql`
   mutation InsertDocumentFile(
-    $document_id: Int!
+    $travel_document_id: Int!
     $file_url: String!
     $file_type: String!
     $file_name: String!
@@ -472,7 +472,7 @@ export const INSERT_DOCUMENT_FILE = gql`
   ) {
     insert_document_files_one(
       object: {
-        document_id: $document_id
+        travel_document_id: $travel_document_id
         file_url: $file_url
         file_type: $file_type
         file_name: $file_name

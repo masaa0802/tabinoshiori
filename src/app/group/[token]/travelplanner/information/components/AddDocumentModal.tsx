@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { INSERT_TRAVEL_DOCUMENT } from '@/graphql/mutates';
 import { CATEGORIES, CategoryIcon } from './InformationContent';
 import { uploadToCloudinary, validateFile } from '@/lib/cloudinary';
+
+const MAX_FILES = 5;
 
 interface AddDocumentModalProps {
   isOpen: boolean;
   onClose: () => void;
   itineraryId: number;
   onDocumentAdded: () => void;
-  startDate: string;
-  endDate: string;
 }
 
 const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
@@ -20,50 +20,25 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
   onClose,
   itineraryId,
   onDocumentAdded,
-  startDate,
-  endDate,
 }) => {
   const [category, setCategory] = useState(CATEGORIES[0].value);
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [notes, setNotes] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const [insertDocument] = useMutation(INSERT_TRAVEL_DOCUMENT);
 
-  // 日程オプションを生成
-  const dayOptions = useMemo(() => {
-    if (!startDate || !endDate) return [];
+  const addFiles = (fileList: FileList | null) => {
+    if (!fileList) return;
 
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const days: { day: number; date: Date; label: string }[] = [];
-
-    let currentDate = new Date(start);
-    let dayNumber = 1;
-
-    while (currentDate <= end) {
-      const month = currentDate.getMonth() + 1;
-      const date = currentDate.getDate();
-      days.push({
-        day: dayNumber,
-        date: new Date(currentDate),
-        label: `${dayNumber}日目 ${month}/${date}日`,
-      });
-      currentDate.setDate(currentDate.getDate() + 1);
-      dayNumber++;
-    }
-
-    return days;
-  }, [startDate, endDate]);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-
-    const newFiles = Array.from(e.target.files);
+    const newFiles = Array.from(fileList);
     const validFiles: File[] = [];
 
     for (const file of newFiles) {
+      if (files.length + validFiles.length >= MAX_FILES) {
+        alert(`ファイルは最大${MAX_FILES}個まで追加できます`);
+        break;
+      }
       const validation = validateFile(file);
       if (!validation.valid) {
         alert(validation.error);
@@ -72,7 +47,28 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
       validFiles.push(file);
     }
 
-    setFiles([...files, ...validFiles]);
+    setFiles(prev => [...prev, ...validFiles]);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    addFiles(e.target.files);
+    e.target.value = '';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    addFiles(e.dataTransfer.files);
   };
 
   const removeFile = (index: number) => {
@@ -107,24 +103,15 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
         return;
       }
 
-      // 選択した日付を取得
-      let dateTime = null;
-      if (selectedDay !== null) {
-        const selectedDayOption = dayOptions.find(d => d.day === selectedDay);
-        if (selectedDayOption) {
-          dateTime = selectedDayOption.date.toISOString().split('T')[0];
-        }
-      }
-
       // ドキュメントをデータベースに保存
       await insertDocument({
         variables: {
           itinerary_id: itineraryId,
           title: files[0]?.name.replace(/\.[^/.]+$/, '') || category,
           category,
-          date: dateTime,
+          date: null,
           reservation_number: null,
-          notes: notes || null,
+          notes: null,
           files: uploadedFiles.map(file => ({
             file_url: file.file_url,
             file_type: file.file_type,
@@ -150,16 +137,14 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
 
   const resetForm = () => {
     setCategory(CATEGORIES[0].value);
-    setSelectedDay(null);
-    setNotes('');
     setFiles([]);
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-md max-h-[90vh] sm:max-h-[85vh] overflow-hidden relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] overflow-hidden relative">
         {/* ヘッダー */}
         <div className="bg-gradient-to-r from-sky-500 to-blue-600 px-3 sm:px-5 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -179,97 +164,49 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
           </button>
         </div>
 
-        <div className="p-3 sm:p-5 overflow-y-auto max-h-[calc(90vh-52px)] sm:max-h-[calc(85vh-52px)]">
+        <div className="p-3 sm:p-5 overflow-y-auto max-h-[calc(85vh-52px)]">
 
         <form onSubmit={handleSubmit} className="space-y-3">
-          {/* カテゴリー */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">カテゴリー *</label>
-            <div className="grid grid-cols-4 gap-1.5">
-              {CATEGORIES.map(cat => (
-                <button
-                  key={cat.value}
-                  type="button"
-                  onClick={() => setCategory(cat.value)}
-                  className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg border-2 transition-all ${
-                    category === cat.value
-                      ? 'border-current shadow-sm'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  style={{
-                    borderColor: category === cat.value ? cat.color : undefined,
-                    backgroundColor: category === cat.value ? `${cat.color}10` : undefined,
-                  }}
-                >
-                  <span style={{ color: cat.color }}>
-                    <CategoryIcon category={cat.value} className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </span>
-                  <span className={`text-[10px] sm:text-xs mt-0.5 ${category === cat.value ? 'font-medium' : 'text-gray-600'}`}>
-                    {cat.label}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 日程選択 */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">日程</label>
-            <select
-              className="w-full border border-gray-200 rounded-lg px-2.5 py-2 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all bg-white"
-              value={selectedDay ?? ''}
-              onChange={e => setSelectedDay(e.target.value ? Number(e.target.value) : null)}
-            >
-              <option value="">選択なし</option>
-              {dayOptions.map(option => (
-                <option key={option.day} value={option.day}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* メモ */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">メモ</label>
-            <textarea
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all resize-none"
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-              rows={2}
-              placeholder="追加情報やメモ"
-            />
-          </div>
-
           {/* ファイルアップロード */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">ファイル *</label>
-            <div className="border-2 border-dashed border-sky-200 rounded-lg p-3 sm:p-4 text-center bg-sky-50/50 hover:bg-sky-50 transition-colors">
-              <input
-                type="file"
-                multiple
-                accept=".pdf,.jpg,.jpeg,.png"
-                onChange={handleFileChange}
-                className="hidden"
-                id="file-upload"
-              />
-              <label
-                htmlFor="file-upload"
-                className="cursor-pointer"
+            <label className="block text-xs font-medium text-gray-700 mb-1">
+              ファイル * <span className="text-gray-400 font-normal">({files.length}/{MAX_FILES})</span>
+            </label>
+            {files.length < MAX_FILES && (
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`border-2 border-dashed rounded-lg p-3 sm:p-4 text-center transition-colors ${
+                  isDragging ? 'border-sky-400 bg-sky-100' : 'border-sky-200 bg-sky-50/50 hover:bg-sky-50'
+                }`}
               >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-sky-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
-                </div>
-                <p className="text-xs text-gray-700 font-medium mb-0.5">
-                  タップしてファイルを選択
-                </p>
-                <p className="text-[10px] text-gray-500">
-                  PDF, JPG, PNG (最大10MB)
-                </p>
-              </label>
-            </div>
+                <input
+                  type="file"
+                  multiple
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="file-upload"
+                />
+                <label
+                  htmlFor="file-upload"
+                  className="cursor-pointer block"
+                >
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-sky-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                  </div>
+                  <p className="text-xs text-gray-700 font-medium mb-0.5">
+                    ドラッグ&ドロップ、またはタップして選択
+                  </p>
+                  <p className="text-[10px] text-gray-500">
+                    PDF, JPG, PNG (最大10MB・{MAX_FILES}個まで)
+                  </p>
+                </label>
+              </div>
+            )}
 
             {/* 選択されたファイル一覧 */}
             {files.length > 0 && (
@@ -306,6 +243,36 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
                 ))}
               </div>
             )}
+          </div>
+
+          {/* カテゴリー */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">カテゴリー *</label>
+            <div className="grid grid-cols-4 gap-1.5">
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat.value}
+                  type="button"
+                  onClick={() => setCategory(cat.value)}
+                  className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg border-2 transition-all ${
+                    category === cat.value
+                      ? 'border-current shadow-sm'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  style={{
+                    borderColor: category === cat.value ? cat.color : undefined,
+                    backgroundColor: category === cat.value ? `${cat.color}10` : undefined,
+                  }}
+                >
+                  <span style={{ color: cat.color }}>
+                    <CategoryIcon category={cat.value} className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </span>
+                  <span className={`text-[10px] sm:text-xs mt-0.5 ${category === cat.value ? 'font-medium' : 'text-gray-600'}`}>
+                    {cat.label}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* ボタン */}

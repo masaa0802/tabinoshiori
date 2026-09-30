@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="山・自然">
+  <style>
+    @keyframes tn-drift { 0%,100% { transform: translateX(0) } 50% { transform: translateX(34px) } }
+    @keyframes tn-bob   { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
+    @keyframes tn-bob-sm { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+    @keyframes tn-pulse { 0%,100% { transform: scale(1); opacity: .26 } 50% { transform: scale(1.18); opacity: .52 } }
+    @keyframes tn-breathe { 0%,100% { transform: scale(1) } 50% { transform: scale(1.06) } }
+    @keyframes tn-twinkle { 0%,100% { opacity: .15 } 50% { opacity: 1 } }
+    .tn-drift { animation: tn-drift 18s ease-in-out infinite }
+    .tn-drift-slow { animation: tn-drift 26s ease-in-out infinite reverse }
+    .tn-bob { animation: tn-bob 3s ease-in-out infinite }
+    .tn-bob-sm { animation: tn-bob-sm 2.4s ease-in-out infinite }
+    .tn-bob-slow { animation: tn-bob 4.4s ease-in-out infinite }
+    .tn-pulse { transform-box: fill-box; transform-origin: center; animation: tn-pulse 3.6s ease-in-out infinite }
+    .tn-breathe { transform-box: fill-box; transform-origin: center; animation: tn-breathe 4s ease-in-out infinite }
+    .tn-twinkle { animation: tn-twinkle 2.2s ease-in-out infinite }
+    @keyframes tn-speed { 0% { transform: translateX(56px); opacity: 0 } 20% { opacity: .9 } 100% { transform: translateX(-80px); opacity: 0 } }
+    @keyframes tn-rail { to { transform: translateX(-48px) } }
+    .tn-speed { animation: tn-speed 1.3s linear infinite }
+    .tn-rail { animation: tn-rail 0.7s linear infinite }
+    @keyframes tn-steam { 0% { transform: translateY(14px); opacity: 0 } 22% { opacity: .95 } 100% { transform: translateY(-38px); opacity: 0 } }
+    .tn-steam { animation: tn-steam 2.4s ease-out infinite }
+    .tn-steam-2 { animation-delay: .8s } .tn-steam-3 { animation-delay: 1.6s }
+    @keyframes tn-float { 0%,100% { transform: translateY(0) rotate(-1.8deg) } 50% { transform: translateY(-18px) rotate(1.8deg) } }
+    .tn-float { transform-box: fill-box; transform-origin: 400px 300px; animation: tn-float 4.6s ease-in-out infinite }
+    @keyframes tn-road { to { transform: translateX(-96px) } }
+    .tn-road { animation: tn-road 0.9s linear infinite }
+    @media (prefers-reduced-motion: reduce) {
+      .tn-drift, .tn-drift-slow, .tn-bob, .tn-bob-sm, .tn-bob-slow, .tn-pulse, .tn-breathe,
+      .tn-twinkle, .tn-speed, .tn-rail, .tn-steam, .tn-float, .tn-drop, .tn-shadow,
+      .tn-route, .tn-road { animation: none }
+    }
+  </style>
+  <defs><clipPath id="mt-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#mt-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#E0F0EA"/>
+    <circle class="tn-pulse" cx="150" cy="76" r="54" fill="#FFE29A" opacity="0.28"/>
+    <circle cx="150" cy="76" r="28" fill="#FFD66B"/>
+    <g class="tn-drift" fill="#FFFFFF" opacity="0.9">
+      <circle cx="560" cy="84" r="24"/><circle cx="590" cy="72" r="32"/><circle cx="624" cy="86" r="22"/>
+      <rect x="538" y="84" width="108" height="24" rx="12"/>
+    </g>
+    <!-- 山 -->
+    <path d="M60 290 L400 60 L740 290 Z" fill="#8FB8C8"/>
+    <path d="M400 60 L330 108 L364 102 L390 122 L414 100 L446 116 L470 108 Z" fill="#FFFFFF"/>
+    <path d="M-20 290 L160 150 L340 290 Z" fill="#A8CDB8"/>
+    <path d="M500 290 L660 160 L820 290 Z" fill="#A8CDB8"/>
+    <!-- 湖 -->
+    <path d="M140 262 C 260 248 540 248 660 262 C 600 280 200 280 140 262 Z" fill="#8FD0E6"/>
+    <path d="M300 262 H500" stroke="#FFFFFF" stroke-width="4" opacity="0.6"/>
+    <path d="M0 288 C 180 278 360 294 540 286 C 660 280 740 290 800 286 L800 360 L0 360 Z" fill="#9ED0A8"/>
+    <path d="M0 322 C 200 312 380 328 560 320 C 680 314 750 322 800 318 L800 360 L0 360 Z" fill="#86C392"/>
+    <!-- 木 -->
+    <g fill="#5FA873">
+      <path d="M70 290 L98 208 L126 290 Z"/><path d="M114 294 L146 196 L178 294 Z"/>
+      <path d="M640 290 L670 204 L700 290 Z"/><path d="M688 294 L720 190 L752 294 Z"/>
+    </g>
+    <!-- 鳥 -->
+    <g class="tn-drift-slow" stroke="#5B7A88" stroke-width="4" stroke-linecap="round" fill="none">
+      <path d="M560 150 Q 570 140 580 150 Q 590 140 600 150"/><path d="M610 176 Q 618 168 626 176 Q 634 168 642 176"/>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#86C392"/>
+  </g>
+</svg>

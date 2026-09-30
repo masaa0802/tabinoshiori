@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="神社">
+  <defs><clipPath id="sh-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#sh-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#E6F4EA"/>
+    <circle class="tn-pulse" cx="660" cy="86" r="54" fill="#FFE29A" opacity="0.28"/>
+    <circle cx="660" cy="86" r="28" fill="#FFD66B"/>
+    <g class="tn-drift" fill="#FFFFFF" opacity="0.9">
+      <circle cx="110" cy="90" r="24"/><circle cx="140" cy="78" r="32"/><circle cx="174" cy="92" r="22"/>
+      <rect x="88" y="90" width="108" height="24" rx="12"/>
+    </g>
+    <!-- 鎮守の森 -->
+    <g fill="#9ED3AE">
+      <circle cx="120" cy="228" r="60"/><circle cx="200" cy="210" r="56"/><circle cx="610" cy="214" r="58"/><circle cx="690" cy="230" r="60"/>
+    </g>
+    <g fill="#86C69A"><circle cx="160" cy="246" r="48"/><circle cx="650" cy="246" r="48"/></g>
+    <path d="M0 288 C 180 278 360 294 540 286 C 660 280 740 290 800 286 L800 360 L0 360 Z" fill="#A8D5B4"/>
+    <path d="M0 322 C 200 312 380 328 560 320 C 680 314 750 322 800 318 L800 360 L0 360 Z" fill="#8CC59C"/>
+    <!-- 参道 -->
+    <path d="M360 290 L440 290 L480 360 L320 360 Z" fill="#E8DCC4"/>
+
+    <!-- 鳥居 -->
+    <g>
+      <ellipse cx="400" cy="294" rx="170" ry="10" fill="#4E7A5A" opacity="0.25"/>
+      <path d="M204 108 C 300 120 500 120 596 108 L588 136 C 500 144 300 144 212 136 Z" fill="#E4534A"/>
+      <rect x="204" y="100" width="392" height="12" rx="6" fill="#2F2F2F"/>
+      <rect x="244" y="160" width="312" height="18" rx="3" fill="#E4534A"/>
+      <rect x="386" y="136" width="28" height="26" fill="#E4534A"/>
+      <rect x="390" y="140" width="20" height="18" fill="#2F2F2F" opacity="0.8"/>
+      <rect x="272" y="136" width="26" height="156" fill="#E4534A"/>
+      <rect x="502" y="136" width="26" height="156" fill="#E4534A"/>
+      <rect x="266" y="276" width="38" height="18" rx="3" fill="#2F2F2F"/>
+      <rect x="496" y="276" width="38" height="18" rx="3" fill="#2F2F2F"/>
+    </g>
+    <!-- 奥の社殿 -->
+    <g>
+      <path d="M330 236 L400 206 L470 236 Z" fill="#6B5A4A"/>
+      <rect x="346" y="236" width="108" height="50" fill="#F2E3C8"/>
+      <rect x="386" y="248" width="28" height="38" fill="#C9A676"/>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#8CC59C"/>
+  </g>
+</svg>

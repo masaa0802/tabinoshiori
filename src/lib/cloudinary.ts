@@ -56,14 +56,17 @@ async function uploadLocal(file: File): Promise<UploadedFile> {
  */
 async function uploadCloudinary(file: File, folder: string): Promise<UploadedFile> {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const isPdf = file.type === 'application/pdf';
 
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', 'travel_planner');
   formData.append('folder', folder);
 
+  // PDFはrawとして保存しないと、Cloudinaryのセキュリティ設定によりブラウザから直接開けない
+  const resourceType = isPdf ? 'raw' : 'auto';
   const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
+    `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
     { method: 'POST', body: formData }
   );
 
@@ -74,8 +77,8 @@ async function uploadCloudinary(file: File, folder: string): Promise<UploadedFil
   const data = await response.json();
 
   let fileType = 'other';
-  if (data.resource_type === 'image') fileType = 'image';
-  else if (data.format === 'pdf') fileType = 'pdf';
+  if (isPdf) fileType = 'pdf';
+  else if (data.resource_type === 'image') fileType = 'image';
 
   return {
     file_url: data.secure_url,

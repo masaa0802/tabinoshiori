@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="山・自然">
+  <defs><clipPath id="mt-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#mt-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#E0F0EA"/>
+    <circle class="tn-pulse" cx="150" cy="76" r="54" fill="#FFE29A" opacity="0.28"/>
+    <circle cx="150" cy="76" r="28" fill="#FFD66B"/>
+    <g class="tn-drift" fill="#FFFFFF" opacity="0.9">
+      <circle cx="560" cy="84" r="24"/><circle cx="590" cy="72" r="32"/><circle cx="624" cy="86" r="22"/>
+      <rect x="538" y="84" width="108" height="24" rx="12"/>
+    </g>
+    <!-- 山 -->
+    <path d="M60 290 L400 60 L740 290 Z" fill="#8FB8C8"/>
+    <path d="M400 60 L330 108 L364 102 L390 122 L414 100 L446 116 L470 108 Z" fill="#FFFFFF"/>
+    <path d="M-20 290 L160 150 L340 290 Z" fill="#A8CDB8"/>
+    <path d="M500 290 L660 160 L820 290 Z" fill="#A8CDB8"/>
+    <!-- 湖 -->
+    <path d="M140 262 C 260 248 540 248 660 262 C 600 280 200 280 140 262 Z" fill="#8FD0E6"/>
+    <path d="M300 262 H500" stroke="#FFFFFF" stroke-width="4" opacity="0.6"/>
+    <path d="M0 288 C 180 278 360 294 540 286 C 660 280 740 290 800 286 L800 360 L0 360 Z" fill="#9ED0A8"/>
+    <path d="M0 322 C 200 312 380 328 560 320 C 680 314 750 322 800 318 L800 360 L0 360 Z" fill="#86C392"/>
+    <!-- 木 -->
+    <g fill="#5FA873">
+      <path d="M70 290 L98 208 L126 290 Z"/><path d="M114 294 L146 196 L178 294 Z"/>
+      <path d="M640 290 L670 204 L700 290 Z"/><path d="M688 294 L720 190 L752 294 Z"/>
+    </g>
+    <!-- 鳥 -->
+    <g class="tn-drift-slow" stroke="#5B7A88" stroke-width="4" stroke-linecap="round" fill="none">
+      <path d="M560 150 Q 570 140 580 150 Q 590 140 600 150"/><path d="M610 176 Q 618 168 626 176 Q 634 168 642 176"/>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#86C392"/>
+  </g>
+</svg>

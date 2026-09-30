@@ -169,12 +169,11 @@ const MapContent: React.FC<MapContentProps> = ({
     }
   }, [selectedActivity]);
 
-  // カードをクリック → マップをパン＆ズーム
+  // カードをクリック → マップをパン（他の番号も見えるようズームは変更しない）
   const handleCardClick = (activity: Activity) => {
     setSelectedActivity(activity);
     if (map && activity.lat && activity.lng) {
       map.panTo({ lat: activity.lat, lng: activity.lng });
-      map.setZoom(13);
       // カードストリップ分だけ上にずらす
       setTimeout(() => map.panBy(0, 60), 50);
     }

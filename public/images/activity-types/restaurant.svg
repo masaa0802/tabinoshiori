@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="飲食店">
+  <defs><clipPath id="rs-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#rs-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#FFEFD9"/>
+
+    <!-- 壁の飾り -->
+    <circle cx="112" cy="84" r="46" fill="#FFDCAF" opacity="0.8"/>
+    <circle cx="690" cy="66" r="62" fill="#FFDCAF" opacity="0.6"/>
+
+    <!-- 湯気 -->
+    <g stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" fill="none" opacity="0.9">
+      <path d="M360 104 C 344 84 376 72 360 50"/>
+      <path d="M408 92 C 392 70 424 58 408 34"/>
+      <path d="M456 106 C 440 86 472 74 456 52"/>
+    </g>
+
+    <!-- テーブル -->
+    <path d="M0 290 C 170 278 320 296 470 290 C 610 284 700 296 800 288 L800 360 L0 360 Z" fill="#F0A85C"/>
+    <path d="M0 322 C 190 312 330 328 490 320 C 620 314 710 324 800 318 L800 360 L0 360 Z" fill="#DE9046"/>
+
+    <!-- 皿 -->
+    <ellipse cx="408" cy="304" rx="140" ry="16" fill="#C97F3C" opacity="0.3"/>
+    <circle cx="408" cy="212" r="104" fill="#FFFDF6"/>
+    <circle cx="408" cy="212" r="80" fill="none" stroke="#FFE6C4" stroke-width="8"/>
+    <circle cx="408" cy="212" r="56" fill="#FFCE93"/>
+    <circle cx="392" cy="200" r="20" fill="#EF8163"/>
+    <path d="M420 234 C 444 222 452 240 436 250 C 424 258 412 248 420 234 Z" fill="#79C47F"/>
+    <path d="M430 196 C 448 186 462 198 452 210 C 444 220 424 210 430 196 Z" fill="#8FD094"/>
+
+    <!-- フォーク -->
+    <g fill="#E29A4E">
+      <rect x="250" y="182" width="16" height="122" rx="8"/>
+      <rect x="234" y="120" width="10" height="54" rx="5"/>
+      <rect x="253" y="120" width="10" height="54" rx="5"/>
+      <rect x="272" y="120" width="10" height="54" rx="5"/>
+      <path d="M234 166 H282 C282 186 270 198 258 198 C246 198 234 186 234 166 Z"/>
+    </g>
+
+    <!-- ナイフ -->
+    <g fill="#E29A4E">
+      <rect x="540" y="192" width="16" height="112" rx="8"/>
+      <path d="M540 120 C 562 132 572 152 572 178 C 572 192 564 202 552 204 L540 204 Z"/>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#DE9046"/>
+  </g>
+</svg>

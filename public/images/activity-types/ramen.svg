@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="ラーメン">
+  <defs><clipPath id="rm-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#rm-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#FFEBD6"/>
+    <circle cx="112" cy="84" r="46" fill="#FFD6A8" opacity="0.8"/>
+    <circle cx="690" cy="66" r="62" fill="#FFD6A8" opacity="0.6"/>
+    <path d="M0 290 C 170 278 320 296 470 290 C 610 284 700 296 800 288 L800 360 L0 360 Z" fill="#E9A05A"/>
+    <path d="M0 322 C 190 312 330 328 490 320 C 620 314 710 324 800 318 L800 360 L0 360 Z" fill="#D48A44"/>
+    <g stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" fill="none" opacity="0.9">
+      <path class="tn-steam" d="M352 116 C 336 96 368 84 352 62"/>
+      <path class="tn-steam tn-steam-2" d="M400 104 C 384 82 416 70 400 46"/>
+      <path class="tn-steam tn-steam-3" d="M448 118 C 432 98 464 86 448 64"/>
+    </g>
+
+    <!-- 丼 -->
+    <g class="tn-bob-slow">
+      <ellipse cx="400" cy="300" rx="170" ry="14" fill="#B8702F" opacity="0.3"/>
+      <path d="M232 176 H568 C 568 250 496 296 400 296 C 304 296 232 250 232 176 Z" fill="#E4534A"/>
+      <path d="M252 206 H548" stroke="#FFFDF6" stroke-width="6" stroke-dasharray="18 12" opacity="0.7"/>
+      <ellipse cx="400" cy="176" rx="168" ry="30" fill="#F7C77E"/>
+      <ellipse cx="400" cy="176" rx="150" ry="22" fill="#F2B45F"/>
+      <!-- 麺 -->
+      <g stroke="#FFE7A6" stroke-width="7" fill="none" stroke-linecap="round">
+        <path d="M300 180 C 320 166 340 190 360 176 C 380 162 400 188 420 174"/>
+        <path d="M330 190 C 350 176 370 198 390 186 C 410 174 430 196 450 184"/>
+      </g>
+      <!-- チャーシュー・卵・のり・ねぎ -->
+      <ellipse cx="452" cy="170" rx="34" ry="16" fill="#D98B5F"/>
+      <ellipse cx="452" cy="170" rx="22" ry="9" fill="#EFB08A"/>
+      <ellipse cx="344" cy="168" rx="22" ry="14" fill="#FFFDF6"/><ellipse cx="344" cy="168" rx="11" ry="8" fill="#F5A623"/>
+      <rect x="494" y="124" width="36" height="58" rx="4" fill="#2F4A3A" transform="rotate(12 512 153)"/>
+      <g fill="#79C47F"><circle cx="396" cy="166" r="6"/><circle cx="410" cy="176" r="5"/><circle cx="384" cy="180" r="5"/></g>
+      <!-- 箸 -->
+      <rect x="470" y="96" width="10" height="120" rx="5" fill="#C98A4B" transform="rotate(28 475 156)"/>
+      <rect x="490" y="96" width="10" height="120" rx="5" fill="#B87A3E" transform="rotate(34 495 156)"/>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#D48A44"/>
+  </g>
+</svg>

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="エリア">
+  <defs>
+    <clipPath id="ar-frame"><rect width="800" height="360"/></clipPath>
+    <clipPath id="ar-map">
+      <path d="M120 96 L300 128 L500 96 L680 128 L680 284 L500 252 L300 284 L120 252 Z"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#ar-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#ECEFF8"/>
+    <circle cx="106" cy="72" r="52" fill="#DCE1F0" opacity="0.9"/>
+    <circle cx="768" cy="336" r="68" fill="#DCE1F0" opacity="0.8"/>
+
+    <!-- 地図 -->
+    <g>
+      <path d="M120 96 L300 128 L500 96 L680 128 L680 284 L500 252 L300 284 L120 252 Z" fill="#FFFDF6"/>
+      <g clip-path="url(#ar-map)">
+        <!-- 区画 -->
+        <g fill="#B9E3C4">
+          <rect x="140" y="140" width="96" height="60" rx="14"/>
+          <rect x="520" y="164" width="120" height="72" rx="16"/>
+        </g>
+        <g fill="#C8D3EC">
+          <rect x="320" y="132" width="70" height="44" rx="10"/>
+          <rect x="248" y="206" width="58" height="46" rx="10"/>
+          <rect x="430" y="200" width="66" height="52" rx="10"/>
+        </g>
+        <!-- 川 -->
+        <path d="M120 232 C 210 206 250 254 340 244 C 430 234 470 268 560 258 C 640 250 660 268 700 262" stroke="#A8C6EE" stroke-width="18" fill="none" stroke-linecap="round"/>
+        <!-- 道路 -->
+        <path d="M108 190 C 220 168 300 214 400 206 C 510 196 580 150 700 168" stroke="#98A5C4" stroke-width="16" fill="none" stroke-linecap="round"/>
+        <path d="M108 190 C 220 168 300 214 400 206 C 510 196 580 150 700 168" stroke="#FFFDF6" stroke-width="4" fill="none" stroke-dasharray="14 14" stroke-linecap="round"/>
+      </g>
+      <!-- 折り目 -->
+      <g stroke="#DFE4F1" stroke-width="4" fill="none">
+        <path d="M300 128 L300 284"/><path d="M500 96 L500 252"/>
+      </g>
+      <path d="M120 96 L300 128 L500 96 L680 128 L680 284 L500 252 L300 284 L120 252 Z" fill="none" stroke="#DFE4F1" stroke-width="5"/>
+    </g>
+
+    <!-- ピン -->
+    <ellipse cx="400" cy="272" rx="46" ry="12" fill="#6B7280" opacity="0.25"/>
+    <path d="M400 96 C 360 96 328 128 328 168 C 328 214 400 268 400 268 C 400 268 472 214 472 168 C 472 128 440 96 400 96 Z" fill="#6366F1"/>
+    <circle cx="400" cy="166" r="26" fill="#FFFDF6"/>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#ECEFF8"/>
+  </g>
+</svg>

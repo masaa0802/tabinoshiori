@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-label="スキー">
+  <defs><clipPath id="sk-frame"><rect width="800" height="360"/></clipPath></defs>
+  <g clip-path="url(#sk-frame)">
+    <g transform="translate(0,-26)">
+    <rect width="800" height="360" fill="#DCEBFA"/>
+    <circle class="tn-pulse" cx="660" cy="76" r="54" fill="#FFE29A" opacity="0.28"/>
+    <circle cx="660" cy="76" r="28" fill="#FFD66B"/>
+    <g class="tn-drift" fill="#FFFFFF" opacity="0.9">
+      <circle cx="120" cy="90" r="24"/><circle cx="150" cy="78" r="32"/><circle cx="184" cy="92" r="22"/>
+      <rect x="98" y="90" width="108" height="24" rx="12"/>
+    </g>
+    <!-- 雪山 -->
+    <path d="M0 290 L180 110 L380 290 Z" fill="#C6DAF0"/>
+    <path d="M180 110 L130 160 L160 152 L184 168 L210 150 L236 166 Z" fill="#FFFFFF"/>
+    <path d="M260 290 L500 70 L760 290 Z" fill="#B3CDEB"/>
+    <path d="M500 70 L440 126 L476 116 L502 134 L530 114 L566 128 Z" fill="#FFFFFF"/>
+    <!-- 雪 -->
+    <g class="tn-drift-slow" fill="#FFFFFF">
+      <circle cx="80" cy="60" r="4"/><circle cx="300" cy="90" r="3"/><circle cx="420" cy="40" r="4"/><circle cx="740" cy="140" r="3"/><circle cx="620" cy="190" r="4"/>
+    </g>
+    <!-- ゲレンデ -->
+    <path d="M0 250 C 200 230 420 262 600 244 C 700 234 760 240 800 238 L800 360 L0 360 Z" fill="#F4F8FD"/>
+    <path d="M0 316 C 200 306 380 322 560 314 C 680 308 750 316 800 312 L800 360 L0 360 Z" fill="#E1EBF7"/>
+    <!-- 木 -->
+    <g fill="#7FA89A">
+      <path d="M90 270 L116 200 L142 270 Z"/><path d="M660 262 L690 180 L720 262 Z"/><path d="M710 270 L734 206 L758 270 Z"/>
+    </g>
+    <g fill="#FFFFFF"><path d="M104 232 L116 200 L128 232 Z"/><path d="M676 220 L690 180 L704 220 Z"/></g>
+    <!-- スキーヤー -->
+    <g class="tn-bob-sm">
+      <g transform="rotate(-10 400 250)">
+        <rect x="320" y="266" width="170" height="8" rx="4" fill="#EF6F5E"/>
+        <path d="M384 220 L372 262 H388 L400 230 L414 262 H430 L414 214 Z" fill="#2E3A4F"/>
+        <rect x="380" y="164" width="44" height="60" rx="16" fill="#3B82F6"/>
+        <circle cx="404" cy="144" r="18" fill="#F6D5B8"/>
+        <path d="M384 140 C 384 118 424 118 424 140 Z" fill="#EF6F5E"/>
+        <rect x="386" y="140" width="36" height="8" rx="4" fill="#FFD66B"/>
+        <rect x="356" y="176" width="6" height="96" rx="3" fill="#6B7280" transform="rotate(-30 359 224)"/>
+        <rect x="438" y="176" width="6" height="96" rx="3" fill="#6B7280" transform="rotate(20 441 224)"/>
+      </g>
+    </g>
+  </g>
+    <rect x="0" y="334" width="800" height="26" fill="#E1EBF7"/>
+  </g>
+</svg>

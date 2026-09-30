@@ -26,7 +26,8 @@ import EditItineraryDatesModal from "../components/EditItineraryDatesModal";
 import ActivityDetailSheet from "../components/ActivityDetailSheet";
 import ActivityDetailModal from "../components/ActivityDetailModal";
 import LoadingAirplane from "@/components/LoadingAirplane";
-import ActivityImage from "@/components/ActivityImage";
+import { preloadActivityTypeImages } from "@/lib/activityTypeImage";
+import ActivityCardIllustration from "../components/ActivityCardIllustration";
 
 interface GroupData {
   groupName: string;
@@ -400,6 +401,9 @@ export default function TravelPlanner() {
   const activitiesToProcess = allActivities.filter((activity: Activity) =>
     activity.itinerary_id === travelPlan.id
   );
+
+  // 詳細シートのヘッダーイラストを先読みしておく（初回タップ時の待ちを無くす）
+  preloadActivityTypeImages(activitiesToProcess, { motion: true });
   console.log("Activities to process:", activitiesToProcess.length, "Total activities:", allActivities.length, "Itinerary ID:", travelPlan.id);
 
   activitiesToProcess.forEach((activity: Activity) => {
@@ -546,13 +550,16 @@ export default function TravelPlanner() {
     setTouchCurrentY(e.touches[0].clientY);
   };
 
-  const handleTouchEnd = (activity: Activity) => {
+  const handleTouchEnd = (e: React.TouchEvent, activity: Activity) => {
     const diffX = Math.abs(touchStart - touchCurrent);
     const diffY = Math.abs(touchStartY - touchCurrentY);
     const elapsed = Date.now() - touchStartTime;
 
     // タップ判定: 移動量が小さく、短時間のタッチ
     if (diffX < 10 && diffY < 10 && elapsed < 300) {
+      // 後から届く click が開いたばかりの詳細シートのバックドロップに当たり、
+      // シートがすぐ閉じてしまうのを防ぐ
+      e.preventDefault();
       setSelectedActivityForDetail(activity);
       setSwipedActivityId(null);
       setTouchStart(0);
@@ -806,17 +813,19 @@ export default function TravelPlanner() {
               />
             </div>
           ) : activeTab === "budget" ? (
-            <BudgetContent
-              itinerary_id={travelPlan.id}
-              itinerary={{
-                id: travelPlan.id,
-                start_date: travelPlan.start_date,
-                end_date: travelPlan.end_date,
-                destination: travelPlan.destination,
-                total_budget: travelPlan.total_budget,
-              }}
-              selectedDay={selectedDay}
-            />
+            <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden">
+              <BudgetContent
+                itinerary_id={travelPlan.id}
+                itinerary={{
+                  id: travelPlan.id,
+                  start_date: travelPlan.start_date,
+                  end_date: travelPlan.end_date,
+                  destination: travelPlan.destination,
+                  total_budget: travelPlan.total_budget,
+                }}
+                selectedDay={selectedDay}
+              />
+            </div>
           ) : activeTab === "information" ? (
             <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden">
               <InformationContent
@@ -944,7 +953,7 @@ export default function TravelPlanner() {
                               }}
                               onTouchStart={(e) => handleTouchStart(e, activity.id)}
                               onTouchMove={handleTouchMove}
-                              onTouchEnd={() => handleTouchEnd(activity)}
+                              onTouchEnd={(e) => handleTouchEnd(e, activity)}
                               onClick={() => {
                                 if (swipedActivityId === activity.id) {
                                   setSwipedActivityId(null);
@@ -953,29 +962,15 @@ export default function TravelPlanner() {
                                 setSelectedActivityForDetail(activity);
                               }}
                             >
-                              {/* 背景画像 */}
-                              {activity.photo_url && (
-                                <div className="absolute inset-0 flex">
-                                  <div className="flex-1"></div>
-                                  <div className="w-1/2 h-full relative">
-                                    <ActivityImage
-                                      src={activity.photo_url}
-                                      alt={activity.name}
-                                      placeId={activity.place_id}
-                                      fill
-                                      className="object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-r from-white via-white/70 to-transparent"></div>
-                                  </div>
-                                </div>
-                              )}
+                              {/* 背景の種別イラスト（右端に敷いて左へフェード） */}
+                              <ActivityCardIllustration type={activity.type} name={activity.name} />
                               <div className="relative z-10 p-4">
                                 <div className="flex justify-between items-center">
                                   <div className="flex items-start flex-1">
                                     <div className="mr-3">
                                       {getActivityIcon(activity.type)}
                                     </div>
-                                    <div className="flex-1 min-w-0">
+                                    <div className="flex-1 min-w-0 pr-[min(34%,180px)]">
                                       <h3 className="font-medium text-gray-800">
                                         {activity.name}
                                       </h3>
@@ -985,7 +980,7 @@ export default function TravelPlanner() {
                                     </div>
                                   </div>
                                   {/* デスクトップ用ボタン */}
-                                  <div className="hidden lg:flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <div className="hidden lg:flex space-x-1 rounded-md bg-white/80 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button
                                       onClick={(e) => { e.stopPropagation(); startEditActivity(activity); }}
                                       className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded"
@@ -1068,7 +1063,14 @@ export default function TravelPlanner() {
       <ActivityDetailSheet
         activity={selectedActivityForDetail}
         isOpen={selectedActivityForDetail !== null}
+        tripActivities={activitiesToProcess}
+        tripStartDate={travelPlan.start_date}
         onClose={() => setSelectedActivityForDetail(null)}
+        onOpenBudget={() => {
+          if (selectedActivityForDetail) setSelectedDay(day(selectedActivityForDetail.date));
+          setSelectedActivityForDetail(null);
+          setActiveTab("budget");
+        }}
         onEdit={(a) => {
           setSelectedActivityForDetail(null);
           startEditActivity(a);
