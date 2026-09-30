@@ -5,8 +5,15 @@
  * クライアントコンポーネントから記事を取得する場合は、このファイルを直接 import せず
  * `/api/blog/related` のような Route Handler を経由すること。直接 import するとビルドが落ちる。
  *
- * フォールバック: MICROCMS_SERVICE_DOMAIN / MICROCMS_API_KEY が未設定なら
- * src/data/blogPosts.ts のシードデータを返す。実記事の入稿後はこの分岐ごと削除する。
+ * フォールバックは2段階ある。
+ * 1. 環境変数が未設定 → src/data/blogPosts.ts のシードデータを返す（ローカル開発用）
+ * 2. 環境変数は設定済みだが microCMS の呼び出しが失敗 → 空を返す
+ *
+ * 2で空にしてシードデータを返さないのは、本番でサンプル記事が公開されるのを防ぐため。
+ * サンプル記事にはレイアウト確認用の金額が入っており、事実として出してはいけない。
+ *
+ * どちらの場合もビルドは通す。CMS の不調でサイト全体（LP・しおりを含む）が
+ * デプロイできなくなる事態を避けるため。
  */
 import "server-only";
 import { cache } from "react";
@@ -26,6 +33,22 @@ function warnOnceAboutSeedData() {
   hasWarnedAboutSeedData = true;
   console.warn(
     "[blog] microCMSの環境変数が未設定のため、ローカルのシードデータを使用しています。"
+  );
+}
+
+/**
+ * microCMS の呼び出しが失敗したときに、ビルドを止めずに記録する。
+ *
+ * よくある原因:
+ * - エンドポイント名が blogs / categories / spots になっていない（404）
+ * - APIキーの権限が足りない、または失効している（403 / 401）
+ * - サービスIDの綴り違い
+ */
+function reportFetchFailure(endpoint: string, error: unknown): void {
+  console.error(
+    `[blog] microCMS の ${endpoint} を取得できませんでした。` +
+      `エンドポイント名・APIキーの権限・サービスIDを確認してください。`,
+    error
   );
 }
 
@@ -52,12 +75,16 @@ export const getAllPosts = cache(async (): Promise<BlogPost[]> => {
     return sortByPublishedAtDesc(seedPosts);
   }
 
-  const response = await microcmsClient.getList<MicroCMSBlog>({
-    endpoint: MICROCMS_ENDPOINTS.blogs,
-    queries: { limit: FETCH_LIMIT, orders: "-publishedAt" },
-  });
-
-  return sortByPublishedAtDesc(response.contents.map(toBlogPost));
+  try {
+    const response = await microcmsClient.getList<MicroCMSBlog>({
+      endpoint: MICROCMS_ENDPOINTS.blogs,
+      queries: { limit: FETCH_LIMIT, orders: "-publishedAt" },
+    });
+    return sortByPublishedAtDesc(response.contents.map(toBlogPost));
+  } catch (error) {
+    reportFetchFailure(MICROCMS_ENDPOINTS.blogs, error);
+    return [];
+  }
 });
 
 export const getPostBySlug = cache(
@@ -73,8 +100,13 @@ export const getPostBySlug = cache(
         contentId: slug,
       });
       return toBlogPost(content);
-    } catch {
-      // 存在しないコンテンツIDは 404 が返るため、null に丸めて notFound() に委ねる
+    } catch (error) {
+      // 存在しないコンテンツIDは 404。これは notFound() に委ねるだけでよい。
+      // 403 や 500 は設定・障害の問題なので、気づけるようにログを残す。
+      const message = error instanceof Error ? error.message : String(error);
+      if (!message.includes("404")) {
+        reportFetchFailure(`${MICROCMS_ENDPOINTS.blogs}/${slug}`, error);
+      }
       return null;
     }
   }
@@ -86,12 +118,16 @@ export const getAllCategories = cache(async (): Promise<Category[]> => {
     return [...seedCategories].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   }
 
-  const response = await microcmsClient.getList<MicroCMSCategory>({
-    endpoint: MICROCMS_ENDPOINTS.categories,
-    queries: { limit: FETCH_LIMIT, orders: "order" },
-  });
-
-  return response.contents.map(toCategory);
+  try {
+    const response = await microcmsClient.getList<MicroCMSCategory>({
+      endpoint: MICROCMS_ENDPOINTS.categories,
+      queries: { limit: FETCH_LIMIT, orders: "order" },
+    });
+    return response.contents.map(toCategory);
+  } catch (error) {
+    reportFetchFailure(MICROCMS_ENDPOINTS.categories, error);
+    return [];
+  }
 });
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
