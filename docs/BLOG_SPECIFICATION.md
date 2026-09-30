@@ -1,26 +1,26 @@
 # ブログ機能 仕様書・設計書
 
-> **⚠️ この仕様書は着手前に書かれたもので、現在の実装と一部が乖離しています。**
+> **技術面（4章・5章・8章・9章・付録）は実装に合わせて更新済み。CMS は microCMS。**
 >
-> 実装の現状・検証済みの範囲・未解決の判断は `docs/BLOG_HANDOVER.md` を参照してください。
-> 主な乖離点:
+> 実装の現状・検証済みの範囲・残作業は `docs/BLOG_HANDOVER.md` を、
+> 接続手順は `docs/MICROCMS_SETUP.md` を参照してください。
 >
-> 1. **CMSがContentful前提のまま**（4章・5章・9章）。実装は microCMS に移行済み。
->    フィールド定義の考え方は流用できますが、パッケージ名・環境変数名・APIの呼び方は全て異なります。
->    接続手順は `docs/MICROCMS_SETUP.md` を参照。
-> 2. **ブログの位置づけ**（1章）が「しおり作成の質を上げるための情報インフラ」のままです。
->    現在の意向は「旅行初心者の不安を取り除く、広い読者向けメディア」で、方向性が異なります。
->    この点は未確定のため、`docs/BLOG_HANDOVER.md` セクション7の判断を待ってから
->    この仕様書を更新してください。
-> 3. **6-1・6-2の一部、および7-1・7-2は未実装**です。詳細は
->    `docs/BLOG_HANDOVER.md` セクション11を参照。
+> まだ実装と食い違っている箇所が2つあります。
+>
+> 1. **ブログの位置づけ**（1章・2章）が「しおり作成の質を上げるための情報インフラ」の
+>    ままです。現在のコンセプトは「旅行初心者の不安を取り除く、広い読者向けメディア」で、
+>    方向性が異なります。3章のカテゴリ設計も、実装では「情報の種類」と「不安の種類」の
+>    2軸になっています（`docs/BLOG_HANDOVER.md` セクション7）。
+> 2. **未実装の機能があります。** 7-1・7-2 の「記事内のスポットをワンタップでしおりに
+>    追加」、6-1 の目的地タグクラウドとカテゴリ別ピックアップ、6-2 のページネーション。
+>    4-4 の下書きプレビューも作っていません。
 
 ## 目次
 1. [概要・目的](#1-概要目的)
 2. [ビジネス要件](#2-ビジネス要件)
 3. [コンテンツ戦略](#3-コンテンツ戦略)
 4. [システム設計](#4-システム設計)
-5. [Contentfulコンテンツモデル](#5-contentfulコンテンツモデル)
+5. [microCMSコンテンツモデル](#5-microcmsコンテンツモデル)
 6. [ページ・機能仕様](#6-ページ機能仕様)
 7. [しおりとの連携仕様](#7-しおりとの連携仕様)
 8. [SEO設計](#8-seo設計)
@@ -40,7 +40,7 @@
 - 旅行前の情報収集がアプリ内で完結する体験を作る
 
 ### 運営方針
-- **記事作成者**: 運営のみ（Contentful CMSから入稿）
+- **記事作成者**: 運営のみ（microCMS から入稿）
 - **公開形態**: 全記事一般公開（SEO最優先）
 - **更新頻度目標**: 週1〜2記事（立ち上げ期）
 
@@ -114,21 +114,49 @@
 ### 4-1. アーキテクチャ
 
 ```
-Contentful CMS（記事入稿・管理）
-  │
-  │ Contentful Delivery API（公開記事）
-  │ Contentful Preview API（下書きプレビュー）
-  ▼
-Next.js（ISR / SSG）
-  ├── /blog               → 記事一覧（ISR: 1時間）
-  ├── /blog/[slug]        → 記事詳細（ISR: 1時間）
-  └── /blog/category/[slug] → カテゴリ別一覧
-  │
-  │ しおり連携
-  ▼
-Hasura GraphQL（既存）
-  └── activities テーブルにスポットを追加
+microCMS（記事入稿・管理／SaaS）
+  ├─ blogs / categories / spots … リスト形式のAPIを3つ
+  └─ 画像は images.microcms-assets.io から配信
+        │
+        │ microcms-js-sdk（GET のみ。書き込み権限は不要）
+        │ 環境変数が未設定ならローカルのシードデータにフォールバック
+        ▼
+src/lib/microcms/   ← server-only。APIキーはここから外に出ない
+  client.ts    SDK初期化・エンドポイント名の定義
+  queries.ts   記事取得。CMSの切り替えはこのファイル内で完結する
+  mappers.ts   microCMSレスポンス → BlogPost 型への変換
+  types.ts     型定義
+  format.ts    読了時間・日付・画像URL・料金の鮮度判定
+               （クライアントからも読むので server-only にしない）
+  jsonLd.ts    構造化データ生成
+  tags.ts      「不安の種類」タグの定義
+        │
+        ├─ Server Component から直接呼ぶ（すべて SSG + ISR 1時間）
+        │    /blog                  記事一覧
+        │    /blog/[slug]           記事詳細
+        │    /blog/category/[slug]  カテゴリ別一覧（情報の種類）
+        │    /blog/tag/[slug]       タグ別一覧（不安の種類）
+        │    /blog/feed.xml         RSS
+        │    /sitemap.xml  /robots.txt
+        │    LPの <BlogHighlights />
+        │
+        └─ Client Component からは Route Handler 経由（直接importは不可）
+             /api/blog/related
+               └─ しおり「情報」タブの <RelatedArticles />
+
+microCMS webhook（任意。Hobbyプランでは利用できない）
+  └─ /api/revalidate  HMAC-SHA256で署名検証 → 該当ページを再生成
 ```
+
+**しおり連携（Hasura）について**
+
+現状、ブログから Hasura への書き込みは無い。
+情報タブの関連記事は、Hasura から取得したしおりの `destination` を
+`RelatedArticles` に渡し、`/api/blog/related` で該当記事を引いているだけ。
+
+7章の「記事内のスポットをワンタップでしおりに追加」（`activities` テーブルへの
+書き込み）は**未実装**。`Spot` の型・スキーマ・表示用の `SpotCard.tsx` までは
+用意してあるが、追加ボタンと旅程選択モーダルは作っていない。
 
 ### 4-2. レンダリング戦略
 | ページ | 方式 | 理由 |
@@ -136,15 +164,37 @@ Hasura GraphQL（既存）
 | 記事詳細 | ISR（revalidate: 3600） | SEO最優先・更新頻度が低い |
 | 記事一覧 | ISR（revalidate: 3600） | 同上 |
 | カテゴリ一覧 | ISR（revalidate: 3600） | 同上 |
-| しおり追加ボタン | Client Component | グループトークンをブラウザで取得 |
+| タグ一覧 | ISR（revalidate: 3600） | 同上 |
+| 情報タブの関連記事 | Client Component + Route Handler | server-only のため直接取得できない |
+
+`export const revalidate = 3600;` はリテラルで書くこと。
+定数を import して代入すると `Invalid segment configuration export detected` で
+ビルドが落ちる。
 
 ### 4-3. キャッシュ戦略
-- Contentfulのwebhookでリビルドをトリガー（記事公開・更新時に即時反映）
-- Netlifyの`revalidate`またはOn-demand ISRで対応
+- 基本は ISR。記事の更新は最大1時間で反映される
+- microCMS の webhook で `/api/revalidate` を叩くと即時反映できる。
+  ただし **Hobby プランでは webhook を使えない**ため、その場合は ISR のみ。
+  すぐ反映したいときはホスティング管理画面から手動で再デプロイする
+- microCMS はプランごとにAPIリクエスト数の上限がある。
+  `getAllPosts` / `getAllCategories` / `getPostBySlug` は React の `cache()` で
+  包んであり、1ページの描画中に何度呼んでも通信は1回で済む
+
+### 4-4. 下書きプレビューについて
+
+**未実装。** microCMS には下書きプレビュー用の API がある（`draftKey` を付けて取得）が、
+プレビュー用のルートは作っていない。必要になったら追加する。
 
 ---
 
-## 5. Contentfulコンテンツモデル
+## 5. microCMSコンテンツモデル
+
+> エンドポイント名は `blogs` / `categories` / `spots`。
+> `src/lib/microcms/client.ts` の `MICROCMS_ENDPOINTS` と一致している必要がある。
+> 3つともリスト形式で作成すること（形式は後から変更できない）。
+>
+> 実際に管理画面へインポートできるスキーマJSONを `microcms/schemas/` に置いてある。
+> 以下の表は、そのJSONの内容を読みやすくしたもの。
 
 ### 5-1. BlogPost（記事）
 | フィールド | 型 | 必須 | 説明 |
@@ -275,16 +325,21 @@ Hasura GraphQL（既存）
 ### 7-3. 旅程画面からのブログ連携
 
 **情報タブ内の「関連記事」セクション**
-- 旅程の`destination`フィールドと一致するブログ記事をContentful APIで取得
-- 最大3件を情報タブ内に表示
+- 旅程の `destination` と一致するブログ記事を `/api/blog/related` 経由で取得
+- 最大3件を情報タブの末尾に表示。0件のときはセクションごと描画しない
 - 「もっと見る」でブログ一覧へ遷移
+
+`RelatedArticles` は Client Component のため、`queries.ts`（server-only）を
+直接 import できない。必ず Route Handler を挟むこと。
 
 ```
 旅程の目的地: 「メキシコ」
   ↓
-Contentful APIで destination: 「メキシコ」の記事を検索
+/api/blog/related?destination=メキシコ
   ↓
-情報タブに「メキシコ関連のおすすめ記事」として表示
+サーバー側で microCMS から取得し、destination が部分一致する記事を返す
+  ↓
+情報タブに「メキシコの旅行に役立つ記事」として表示
 ```
 
 ### 7-4. 追加されるアクティビティのデータ形式
@@ -340,12 +395,14 @@ export const generateMetadata = async ({ params }) => ({
 ```
 
 ### 8-3. サイトマップ
-- `/sitemap.xml` に全ブログ記事を含める
-- Contentful更新時に自動再生成（ISR）
+- `/sitemap.xml` に `/blog`・全記事・全カテゴリ・全タグを含める
+- 記事の `lastModified` は `updatedAt` 基準
+- ISR（1時間）で自動再生成。webhook があれば即時
 
 ### 8-4. パフォーマンス
 - アイキャッチ画像は`next/image`で最適化（WebP変換・サイズ自動調整）
-- Contentfulの画像URLにパラメータを付与（`?w=800&fm=webp&q=80`）
+- microCMS の画像URLにパラメータを付与（`?w=800&fm=webp&q=80`）。
+  `format.ts` の `optimizedImageUrl()` が microCMS のURLのときだけ付ける
 - Core Web Vitals目標: LCP < 2.5s、CLS < 0.1
 
 ---
@@ -355,68 +412,108 @@ export const generateMetadata = async ({ params }) => ({
 ### 9-1. 使用パッケージ
 | パッケージ | 用途 |
 |---|---|
-| `contentful` | Contentful Delivery / Preview API クライアント |
-| `@contentful/rich-text-react-renderer` | Rich TextをReactコンポーネントに変換 |
-| `@contentful/rich-text-types` | 型定義 |
+| `microcms-js-sdk` | microCMS の API クライアント |
+| `server-only` | APIキーがクライアントバンドルに載るのを防ぐマーカー |
+
+リッチテキスト用のライブラリは使っていない。microCMS のリッチエディタは HTML 文字列を
+返すため、`HtmlBody.tsx` が `dangerouslySetInnerHTML` で描画している。
+`@tailwindcss/typography` も導入していないので、本文のスタイルは子要素セレクタで当てている。
+
+> `HtmlBody.tsx` はサニタイズしていない。入稿者が運営のみである前提（2章）。
+> 外部ライターに入稿権限を渡す場合はサニタイズ処理の追加が必須。
 
 ### 9-2. 環境変数
-| 変数名 | 説明 |
-|---|---|
-| `CONTENTFUL_SPACE_ID` | ContentfulのSpace ID |
-| `CONTENTFUL_ACCESS_TOKEN` | Delivery API用トークン（公開記事） |
-| `CONTENTFUL_PREVIEW_TOKEN` | Preview API用トークン（下書きプレビュー） |
-| `CONTENTFUL_WEBHOOK_SECRET` | Webhook検証用シークレット |
+| 変数名 | 必須 | 説明 |
+|---|---|---|
+| `MICROCMS_SERVICE_DOMAIN` | 必須 | サービスID。管理画面URL `https://<ここ>.microcms.io` の部分 |
+| `MICROCMS_API_KEY` | 必須 | APIキー。GET 権限のみで足りる |
+| `MICROCMS_WEBHOOK_SECRET` | 任意 | webhook 署名検証用。microCMS が発行するものではなく自分で決める値 |
+| `NEXT_PUBLIC_BASE_URL` | 任意 | 未設定なら `https://tabinoshiori.jp` にフォールバック |
+
+必須2つが未設定のあいだは `src/data/blogPosts.ts` のシードデータで動作し、
+サーバーログに警告が出る。設定はソースコードではなくホスティングの管理画面で行う。
+手順は `docs/MICROCMS_SETUP.md` を参照。
 
 ### 9-3. ディレクトリ構成
 ```
 src/
 ├── app/
-│   └── blog/
-│       ├── page.tsx                  # ブログトップ
-│       ├── [slug]/
-│       │   └── page.tsx              # 記事詳細
-│       └── category/
-│           └── [slug]/
-│               └── page.tsx          # カテゴリ一覧
+│   ├── blog/
+│   │   ├── page.tsx                  # ブログトップ
+│   │   ├── layout.tsx                # ブログ共通ヘッダー／フッター
+│   │   ├── [slug]/page.tsx           # 記事詳細
+│   │   ├── category/[slug]/page.tsx  # カテゴリ別一覧（情報の種類）
+│   │   ├── tag/[slug]/page.tsx       # タグ別一覧（不安の種類）
+│   │   └── feed.xml/route.ts         # RSS
+│   └── api/
+│       ├── blog/related/route.ts     # 情報タブ用。クライアントから呼ぶ
+│       └── revalidate/route.ts       # microCMS webhook 受け口
 ├── lib/
-│   └── contentful/
-│       ├── client.ts                 # APIクライアント初期化
-│       ├── queries.ts                # 記事取得関数
-│       └── types.ts                 # 型定義
-└── components/
-    └── blog/
-        ├── ArticleCard.tsx           # 記事カード
-        ├── RichTextRenderer.tsx      # リッチテキスト描画
-        ├── SpotCard.tsx              # スポットカード（しおり追加ボタン含む）
-        ├── AddToItineraryModal.tsx   # 旅程選択モーダル
-        └── RelatedArticles.tsx      # 関連記事
+│   ├── site.ts                       # サイトURL・名称の定数
+│   └── microcms/
+│       ├── client.ts                 # SDK初期化・エンドポイント名（server-only）
+│       ├── queries.ts                # 記事取得（server-only）
+│       ├── mappers.ts                # レスポンス → BlogPost 型
+│       ├── types.ts                  # 型定義
+│       ├── format.ts                 # 読了時間・日付・画像URL・料金の鮮度
+│       ├── jsonLd.ts                 # 構造化データ
+│       └── tags.ts                   # 「不安の種類」タグの定義
+├── components/blog/
+│   ├── ArticleCard.tsx               # 記事カード
+│   ├── ArticleBody.tsx               # 本文描画の出し分け
+│   ├── HtmlBody.tsx                  # microCMSのHTMLを描画
+│   ├── SpotCard.tsx                  # スポットカード（しおり追加ボタンは未実装）
+│   ├── PriceNote.tsx                 # 金額ブロック。出典・調査時点が型で必須
+│   ├── PriceDisclosure.tsx           # 記事冒頭の料金注釈バナー
+│   ├── BlogHighlights.tsx            # LPの新着記事セクション
+│   └── RelatedArticles.tsx           # 情報タブの関連記事（Client Component）
+├── data/blogPosts.ts                 # シードデータ。実記事投入後は削除
+└── microcms/
+    ├── schemas/*.json                # 管理画面にインポートできるAPIスキーマ
+    └── seed-csv/*.csv                # シードデータのCSVインポート用
 ```
 
-### 9-4. Contentfulクライアント
+未実装: `AddToItineraryModal.tsx`（旅程選択モーダル）。7章を参照。
+
+### 9-4. microCMSクライアント
 ```typescript
-// src/lib/contentful/client.ts
-import { createClient } from 'contentful';
+// src/lib/microcms/client.ts
+import "server-only";
+import { createClient } from "microcms-js-sdk";
 
-export const contentfulClient = createClient({
-  space: process.env.CONTENTFUL_SPACE_ID!,
-  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
-});
+export const MICROCMS_ENDPOINTS = {
+  blogs: "blogs",
+  categories: "categories",
+  spots: "spots",
+} as const;
 
-export const contentfulPreviewClient = createClient({
-  space: process.env.CONTENTFUL_SPACE_ID!,
-  accessToken: process.env.CONTENTFUL_PREVIEW_TOKEN!,
-  host: 'preview.contentful.com',
-});
+const serviceDomain = process.env.MICROCMS_SERVICE_DOMAIN;
+const apiKey = process.env.MICROCMS_API_KEY;
+
+export const isMicroCMSConfigured = Boolean(serviceDomain && apiKey);
+
+export const microcmsClient = isMicroCMSConfigured
+  ? createClient({ serviceDomain: serviceDomain as string, apiKey: apiKey as string })
+  : null;
 ```
+
+**`server-only` を外さないこと。** クライアントコンポーネントから記事を取得する場合は
+`/api/blog/related` のような Route Handler を経由する。直接 import するとビルドが落ちる。
 
 ### 9-5. ISR + Webhook構成
 ```
-記事を公開・更新（Contentful）
-  └─ Webhookを発火
+記事を公開・更新（microCMS）
+  └─ Webhookを発火（Hobbyプランでは使えない）
        └─ /api/revalidate（Next.js Route Handler）
+            ├─ X-MICROCMS-Signature を HMAC-SHA256 で検証
+            │    不一致・欠落は 401
             └─ revalidatePath('/blog')
-               revalidatePath('/blog/[slug]')
+               revalidatePath('/')
+               revalidatePath('/sitemap.xml')
+               revalidatePath(`/blog/${contentId}`)
 ```
+
+webhook を使わない場合は ISR のみで、最大1時間で反映される。
 
 ---
 
@@ -432,7 +529,7 @@ export const contentfulPreviewClient = createClient({
 - **「いいね」機能**: 気になる記事を保存（グループトークンに紐付け）
 
 ### フェーズ4: 収益化
-- **アフィリエイトリンク管理**: Contentful内で予約リンクを管理・記事に挿入
+- **アフィリエイトリンク管理**: microCMS 内で予約リンクを管理・記事に挿入
 - **PR記事タグ**: スポンサードコンテンツの明示表示
 - **広告枠**: 記事一覧・詳細ページへのGoogle AdSense設置
 
@@ -443,10 +540,16 @@ export const contentfulPreviewClient = createClient({
 
 ---
 
-## 付録: Contentfulセットアップ手順
+## 付録: microCMS セットアップ手順
 
-1. [contentful.com](https://contentful.com) でSpaceを作成
-2. Content Modelで `BlogPost`・`Category`・`Spot` を作成（上記スキーマ参照）
-3. Settings → API Keys から `Space ID` と `Access Token` を取得
-4. Netlifyの環境変数に追加
-5. Settings → Webhooks でNetlifyのrevalidateエンドポイントを登録
+手順の詳細は **`docs/MICROCMS_SETUP.md`** にある。概要は以下のとおり。
+
+1. [microcms.io](https://microcms.io) でサービスを作成
+2. `blogs` / `categories` / `spots` をリスト形式で作成し、
+   `microcms/schemas/*.json` からスキーマをインポート
+3. `blogs` の参照フィールド（`category` → categories、`spots` → spots）を
+   管理画面で手動設定する。スキーマJSONでは参照先を指定できないため
+4. サービス設定 → APIキー から GET 権限のキーを取得
+5. ホスティングの環境変数に `MICROCMS_SERVICE_DOMAIN` と `MICROCMS_API_KEY` を
+   設定して再デプロイ
+6. （任意）Webhook を登録。Hobby プランでは利用できない
