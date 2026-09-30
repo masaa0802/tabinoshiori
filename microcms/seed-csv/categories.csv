@@ -1,0 +1,4 @@
+contentId,name,slug,description,order
+destination-guide,目的地ガイド,destination-guide,行き先ごとの基本情報と、現地での動き方をまとめています。,1
+preparation,旅の準備,preparation,出発前に決めること・そろえるものを、順番に整理します。,2
+model-course,モデルコース,model-course,日数別の回り方の例。そのまま真似できる形で紹介します。,3

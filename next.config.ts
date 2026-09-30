@@ -25,6 +25,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        // microCMS のメディア（ブログのアイキャッチ・スポット写真）
+        protocol: 'https',
+        hostname: 'images.microcms-assets.io',
+      },
     ],
   },
 

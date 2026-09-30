@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# テンプレートはコミットする（`.env*` に飲み込まれるため例外指定が必要。消さないこと）
+!.env.local.example
 
 # vercel
 .vercel

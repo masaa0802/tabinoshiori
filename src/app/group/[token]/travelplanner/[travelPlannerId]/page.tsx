@@ -832,6 +832,7 @@ export default function TravelPlanner() {
                 itinerary_id={travelPlan.id}
                 startDate={travelPlan.start_date}
                 endDate={travelPlan.end_date}
+                destination={travelPlan.destination}
               />
             </div>
           ) : (

@@ -1,0 +1,114 @@
+{
+  "apiFields": [
+    {
+      "idValue": "blog-title",
+      "fieldId": "title",
+      "name": "タイトル",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "idValue": "blog-excerpt",
+      "fieldId": "excerpt",
+      "name": "抜粋",
+      "kind": "textArea",
+      "description": "一覧・OGPで使う要約。120文字以内を目安に。",
+      "required": true
+    },
+    {
+      "idValue": "blog-cover-image",
+      "fieldId": "coverImage",
+      "name": "アイキャッチ画像",
+      "kind": "media",
+      "required": true
+    },
+    {
+      "idValue": "blog-body",
+      "fieldId": "body",
+      "name": "本文",
+      "kind": "richEditorV2",
+      "required": true
+    },
+    {
+      "idValue": "blog-category",
+      "fieldId": "category",
+      "name": "カテゴリ",
+      "kind": "relation",
+      "description": "参照先APIは管理画面で categories に設定すること（スキーマJSONでは指定できない）。",
+      "required": true
+    },
+    {
+      "idValue": "blog-tags",
+      "fieldId": "tags",
+      "name": "タグ",
+      "kind": "text",
+      "description": "カンマ区切りで入力。不安の種類（お金の不安 / 手続きの不安 / 現地の不安 / 段取りの不安）を1つ以上入れると、その一覧ページに表示される。文字列は一字一句同じにすること。以降は自由タグ（例: 台湾, はじめての旅行）。",
+      "required": false
+    },
+    {
+      "idValue": "blog-destination",
+      "fieldId": "destination",
+      "name": "関連する目的地",
+      "kind": "text",
+      "description": "カンマ区切りで入力（例: 台湾, 台北）。しおりの目的地と突き合わせて関連記事を出すのに使う。",
+      "required": false
+    },
+    {
+      "idValue": "blog-spots",
+      "fieldId": "spots",
+      "name": "紹介スポット",
+      "kind": "relationList",
+      "description": "参照先APIは管理画面で spots に設定すること（スキーマJSONでは指定できない）。",
+      "required": false
+    },
+    {
+      "idValue": "blog-seo-title",
+      "fieldId": "seoTitle",
+      "name": "SEOタイトル",
+      "kind": "text",
+      "description": "未設定ならタイトルを使う。",
+      "required": false
+    },
+    {
+      "idValue": "blog-seo-description",
+      "fieldId": "seoDescription",
+      "name": "メタディスクリプション",
+      "kind": "textArea",
+      "description": "160文字以内。未設定なら抜粋を使う。",
+      "required": false
+    },
+    {
+      "idValue": "blog-og-image",
+      "fieldId": "ogImage",
+      "name": "OGP画像",
+      "kind": "media",
+      "description": "未設定ならアイキャッチ画像を使う。",
+      "required": false
+    },
+    {
+      "idValue": "blog-featured",
+      "fieldId": "featured",
+      "name": "注目記事",
+      "kind": "boolean",
+      "description": "ブログトップの大きな枠に表示する。",
+      "required": false
+    },
+    {
+      "idValue": "blog-price-checked-at",
+      "fieldId": "priceCheckedAt",
+      "name": "料金の調査日",
+      "kind": "date",
+      "description": "記事内に金額・相場を書いた場合は必ず設定する。記事冒頭に「◯年◯月時点」の注釈バナーが出る。6か月を過ぎると警告色に変わり、棚卸しが必要なことが分かる。",
+      "required": false
+    },
+    {
+      "idValue": "blog-price-sources",
+      "fieldId": "priceSources",
+      "name": "料金の出典",
+      "kind": "text",
+      "description": "カンマ区切りで入力（例: 各航空会社の公式サイト, 観光局の公表資料）。注釈バナーに列挙される。金額を書くなら必ず入れる。",
+      "required": false
+    }
+  ],
+  "customFields": []
+}

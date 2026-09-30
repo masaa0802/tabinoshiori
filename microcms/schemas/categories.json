@@ -1,0 +1,36 @@
+{
+  "apiFields": [
+    {
+      "idValue": "category-name",
+      "fieldId": "name",
+      "name": "カテゴリ名",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "idValue": "category-slug",
+      "fieldId": "slug",
+      "name": "スラッグ",
+      "kind": "text",
+      "description": "URL に使う英数字（例: preparation）。未設定ならコンテンツIDを使う。",
+      "required": true
+    },
+    {
+      "idValue": "category-description",
+      "fieldId": "description",
+      "name": "説明",
+      "kind": "textArea",
+      "description": "カテゴリ一覧ページの見出し下に表示する。",
+      "required": false
+    },
+    {
+      "idValue": "category-order",
+      "fieldId": "order",
+      "name": "表示順",
+      "kind": "number",
+      "description": "小さいほど先に表示する。",
+      "required": false
+    }
+  ],
+  "customFields": []
+}
