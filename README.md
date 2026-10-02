@@ -104,7 +104,8 @@ DATABASE_URL="postgresql://masaaki:Tatakomaki4649@localhost:5432/mydb?schema=pub
 
 # Hasura Configuration
 NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT="http://localhost:8080/v1/graphql"
-NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET="travelplanner9032"
+# 管理シークレットは NEXT_PUBLIC_ を付けないこと（付けるとビルド出力に埋め込まれる）
+HASURA_GRAPHQL_ADMIN_SECRET="your-local-admin-secret"
 
 # API Keys
 OPENAI_API_KEY="your-openai-api-key"

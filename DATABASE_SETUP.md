@@ -60,7 +60,7 @@ Production環境では以下の環境変数を設定してください：
 ```bash
 DATABASE_URL="postgresql://username:password@host:port/database"
 NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT="https://your-hasura-endpoint/v1/graphql"
-NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET="your-admin-secret"
+HASURA_GRAPHQL_ADMIN_SECRET="your-admin-secret"
 ```
 
 ### Hasura Cloud Setup
