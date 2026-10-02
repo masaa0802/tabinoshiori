@@ -128,6 +128,6 @@ hasura console --endpoint "$PROD_HASURA_ENDPOINT" --admin-secret "$PROD_ADMIN_SE
 
 ```env
 NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT="https://your-hasura-app.hasura.app/v1/graphql"
-NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET="your-production-admin-secret"
+HASURA_GRAPHQL_ADMIN_SECRET="your-production-admin-secret"
 DATABASE_URL="postgresql://username:password@host:port/database"
 ```
