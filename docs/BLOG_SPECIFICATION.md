@@ -145,8 +145,14 @@ AI検索（ChatGPT・Perplexity等）からの流入も狙う。
 | 段取りの不安 | 日程が組めない | モデルコース、何日必要か、詰め込みすぎない組み方 |
 
 定義は `src/lib/microcms/tags.ts`。一覧ページ・sitemap・ナビはこの配列から自動生成される。
-microCMS 側は `tags`（カンマ区切りテキスト）で運用するため、**入稿時にラベルと
-一字一句同じ文字列を入れること**。ずれると自由タグ扱いになり一覧に出ない。
+microCMS 側は `tags`（セレクトフィールド・複数選択）で運用する。選択式にしているのは、
+テキスト入力だと打ち間違えたときに警告も出ないまま一覧から消えてしまうため。
+
+**増減するときは `ANXIETY_TAGS` と microCMS の選択肢の両方を揃えること。**
+片方だけ変えると、一覧ページはあるのに選べない（または選べるのに一覧に出ない）
+状態になる。
+
+一覧ページを持たない表示専用のタグは、別フィールドの `freeTags` に入れる。
 
 **軸2: 情報の種類（カテゴリ）** — 記事の形式
 
@@ -203,7 +209,7 @@ microCMS 側は `tags`（カンマ区切りテキスト）で運用するため�
 
 ```
 microCMS（記事入稿・管理／SaaS）
-  ├─ blogs / categories / spots … リスト形式のAPIを3つ
+  ├─ articles / categories / spots … リスト形式のAPIを3つ
   └─ 画像は images.microcms-assets.io から配信
         │
         │ microcms-js-sdk（GET のみ。書き込み権限は不要）
@@ -277,14 +283,14 @@ microCMS webhook（任意。Hobbyプランでは利用できない）
 
 ## 5. microCMSコンテンツモデル
 
-> エンドポイント名は `blogs` / `categories` / `spots`。
+> エンドポイント名は `articles` / `categories` / `spots`。
 > `src/lib/microcms/client.ts` の `MICROCMS_ENDPOINTS` と一致している必要がある。
 > 3つともリスト形式で作成すること（形式は後から変更できない）。
 >
 > 実際に管理画面へインポートできるスキーマJSONを `microcms/schemas/` に置いてある。
 > 以下の表は、そのJSONの内容を読みやすくしたもの。
 
-### 5-1. blogs（記事）
+### 5-1. articles（記事）
 
 **URLスラッグは microCMS のコンテンツID。** 専用の `slug` フィールドは無い。
 記事URLは `/blog/<コンテンツID>` になるため、記事作成時に「コンテンツIDを変更」から
@@ -300,7 +306,8 @@ microCMS webhook（任意。Hobbyプランでは利用できない）
 | coverImage | 画像 | ✓ | アイキャッチ画像 |
 | body | リッチエディタ | ✓ | 本文。HTML文字列として取得される |
 | category | コンテンツ参照 → categories | ✓ | カテゴリ（情報の種類） |
-| tags | テキストフィールド | | **カンマ区切り**。不安タグを1つ以上入れる（3-1参照） |
+| tags | セレクト（複数選択） | | 不安タグ。**1つ以上選ぶ**（3-1参照） |
+| freeTags | テキストフィールド | | **カンマ区切り**。表示専用で一覧ページを持たない |
 | destination | テキストフィールド | | **カンマ区切り**。しおりの目的地と突き合わせる |
 | spots | 複数コンテンツ参照 → spots | | 記事内で紹介するスポット |
 | seoTitle | テキストフィールド | | 未設定なら title を使用 |
@@ -310,8 +317,12 @@ microCMS webhook（任意。Hobbyプランでは利用できない）
 | priceCheckedAt | 日付 | | **金額を書いたら必須**。冒頭の注釈バナーに使う（3-3参照） |
 | priceSources | テキストフィールド | | 同上。カンマ区切りの出典 |
 
-`tags` と `destination` がカンマ区切りテキストなのは、microCMS に文字列配列型が
+`freeTags` と `destination` がカンマ区切りテキストなのは、microCMS に文字列配列型が
 無いため。`mappers.ts` の `splitList()` がカンマ・読点・改行で分割する。
+
+`tags`（セレクト）と `freeTags`（テキスト）は、`mappers.ts` の `toTagList()` が
+`BlogPost.tags` の1本の配列にまとめる。アプリ側はこの1本だけを見ればよく、
+不安タグか自由タグかの判別は `tags.ts` の `ANXIETY_TAGS` との完全一致で行う。
 
 **スキーマインポート後に手動設定が2箇所必要。** スキーマJSONでは参照先APIを
 指定できないため、`category` → `categories`、`spots` → `spots` を管理画面で設定する。
@@ -616,7 +627,7 @@ import "server-only";
 import { createClient } from "microcms-js-sdk";
 
 export const MICROCMS_ENDPOINTS = {
-  blogs: "blogs",
+  articles: "articles",
   categories: "categories",
   spots: "spots",
 } as const;
@@ -679,9 +690,9 @@ webhook を使わない場合は ISR のみで、最大1時間で反映される
 手順の詳細は **`docs/MICROCMS_SETUP.md`** にある。概要は以下のとおり。
 
 1. [microcms.io](https://microcms.io) でサービスを作成
-2. `blogs` / `categories` / `spots` をリスト形式で作成し、
+2. `articles` / `categories` / `spots` をリスト形式で作成し、
    `microcms/schemas/*.json` からスキーマをインポート
-3. `blogs` の参照フィールド（`category` → categories、`spots` → spots）を
+3. `articles` の参照フィールド（`category` → categories、`spots` → spots）を
    管理画面で手動設定する。スキーマJSONでは参照先を指定できないため
 4. サービス設定 → APIキー から GET 権限のキーを取得
 5. ホスティングの環境変数に `MICROCMS_SERVICE_DOMAIN` と `MICROCMS_API_KEY` を

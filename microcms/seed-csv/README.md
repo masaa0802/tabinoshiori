@@ -15,7 +15,7 @@ CSVインポートするためのファイル。
 
 1. `categories.csv` → `categories` API
 2. `spots.csv` → `spots` API
-3. `blogs.csv` → `blogs` API
+3. `articles.csv` → `articles` API
 
 ---
 
@@ -33,6 +33,20 @@ microCMS のCSVインポートは、参照フィールドとメディアフィ�
 
 `coverImage` は全記事で未設定。画像をアップロードして設定する。
 未設定でもページは壊れず、グラデーションのプレースホルダが表示される。
+
+### `tags`（不安タグ）が入らなかった場合
+
+`tags` はセレクトフィールド（複数選択）なので、CSVの値が選択肢の文字列と一致すれば
+入るはず**だが、未検証**。入らなかった場合は各記事を開いて手で選び直す。
+
+| 記事のコンテンツID | tags |
+|---|---|
+| `kyoto-2days-guide` | 段取りの不安 |
+| `first-overseas-packing-list` | 手続きの不安 |
+| `cheap-flight-timing` | お金の不安 |
+| `taipei-travel-guide` | 現地の不安 |
+
+`freeTags` はテキストフィールドなので、こちらは通常どおり入る。
 
 ---
 

@@ -10,7 +10,7 @@ import { createClient } from "microcms-js-sdk";
 
 /** microCMS 側のエンドポイント（API）名 */
 export const MICROCMS_ENDPOINTS = {
-  blogs: "blogs",
+  articles: "articles",
   categories: "categories",
   spots: "spots",
 } as const;
