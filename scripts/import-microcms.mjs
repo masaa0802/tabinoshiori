@@ -12,9 +12,9 @@
  *   export MICROCMS_SERVICE_DOMAIN=lisczn7nn1
  *   export MICROCMS_API_KEY=<書き込み権限のあるキー>
  *
- *   node scripts/import-microcms.js            # 何が送られるか表示するだけ
- *   node scripts/import-microcms.js --apply    # 実際に送る（下書きとして作成）
- *   node scripts/import-microcms.js --apply --publish   # 公開状態で作成
+ *   node scripts/import-microcms.mjs            # 何が送られるか表示するだけ
+ *   node scripts/import-microcms.mjs --apply    # 実際に送る（下書きとして作成）
+ *   node scripts/import-microcms.mjs --apply --publish   # 公開状態で作成
  *
  * 既定が下書きなのは、シードデータが動作確認用のサンプルだから。
  * とくに cheap-flight-timing の金額はレイアウト確認用の仮の値で、
@@ -23,10 +23,16 @@
  * contentId を指定した PUT なので、同じIDで再実行すると上書きになる。
  * 途中で失敗しても、直してもう一度流せばよい。
  */
-const fs = require("node:fs");
-const path = require("node:path");
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const SEED_DIR = path.join(__dirname, "..", "microcms", "seed-csv");
+const SEED_DIR = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "microcms",
+  "seed-csv"
+);
 
 /** CSVで表現できない参照フィールド。記事のコンテンツIDで引く */
 const ARTICLE_REFERENCES = {

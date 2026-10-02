@@ -11,7 +11,7 @@ CSVインポートするためのファイル。
 
 ## CSVの代わりにスクリプトで入れる（推奨）
 
-`scripts/import-microcms.js` を使うと、CSVでは扱えない参照フィールド
+`scripts/import-microcms.mjs` を使うと、CSVでは扱えない参照フィールド
 （`category` / `spots`）とセレクトフィールド（`tags`）もまとめて設定できる。
 記事を1件ずつ開いて手で直す作業がなくなる。
 
@@ -22,8 +22,8 @@ CSVインポートするためのファイル。
 export MICROCMS_SERVICE_DOMAIN=lisczn7nn1
 export MICROCMS_API_KEY=<書き込み権限のあるキー>
 
-node scripts/import-microcms.js            # 何が送られるか表示するだけ
-node scripts/import-microcms.js --apply    # 実際に送る（下書きとして作成）
+node scripts/import-microcms.mjs            # 何が送られるか表示するだけ
+node scripts/import-microcms.mjs --apply    # 実際に送る（下書きとして作成）
 ```
 
 既定で**下書き**として作成される。このシードは動作確認用のサンプルで、
