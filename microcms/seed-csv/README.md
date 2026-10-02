@@ -55,6 +55,19 @@ node scripts/import-microcms.mjs --apply    # 実際に送る（下書きとし�
 2. `spots.csv` → `spots` API
 3. `articles.csv` → `articles` API
 
+### `articles` を入れる前に、必須を2つ外す
+
+`coverImage` と `category` はCSVで値を入れられないが、スキーマ上は必須のため
+インポートが弾かれる（2026-10-02 に実際に発生）。
+
+> "coverImage" フィールドは必須です。値を入力してください。
+
+`articles` → API設定 → APIスキーマ で、`coverImage` と `category` の
+**「必須」を一時的に外してからインポートし、終わったら戻す**。
+
+片方ずつ外すともう一方で同じエラーになるので、2つまとめて外すこと。
+他の必須（`title` / `excerpt` / `body`）はCSVに値があるのでそのままでよい。
+
 ---
 
 ## CSVで入らない項目
