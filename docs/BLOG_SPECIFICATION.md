@@ -203,7 +203,7 @@ microCMS 側は `tags`（カンマ区切りテキスト）で運用するため�
 
 ```
 microCMS（記事入稿・管理／SaaS）
-  ├─ blogs / categories / spots … リスト形式のAPIを3つ
+  ├─ articles / categories / spots … リスト形式のAPIを3つ
   └─ 画像は images.microcms-assets.io から配信
         │
         │ microcms-js-sdk（GET のみ。書き込み権限は不要）
@@ -277,14 +277,14 @@ microCMS webhook（任意。Hobbyプランでは利用できない）
 
 ## 5. microCMSコンテンツモデル
 
-> エンドポイント名は `blogs` / `categories` / `spots`。
+> エンドポイント名は `articles` / `categories` / `spots`。
 > `src/lib/microcms/client.ts` の `MICROCMS_ENDPOINTS` と一致している必要がある。
 > 3つともリスト形式で作成すること（形式は後から変更できない）。
 >
 > 実際に管理画面へインポートできるスキーマJSONを `microcms/schemas/` に置いてある。
 > 以下の表は、そのJSONの内容を読みやすくしたもの。
 
-### 5-1. blogs（記事）
+### 5-1. articles（記事）
 
 **URLスラッグは microCMS のコンテンツID。** 専用の `slug` フィールドは無い。
 記事URLは `/blog/<コンテンツID>` になるため、記事作成時に「コンテンツIDを変更」から
@@ -616,7 +616,7 @@ import "server-only";
 import { createClient } from "microcms-js-sdk";
 
 export const MICROCMS_ENDPOINTS = {
-  blogs: "blogs",
+  articles: "articles",
   categories: "categories",
   spots: "spots",
 } as const;
@@ -679,9 +679,9 @@ webhook を使わない場合は ISR のみで、最大1時間で反映される
 手順の詳細は **`docs/MICROCMS_SETUP.md`** にある。概要は以下のとおり。
 
 1. [microcms.io](https://microcms.io) でサービスを作成
-2. `blogs` / `categories` / `spots` をリスト形式で作成し、
+2. `articles` / `categories` / `spots` をリスト形式で作成し、
    `microcms/schemas/*.json` からスキーマをインポート
-3. `blogs` の参照フィールド（`category` → categories、`spots` → spots）を
+3. `articles` の参照フィールド（`category` → categories、`spots` → spots）を
    管理画面で手動設定する。スキーマJSONでは参照先を指定できないため
 4. サービス設定 → APIキー から GET 権限のキーを取得
 5. ホスティングの環境変数に `MICROCMS_SERVICE_DOMAIN` と `MICROCMS_API_KEY` を

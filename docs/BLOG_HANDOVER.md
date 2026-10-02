@@ -58,7 +58,7 @@ Netlify のビルドが `exit code 2` で落ちていた。
 呼び出しが失敗したときはエラーログが出る:
 
 ```
-[blog] microCMS の blogs を取得できませんでした。エンドポイント名・APIキーの権限・サービスIDを確認してください。
+[blog] microCMS の articles を取得できませんでした。エンドポイント名・APIキーの権限・サービスIDを確認してください。
 ```
 
 ---
@@ -68,7 +68,7 @@ Netlify のビルドが `exit code 2` で落ちていた。
 ### データ層 `src/lib/microcms/`
 | ファイル | 役割 |
 |---|---|
-| `client.ts` | microCMSクライアント初期化。エンドポイント名（`blogs`/`categories`/`spots`）を定義 |
+| `client.ts` | microCMSクライアント初期化。エンドポイント名（`articles`/`categories`/`spots`）を定義 |
 | `queries.ts` | 記事取得関数。**CMS切り替えはこのファイル内で完結する** |
 | `mappers.ts` | microCMSレスポンス → `BlogPost` 型への変換 |
 | `types.ts` | `BlogPost` / `Category` / `Spot` / `ArticleBody` の型定義 |
@@ -298,7 +298,7 @@ Next.js の App Router ではプライベートフォルダ扱いになる。
 英数字のIDを設定する運用が必要。自動生成のランダムIDだとURLが読みにくくなる。
 
 **スキーマインポート後の手動設定が2箇所ある**
-スキーマJSONでは参照先APIを指定できないため、`blogs` APIの
+スキーマJSONでは参照先APIを指定できないため、`articles` APIの
 `category`（参照）→ `categories`、`spots`（複数参照）→ `spots` を管理画面で設定する。
 
 **`tags` / `destination` はカンマ区切りテキスト**

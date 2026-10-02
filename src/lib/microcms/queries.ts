@@ -40,7 +40,7 @@ function warnOnceAboutSeedData() {
  * microCMS の呼び出しが失敗したときに、ビルドを止めずに記録する。
  *
  * よくある原因:
- * - エンドポイント名が blogs / categories / spots になっていない（404）
+ * - エンドポイント名が articles / categories / spots になっていない（404）
  * - APIキーの権限が足りない、または失効している（403 / 401）
  * - サービスIDの綴り違い
  */
@@ -77,12 +77,12 @@ export const getAllPosts = cache(async (): Promise<BlogPost[]> => {
 
   try {
     const response = await microcmsClient.getList<MicroCMSBlog>({
-      endpoint: MICROCMS_ENDPOINTS.blogs,
+      endpoint: MICROCMS_ENDPOINTS.articles,
       queries: { limit: FETCH_LIMIT, orders: "-publishedAt" },
     });
     return sortByPublishedAtDesc(response.contents.map(toBlogPost));
   } catch (error) {
-    reportFetchFailure(MICROCMS_ENDPOINTS.blogs, error);
+    reportFetchFailure(MICROCMS_ENDPOINTS.articles, error);
     return [];
   }
 });
@@ -96,7 +96,7 @@ export const getPostBySlug = cache(
 
     try {
       const content = await microcmsClient.getListDetail<MicroCMSBlog>({
-        endpoint: MICROCMS_ENDPOINTS.blogs,
+        endpoint: MICROCMS_ENDPOINTS.articles,
         contentId: slug,
       });
       return toBlogPost(content);
@@ -105,7 +105,7 @@ export const getPostBySlug = cache(
       // 403 や 500 は設定・障害の問題なので、気づけるようにログを残す。
       const message = error instanceof Error ? error.message : String(error);
       if (!message.includes("404")) {
-        reportFetchFailure(`${MICROCMS_ENDPOINTS.blogs}/${slug}`, error);
+        reportFetchFailure(`${MICROCMS_ENDPOINTS.articles}/${slug}`, error);
       }
       return null;
     }

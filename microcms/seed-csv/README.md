@@ -15,7 +15,7 @@ CSVインポートするためのファイル。
 
 1. `categories.csv` → `categories` API
 2. `spots.csv` → `spots` API
-3. `blogs.csv` → `blogs` API
+3. `articles.csv` → `articles` API
 
 ---
 

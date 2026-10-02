@@ -25,7 +25,7 @@
 
 | 作る API | エンドポイント名 | 型 | スキーマ |
 |---|---|---|---|
-| ブログ | `blogs` | リスト形式 | `microcms/schemas/blogs.json` |
+| 記事 | `articles` | リスト形式 | `microcms/schemas/articles.json` |
 | カテゴリ | `categories` | リスト形式 | `microcms/schemas/categories.json` |
 | スポット | `spots` | リスト形式 | `microcms/schemas/spots.json` |
 
@@ -38,7 +38,7 @@ API スキーマの画面で「スキーマのインポート」から JSON を�
 
 ### 2-1. インポート後に手動で設定する箇所（2つ）
 
-スキーマJSONでは参照先APIを指定できないため、`blogs` API の以下2フィールドは
+スキーマJSONでは参照先APIを指定できないため、`articles` API の以下2フィールドは
 管理画面で参照先を設定する必要がある。
 
 | フィールド | 種類 | 参照先に指定する API |
@@ -153,7 +153,7 @@ MICROCMS_WEBHOOK_SECRET=<自分で決めた文字列>
 
 記事の公開・更新時に該当ページだけ再生成する。設定しない場合は最大1時間（ISR）で反映される。
 
-1. 管理画面 → `blogs` API → API設定 → Webhook
+1. 管理画面 → `articles` API → API設定 → Webhook
 2. 「カスタム通知」を選ぶ
 3. URL: `https://tabinoshiori.jp/api/revalidate`
 4. シークレット: `.env.local` の `MICROCMS_WEBHOOK_SECRET` と同じ値
@@ -223,14 +223,14 @@ microCMS のメディアは `images.microcms-assets.io` から配信される。
 サーバーログ（Netlify なら Deploy log）に次のエラーが出ていないか確認する。
 
 ```
-[blog] microCMS の blogs を取得できませんでした。エンドポイント名・APIキーの権限・サービスIDを確認してください。
+[blog] microCMS の articles を取得できませんでした。エンドポイント名・APIキーの権限・サービスIDを確認してください。
 ```
 
 よくある原因は3つ。
 
 | 症状 | 原因 | 対処 |
 |---|---|---|
-| 404 | エンドポイント名が `blogs` / `categories` / `spots` になっていない | API の作り直し（エンドポイント名は変更できない） |
+| 404 | エンドポイント名が `articles` / `categories` / `spots` になっていない | API の作り直し（エンドポイント名は変更できない） |
 | 403 / 401 | APIキーの権限不足、または失効 | サービス設定 → APIキー で GET 権限を確認 |
 | 404 | サービスIDの綴り違い | `MICROCMS_SERVICE_DOMAIN` を管理画面URLと突き合わせる |
 

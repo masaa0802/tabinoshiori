@@ -1,14 +1,14 @@
 {
   "apiFields": [
     {
-      "idValue": "blog-title",
+      "idValue": "article-title",
       "fieldId": "title",
       "name": "タイトル",
       "kind": "text",
       "required": true
     },
     {
-      "idValue": "blog-excerpt",
+      "idValue": "article-excerpt",
       "fieldId": "excerpt",
       "name": "抜粋",
       "kind": "textArea",
@@ -16,21 +16,21 @@
       "required": true
     },
     {
-      "idValue": "blog-cover-image",
+      "idValue": "article-cover-image",
       "fieldId": "coverImage",
       "name": "アイキャッチ画像",
       "kind": "media",
       "required": true
     },
     {
-      "idValue": "blog-body",
+      "idValue": "article-body",
       "fieldId": "body",
       "name": "本文",
       "kind": "richEditorV2",
       "required": true
     },
     {
-      "idValue": "blog-category",
+      "idValue": "article-category",
       "fieldId": "category",
       "name": "カテゴリ",
       "kind": "relation",
@@ -38,7 +38,7 @@
       "required": true
     },
     {
-      "idValue": "blog-tags",
+      "idValue": "article-tags",
       "fieldId": "tags",
       "name": "タグ",
       "kind": "text",
@@ -46,7 +46,7 @@
       "required": false
     },
     {
-      "idValue": "blog-destination",
+      "idValue": "article-destination",
       "fieldId": "destination",
       "name": "関連する目的地",
       "kind": "text",
@@ -54,7 +54,7 @@
       "required": false
     },
     {
-      "idValue": "blog-spots",
+      "idValue": "article-spots",
       "fieldId": "spots",
       "name": "紹介スポット",
       "kind": "relationList",
@@ -62,7 +62,7 @@
       "required": false
     },
     {
-      "idValue": "blog-seo-title",
+      "idValue": "article-seo-title",
       "fieldId": "seoTitle",
       "name": "SEOタイトル",
       "kind": "text",
@@ -70,7 +70,7 @@
       "required": false
     },
     {
-      "idValue": "blog-seo-description",
+      "idValue": "article-seo-description",
       "fieldId": "seoDescription",
       "name": "メタディスクリプション",
       "kind": "textArea",
@@ -78,7 +78,7 @@
       "required": false
     },
     {
-      "idValue": "blog-og-image",
+      "idValue": "article-og-image",
       "fieldId": "ogImage",
       "name": "OGP画像",
       "kind": "media",
@@ -86,7 +86,7 @@
       "required": false
     },
     {
-      "idValue": "blog-featured",
+      "idValue": "article-featured",
       "fieldId": "featured",
       "name": "注目記事",
       "kind": "boolean",
@@ -94,7 +94,7 @@
       "required": false
     },
     {
-      "idValue": "blog-price-checked-at",
+      "idValue": "article-price-checked-at",
       "fieldId": "priceCheckedAt",
       "name": "料金の調査日",
       "kind": "date",
@@ -102,7 +102,7 @@
       "required": false
     },
     {
-      "idValue": "blog-price-sources",
+      "idValue": "article-price-sources",
       "fieldId": "priceSources",
       "name": "料金の出典",
       "kind": "text",
