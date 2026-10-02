@@ -295,7 +295,7 @@ src/
 ```
 
 ### 認証
-- Admin Secret: 環境変数 `NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET`
+- Admin Secret: 環境変数 `HASURA_GRAPHQL_ADMIN_SECRET`（無ければ `NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET`）
 - ヘッダー: `x-hasura-admin-secret`
 
 ### 主要なクエリ
@@ -434,6 +434,44 @@ mutation InsertBudget($object: budgets_insert_input!) {
 
 ### 環境変数
 
+> ## ⚠️ 本番の環境変数を API から削除・再作成しないこと
+>
+> **2026-09-30、この操作で本番障害が発生した。**
+>
+> Netlify の環境変数を secret 指定に切り替えようとして、API 経由で
+> 削除と再作成を行ったところ、**削除だけが成功し、再作成が失敗していた。**
+> API は "Environment variable upserted" と成功を返すが、変数は作られていない。
+> 結果、7個の認証情報が本番から消えた。
+>
+> 消えた変数と症状:
+>
+> | 変数 | 症状 |
+> |---|---|
+> | `HASURA_GRAPHQL_ADMIN_SECRET` | しおりが全て 500（`Response not successful: Received status code 500`） |
+> | `ADMIN_PASSWORD` / `ADMIN_SESSION_TOKEN` | 管理画面が開けない（`Admin is not configured`） |
+> | `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` | 画像アップロード |
+> | `MICROCMS_API_KEY` | ブログ記事の取得 |
+> | `OPENAI_API_KEY` | 該当機能 |
+>
+> **やってはいけないこと**
+>
+> - API 経由で本番の環境変数を削除する。API は既存変数の secret 切り替えを
+>   422 で拒否するため削除と再作成が必要になるが、その再作成が失敗しても
+>   成功として返ってくる
+> - 環境変数を変更したあと、**一覧を再取得して実在を確認せずに次へ進む**
+>
+> **環境変数を変更する場合**
+>
+> 管理画面から行うこと。変更後は必ず一覧で実在と値を目視し、
+> プレビューをビルドし直して該当機能が動くことを確認してから本番に反映する。
+>
+> また、環境変数に依存するコードからフォールバックを外す変更は、
+> 変更後の環境変数で動作すると確認できるまで適用しない。今回は確認前に
+> フォールバックを削除したため、退避先がない状態で障害になった。
+>
+> なお当初は「secret 指定すると値が関数に届かない」と推測したが、**これは誤り。**
+> 単に変数が存在しなかっただけである。
+
 #### 必須環境変数
 ```env
 # データベース設定（Prisma用）
@@ -444,7 +482,8 @@ HASURA_DATABASE_URL="postgresql://masaaki:password@postgres:5432/mydb"
 
 # Hasura設定
 NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT="http://localhost:8080/v1/graphql"
-NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET="travelplanner9032"
+# 管理シークレットは NEXT_PUBLIC_ を付けないこと（ビルド出力に埋め込まれる）
+HASURA_GRAPHQL_ADMIN_SECRET="travelplanner9032"
 
 # API Keys
 OPENAI_API_KEY="your-openai-api-key"
@@ -457,9 +496,30 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="your-google-maps-api-key"
 | DATABASE_URL | Prisma用データベース接続URL | `?schema=public`パラメータ必須 |
 | HASURA_DATABASE_URL | Hasura用データベース接続URL | クエリパラメータなし |
 | NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT | GraphQLエンドポイント | クライアントサイドで使用 |
-| NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET | Hasura管理者シークレット | クライアントサイドで使用 |
+| HASURA_GRAPHQL_ADMIN_SECRET | Hasura管理者シークレット | **サーバーサイドのみ。本番はこちらを使う** |
+| NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET | 同上のフォールバック | ⚠️ 下記参照。将来的に削除したい |
 | OPENAI_API_KEY | OpenAI APIキー | サーバーサイドのみ |
 | NEXT_PUBLIC_GOOGLE_MAPS_API_KEY | Google Maps APIキー | クライアントサイドで使用 |
+
+> ### ⚠️ NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET について
+>
+> **この変数は本来あってはならない。** `NEXT_PUBLIC_` 付きの変数は Next.js が
+> ビルド出力に値を埋め込むため、クライアントコンポーネントから参照された瞬間に
+> **データベースへの全権アクセスキーがブラウザに配信される。**
+>
+> 現在はサーバーサイドのファイルからしか参照していないため実際には露出していないが、
+> 誰かが誤ってクライアント側で参照すると即座に漏洩する。
+>
+> 本来は `HASURA_GRAPHQL_ADMIN_SECRET` だけにすべきで、一度削除を試みたが、
+> 同時に行った環境変数の操作で `HASURA_GRAPHQL_ADMIN_SECRET` 自体を消してしまい
+> 本番障害になった。応急処置として `NEXT_PUBLIC_` 版を戻してある。
+>
+> **削除する手順:**
+> 1. Netlify で `HASURA_GRAPHQL_ADMIN_SECRET` が secret 指定でないことを確認する
+> 2. 再デプロイし、しおりが正常に動くことを確認する（フォールバックに頼っていない状態）
+> 3. そのうえでコードから `NEXT_PUBLIC_` 版の参照を外し、Netlify からも削除する
+>
+> 2を飛ばさないこと。今回はここを飛ばして障害になった。
 
 ### Docker Compose設定
 
@@ -599,7 +659,7 @@ Vercelダッシュボードで以下を設定：
 - `DATABASE_URL`
 - `HASURA_DATABASE_URL`
 - `NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT`
-- `NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET`
+- `HASURA_GRAPHQL_ADMIN_SECRET`
 - `OPENAI_API_KEY`
 - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`
 
