@@ -9,6 +9,44 @@ CSVインポートするためのファイル。
 
 ---
 
+## CSVの代わりにスクリプトで入れる（推奨）
+
+`scripts/import-microcms.js` を使うと、CSVでは扱えない参照フィールド
+（`category` / `spots`）とセレクトフィールド（`tags`）もまとめて設定できる。
+記事を1件ずつ開いて手で直す作業がなくなる。
+
+**書き込み権限つきのAPIキーが必要。**（デフォルトキーはGETのみのことが多い。
+サービス設定 → APIキー で PUT を許可する）
+
+```bash
+export MICROCMS_SERVICE_DOMAIN=lisczn7nn1
+export MICROCMS_API_KEY=<書き込み権限のあるキー>
+
+node scripts/import-microcms.js            # 何が送られるか表示するだけ
+node scripts/import-microcms.js --apply    # 実際に送る（下書きとして作成）
+```
+
+既定で**下書き**として作成される。このシードは動作確認用のサンプルで、
+とくに `cheap-flight-timing` の金額は仮の値のため、そのまま公開してはいけない。
+公開状態で入れたい場合のみ `--publish` を付ける。
+
+`contentId` を指定した PUT なので、同じIDで再実行すると上書きになる。
+途中で失敗しても、直してもう一度流せばよい。
+
+キーは環境変数からのみ読む。スクリプトにもコマンドライン引数にも書かないこと。
+
+### うまくいかない場合
+
+| 症状 | 原因 | 対処 |
+|---|---|---|
+| 401 / 403 | APIキーに書き込み権限がない | サービス設定 → APIキーで PUT を許可 |
+| 400 `coverImage` | 必須フィールドだが画像はAPIで設定できない | スキーマで一時的に「必須」を外す |
+| 404 | エンドポイント名かサービスIDの誤り | `articles` / `categories` / `spots` と `MICROCMS_SERVICE_DOMAIN` を確認 |
+
+以下は手作業でCSVを入れる場合の手順。
+
+---
+
 ## インポートする順番
 
 参照される側から先に入れる。
