@@ -40,9 +40,36 @@
     {
       "idValue": "article-tags",
       "fieldId": "tags",
-      "name": "タグ",
+      "name": "不安タグ",
+      "kind": "select",
+      "description": "読者の不安の種類。該当するものを選ぶ（複数可）。選んだものが /blog/tag/<slug> の一覧ページに表示される。選択肢を増減するには src/lib/microcms/tags.ts の ANXIETY_TAGS も合わせて変更すること。",
+      "required": false,
+      "selectItems": [
+        {
+          "id": "anxiety-1",
+          "value": "お金の不安"
+        },
+        {
+          "id": "anxiety-2",
+          "value": "手続きの不安"
+        },
+        {
+          "id": "anxiety-3",
+          "value": "現地の不安"
+        },
+        {
+          "id": "anxiety-4",
+          "value": "段取りの不安"
+        }
+      ],
+      "multipleSelect": true
+    },
+    {
+      "idValue": "article-free-tags",
+      "fieldId": "freeTags",
+      "name": "自由タグ",
       "kind": "text",
-      "description": "カンマ区切りで入力。不安の種類（お金の不安 / 手続きの不安 / 現地の不安 / 段取りの不安）を1つ以上入れると、その一覧ページに表示される。文字列は一字一句同じにすること。以降は自由タグ（例: 台湾, はじめての旅行）。",
+      "description": "カンマ区切りで入力（例: 台湾, はじめての旅行）。記事下部に表示されるだけで、一覧ページは持たない。不安タグは上の「不安タグ」で選ぶこと。",
       "required": false
     },
     {

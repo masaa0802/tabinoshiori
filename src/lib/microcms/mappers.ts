@@ -52,9 +52,15 @@ export type MicroCMSBlog = MicroCMSMeta & {
   coverImage?: MicroCMSImageField;
   body?: string;
   category?: MicroCMSCategory;
+  /**
+   * 不安タグ。microCMS 側はセレクトフィールド（複数選択）なので配列で返る。
+   * 以前はカンマ区切りテキストだったため、移行前のデータや
+   * 単一選択に設定された場合に備えて文字列も受け付ける。
+   */
+  tags?: string[] | string;
+  /** 自由タグ。一覧ページを持たない表示専用。カンマ区切りテキスト */
+  freeTags?: string;
   /** microCMS に文字列配列型がないため、カンマ区切りのテキストで入稿する */
-  tags?: string;
-  /** 同上 */
   destination?: string;
   spots?: MicroCMSSpot[];
   seoTitle?: string;
@@ -78,6 +84,23 @@ export function splitList(value?: string | null): string[] {
     .split(/[,、\n]/)
     .map((item) => item.trim())
     .filter((item) => item.length > 0);
+}
+
+/**
+ * 不安タグ（セレクト）と自由タグ（テキスト）を1つの配列にまとめる。
+ *
+ * アプリ側は BlogPost.tags の1本だけを見れば済むようにしてある。
+ * 不安タグか自由タグかの判別は tags.ts の ANXIETY_TAGS との完全一致で行うため、
+ * ここで混ぜても区別は失われない。重複は先に出たほうを残す。
+ */
+export function toTagList(
+  anxiety?: string[] | string | null,
+  free?: string | null
+): string[] {
+  const selected = Array.isArray(anxiety)
+    ? anxiety.map((item) => item.trim()).filter((item) => item.length > 0)
+    : splitList(anxiety);
+  return [...new Set([...selected, ...splitList(free)])];
 }
 
 function toImage(image?: MicroCMSImageField): BlogImage | undefined {
@@ -128,7 +151,7 @@ export function toBlogPost(raw: MicroCMSBlog): BlogPost {
     coverImage: toImage(raw.coverImage),
     body: { format: "html", html: raw.body ?? "" },
     category: toCategory(raw.category),
-    tags: splitList(raw.tags),
+    tags: toTagList(raw.tags, raw.freeTags),
     destinations: splitList(raw.destination),
     spots: (raw.spots ?? []).map(toSpot),
     seoTitle: raw.seoTitle?.trim() || undefined,
