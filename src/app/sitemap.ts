@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { getAllCategories, getAllPosts } from "@/lib/microcms/queries";
+import { getAllCategories, getPublishedPosts } from "@/lib/microcms/queries";
 import { ANXIETY_TAGS } from "@/lib/microcms/tags";
 import { SITE_URL } from "@/lib/site";
 
@@ -49,7 +49,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const [posts, categories] = await Promise.all([
-    getAllPosts(),
+    // 下書きのURLを検索エンジンに知らせないため、必ず公開済みのみ
+    getPublishedPosts(),
     getAllCategories(),
   ]);
 

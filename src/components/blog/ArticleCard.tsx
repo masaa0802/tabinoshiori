@@ -1,3 +1,4 @@
+import CoverPlaceholder from "./CoverPlaceholder";
 import Link from "next/link";
 import Image from "next/image";
 import type { BlogPost } from "@/lib/microcms/types";
@@ -41,7 +42,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ post, featured = false }) => 
               className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-100 to-teal-100" />
+            <CoverPlaceholder categorySlug={post.category.slug} categoryName={post.category.name} variant="card" />
           )}
         </div>
 

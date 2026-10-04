@@ -96,6 +96,13 @@ export type BlogPost = {
   updatedAt: string;
   featured: boolean;
   /**
+   * 下書きかどうか。microCMS で一度も公開されていないコンテンツが true。
+   *
+   * 一覧取得は公開済みしか返さないため、一覧では常に false。
+   * `draftKey` 付きで取得したとき（画面プレビュー）だけ true になりうる。
+   */
+  isDraft: boolean;
+  /**
    * 記事内の料金・相場をいつ調べたか（ISO8601）。
    * 金額を含む記事は必ず設定する。設定すると記事冒頭に注釈バナーが出る。
    */

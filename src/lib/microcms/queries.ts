@@ -87,8 +87,15 @@ export const getAllPosts = cache(async (): Promise<BlogPost[]> => {
   }
 });
 
+/**
+ * 1記事を取得する。
+ *
+ * `draftKey` を渡すと下書きの内容が返る。キーは microCMS が記事ごとに発行する
+ * もので、管理画面の「画面プレビュー」から `/api/preview` に渡される。
+ * 一覧取得では下書きを取れないため、下書きの確認はこの経路だけ。
+ */
 export const getPostBySlug = cache(
-  async (slug: string): Promise<BlogPost | null> => {
+  async (slug: string, draftKey?: string): Promise<BlogPost | null> => {
     if (!isMicroCMSConfigured || !microcmsClient) {
       warnOnceAboutSeedData();
       return seedPosts.find((post) => post.slug === slug) ?? null;
@@ -98,6 +105,7 @@ export const getPostBySlug = cache(
       const content = await microcmsClient.getListDetail<MicroCMSBlog>({
         endpoint: MICROCMS_ENDPOINTS.articles,
         contentId: slug,
+        ...(draftKey ? { queries: { draftKey } } : {}),
       });
       return toBlogPost(content);
     } catch (error) {
@@ -129,6 +137,20 @@ export const getAllCategories = cache(async (): Promise<Category[]> => {
     return [];
   }
 });
+
+/**
+ * 公開済みの記事だけを返す。
+ *
+ * `sitemap.xml` と `feed.xml` は**必ずこちらを使うこと。**
+ * 下書きのURLを検索エンジンやRSSリーダーに知らせる経路を作らないため。
+ *
+ * 現状は一覧取得が公開済みしか返さないので、この絞り込みは実質的に何もしない。
+ * 将来「下書き全取得」権限を使うようになったときに効く保険として置いている。
+ */
+export async function getPublishedPosts(): Promise<BlogPost[]> {
+  const posts = await getAllPosts();
+  return posts.filter((post) => !post.isDraft);
+}
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const categories = await getAllCategories();

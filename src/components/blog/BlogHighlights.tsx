@@ -1,3 +1,4 @@
+import CoverPlaceholder from "./CoverPlaceholder";
 import Link from "next/link";
 import Image from "next/image";
 import { getAllPosts } from "@/lib/microcms/queries";
@@ -68,7 +69,7 @@ const BlogHighlights = async () => {
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-100 to-teal-100" />
+                  <CoverPlaceholder categorySlug={post.category.slug} categoryName={post.category.name} variant="card" />
                 )}
               </div>
 

@@ -112,6 +112,7 @@ export const seedPosts: BlogPost[] = [
     publishedAt: "2026-07-14T09:00:00.000Z",
     updatedAt: "2026-08-05T09:00:00.000Z",
     featured: true,
+    isDraft: false,
     priceSources: [],
     seoDescription:
       "京都を1泊2日で回るモデルコース。清水寺・伏見稲荷・錦市場を移動時間込みで無理なく組んだ、はじめての京都向けの行程です。",
@@ -181,6 +182,7 @@ export const seedPosts: BlogPost[] = [
     publishedAt: "2026-07-28T09:00:00.000Z",
     updatedAt: "2026-07-28T09:00:00.000Z",
     featured: false,
+    isDraft: false,
     priceSources: [],
     seoDescription:
       "はじめての海外旅行の持ち物を「現地で買えないもの」から逆算して整理。パスポート・常備薬・変換プラグなど、出発前に必ず用意すべきものだけをまとめました。",
@@ -247,6 +249,7 @@ export const seedPosts: BlogPost[] = [
     publishedAt: "2026-08-11T09:00:00.000Z",
     updatedAt: "2026-08-11T09:00:00.000Z",
     featured: false,
+    isDraft: false,
     // 金額を含む記事なので調査時点と出典を設定する。記事冒頭に注釈バナーが出る
     priceCheckedAt: "2026-08-01T00:00:00.000Z",
     priceSources: ["（サンプル）実記事では実際に確認した出典に差し替えること"],
@@ -342,6 +345,7 @@ export const seedPosts: BlogPost[] = [
     publishedAt: "2026-08-18T09:00:00.000Z",
     updatedAt: "2026-08-18T09:00:00.000Z",
     featured: false,
+    isDraft: false,
     priceSources: [],
     seoDescription:
       "はじめての台北向けガイド。桃園空港から市内への行き方、悠遊カードでの移動、両替のタイミングなど、到着日に必要な情報をまとめました。",
