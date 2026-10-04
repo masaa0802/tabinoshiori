@@ -55,21 +55,28 @@ API スキーマの画面で「スキーマのインポート」から JSON を�
 2. デフォルトキーの GET 権限があれば足りる（書き込み権限は不要）
 3. 発行したキーが `MICROCMS_API_KEY` に入る値
 
-## 3-1. 下書きプレビュー用のAPIキーを発行する（任意）
+## 3-1. 下書きの画面プレビューを設定する（任意）
 
-Deploy Preview とローカルで、下書きの記事も一覧に出したい場合のみ。
+公開前に下書きを確認したい場合のみ。**APIキーは増やさなくてよい。**
 
-1. サービス設定 → APIキー で**もう1本キーを作る**
-2. そのキーに「**下書き全取得**」権限を付ける
-3. `MICROCMS_DRAFT_API_KEY` に設定する
+1. 任意の文字列を決めて `MICROCMS_PREVIEW_SECRET` に設定する
+   （microCMS のキーではなく、こちらで決めるパスワードのようなもの）
+2. microCMS の `articles` → API設定 → **画面プレビュー** に次のURLを入れる
 
-**本番には絶対に設定しないこと。** Netlify ではデプロイコンテキストごとに値を
-分けられるので、Deploy Previews と Branch deploys にだけ入れる。
+```
+https://tabinoshiori.jp/api/preview?secret=<MICROCMS_PREVIEW_SECRET>&contentId={CONTENT_ID}&draftKey={DRAFT_KEY}
+```
 
-コード側でも許可リスト方式で本番を弾いているが（`src/lib/microcms/client.ts`）、
-鍵を分けることが2枚目の安全装置になる。片方が壊れても下書きは漏れない。
+`{CONTENT_ID}` と `{DRAFT_KEY}` は microCMS が自動で置き換える。そのまま書く。
 
-## 4. 環境変数を設定する
+記事編集画面の「画面プレビュー」ボタンから、その記事の下書きが開ける。
+プレビューは押した本人にしか効かず、検索結果にも出ない。
+
+**一覧に下書きを混ぜることはできない。** それには「下書き全取得」権限を付けた
+専用のAPIキーが必要だが、現在のプランはキーを1本しか作れず本番と共用になる。
+いまのキーに権限を足すと**本番に下書きが出る**ので、やらないこと。
+
+## 4. 環境変数を設定する## 4. 環境変数を設定する
 
 `.env.local.example` をコピーして `.env.local` を作り、値を埋める。
 
@@ -244,7 +251,7 @@ Netlify なら Site configuration → Environment variables）に設定する。
 | `MICROCMS_SERVICE_DOMAIN` | 必須 |
 | `MICROCMS_API_KEY` | 必須 |
 | `MICROCMS_WEBHOOK_SECRET` | 任意（webhook を使う場合のみ） |
-| `MICROCMS_DRAFT_API_KEY` | 任意。**Production には設定しない**（3-1参照） |
+| `MICROCMS_PREVIEW_SECRET` | 任意。画面プレビューを使う場合のみ（3-1参照） |
 
 **環境変数を追加したら再デプロイすること。** 追加しただけでは反映されない。
 

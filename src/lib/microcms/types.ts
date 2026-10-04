@@ -98,9 +98,8 @@ export type BlogPost = {
   /**
    * 下書きかどうか。microCMS で一度も公開されていないコンテンツが true。
    *
-   * 本番では下書きがそもそも取得されないため、常に false になる。
-   * Deploy Preview とローカルでのみ true になりうる。
-   * `sitemap.xml` と `feed.xml` からは、どの環境でも必ず除外すること。
+   * 一覧取得は公開済みしか返さないため、一覧では常に false。
+   * `draftKey` 付きで取得したとき（画面プレビュー）だけ true になりうる。
    */
   isDraft: boolean;
   /**

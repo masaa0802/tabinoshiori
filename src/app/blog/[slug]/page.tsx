@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { draftMode } from "next/headers";
 import ArticleBody from "@/components/blog/ArticleBody";
 import ArticleCard from "@/components/blog/ArticleCard";
 import CoverPlaceholder from "@/components/blog/CoverPlaceholder";
@@ -23,19 +24,48 @@ export const revalidate = 3600;
 
 type PageProps = {
   params: Promise<{ slug: string }>;
+  /** `draftKey` は microCMS の画面プレビューから `/api/preview` 経由で渡る */
+  searchParams: Promise<{ draftKey?: string }>;
 };
+
+/**
+ * プレビューとして開かれているかを判定し、使う draftKey を返す。
+ *
+ * Draft Mode の Cookie と draftKey の両方が揃ったときだけ下書きを取りにいく。
+ * クエリだけで下書きが見えると、キーが漏れたときに誰でも開けてしまう。
+ */
+async function resolveDraftKey(
+  searchParams: PageProps["searchParams"]
+): Promise<string | undefined> {
+  const { isEnabled } = await draftMode();
+  if (!isEnabled) return undefined;
+  const { draftKey } = await searchParams;
+  return draftKey || undefined;
+}
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
   return posts.map((post) => ({ slug: post.slug }));
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const draftKey = await resolveDraftKey(searchParams);
+  const post = await getPostBySlug(slug, draftKey);
 
   if (!post) {
     return { title: "記事が見つかりません" };
+  }
+
+  // プレビューは検索結果に出さない。下書きのURLが拾われる経路を作らないため
+  if (draftKey) {
+    return {
+      title: `[プレビュー] ${post.seoTitle || post.title}`,
+      robots: { index: false, follow: false },
+    };
   }
 
   const title = post.seoTitle || post.title;
@@ -69,9 +99,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function BlogArticlePage({ params }: PageProps) {
+export default async function BlogArticlePage({
+  params,
+  searchParams,
+}: PageProps) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const draftKey = await resolveDraftKey(searchParams);
+  const post = await getPostBySlug(slug, draftKey);
 
   if (!post) {
     notFound();
@@ -160,9 +194,10 @@ export default async function BlogArticlePage({ params }: PageProps) {
           </div>
         </header>
 
-        {post.isDraft && (
+        {draftKey && (
           <p className="mt-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">
-            この記事は<strong>下書き</strong>です。本番環境には表示されません。
+            <strong>下書きのプレビュー</strong>です。このページは公開されておらず、
+            検索結果にも出ません。公開するには microCMS で公開してください。
           </p>
         )}
 
