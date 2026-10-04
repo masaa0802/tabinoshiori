@@ -1,3 +1,4 @@
+import CoverPlaceholder from "./CoverPlaceholder";
 import Link from "next/link";
 import Image from "next/image";
 import type { BlogPost } from "@/lib/microcms/types";
@@ -41,14 +42,22 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ post, featured = false }) => 
               className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-100 to-teal-100" />
+            <CoverPlaceholder categorySlug={post.category.slug} categoryName={post.category.name} variant="card" />
           )}
         </div>
 
         <div className={`p-5 flex flex-col flex-1 ${featured ? "md:w-1/2 md:p-8 md:justify-center" : ""}`}>
-          <span className="inline-flex self-start items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-            {post.category.name}
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+              {post.category.name}
+            </span>
+            {/* 公開済みと見分けがつかないと事故るため、一覧でも明示する */}
+            {post.isDraft && (
+              <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">
+                下書き
+              </span>
+            )}
+          </div>
 
           <h3
             className={`mt-3 font-bold text-gray-900 leading-snug group-hover:text-emerald-700 transition-colors ${

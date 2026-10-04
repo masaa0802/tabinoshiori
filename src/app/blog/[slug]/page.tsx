@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ArticleBody from "@/components/blog/ArticleBody";
 import ArticleCard from "@/components/blog/ArticleCard";
+import CoverPlaceholder from "@/components/blog/CoverPlaceholder";
 import PriceDisclosure from "@/components/blog/PriceDisclosure";
 import SpotCard from "@/components/blog/SpotCard";
 import { anxietyTagsOf, freeTagsOf } from "@/lib/microcms/tags";
@@ -159,8 +160,15 @@ export default async function BlogArticlePage({ params }: PageProps) {
           </div>
         </header>
 
-        {post.coverImage && (
-          <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100">
+        {post.isDraft && (
+          <p className="mt-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">
+            この記事は<strong>下書き</strong>です。本番環境には表示されません。
+          </p>
+        )}
+
+        {/* 画像が未設定でも枠は出す。消すとタイトルの直後に本文が始まって間が抜ける */}
+        <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100">
+          {post.coverImage ? (
             <Image
               src={optimizedImageUrl(post.coverImage.url, 1200)}
               alt=""
@@ -169,8 +177,14 @@ export default async function BlogArticlePage({ params }: PageProps) {
               sizes="(max-width: 768px) 100vw, 768px"
               className="object-cover"
             />
-          </div>
-        )}
+          ) : (
+            <CoverPlaceholder
+              categorySlug={post.category.slug}
+              categoryName={post.category.name}
+              variant="hero"
+            />
+          )}
+        </div>
 
         {post.excerpt && (
           <p className="mt-8 rounded-xl bg-gray-50 p-5 text-sm leading-relaxed text-gray-600">

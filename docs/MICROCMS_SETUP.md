@@ -55,6 +55,20 @@ API スキーマの画面で「スキーマのインポート」から JSON を�
 2. デフォルトキーの GET 権限があれば足りる（書き込み権限は不要）
 3. 発行したキーが `MICROCMS_API_KEY` に入る値
 
+## 3-1. 下書きプレビュー用のAPIキーを発行する（任意）
+
+Deploy Preview とローカルで、下書きの記事も一覧に出したい場合のみ。
+
+1. サービス設定 → APIキー で**もう1本キーを作る**
+2. そのキーに「**下書き全取得**」権限を付ける
+3. `MICROCMS_DRAFT_API_KEY` に設定する
+
+**本番には絶対に設定しないこと。** Netlify ではデプロイコンテキストごとに値を
+分けられるので、Deploy Previews と Branch deploys にだけ入れる。
+
+コード側でも許可リスト方式で本番を弾いているが（`src/lib/microcms/client.ts`）、
+鍵を分けることが2枚目の安全装置になる。片方が壊れても下書きは漏れない。
+
 ## 4. 環境変数を設定する
 
 `.env.local.example` をコピーして `.env.local` を作り、値を埋める。
@@ -230,6 +244,7 @@ Netlify なら Site configuration → Environment variables）に設定する。
 | `MICROCMS_SERVICE_DOMAIN` | 必須 |
 | `MICROCMS_API_KEY` | 必須 |
 | `MICROCMS_WEBHOOK_SECRET` | 任意（webhook を使う場合のみ） |
+| `MICROCMS_DRAFT_API_KEY` | 任意。**Production には設定しない**（3-1参照） |
 
 **環境変数を追加したら再デプロイすること。** 追加しただけでは反映されない。
 

@@ -130,6 +130,20 @@ export const getAllCategories = cache(async (): Promise<Category[]> => {
   }
 });
 
+/**
+ * 公開済みの記事だけを返す。
+ *
+ * `sitemap.xml` と `feed.xml` は**必ずこちらを使うこと。**
+ * 下書きのURLを検索エンジンやRSSリーダーに知らせる経路を作らないため。
+ * Deploy Preview でも同じ扱いにする（プレビューURLが拾われる可能性があるため）。
+ *
+ * 画面に出す一覧は `getAllPosts()` でよい。下書きはバッジ付きで表示される。
+ */
+export async function getPublishedPosts(): Promise<BlogPost[]> {
+  const posts = await getAllPosts();
+  return posts.filter((post) => !post.isDraft);
+}
+
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const categories = await getAllCategories();
   return categories.find((category) => category.slug === slug) ?? null;

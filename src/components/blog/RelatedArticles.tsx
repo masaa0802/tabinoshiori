@@ -1,5 +1,6 @@
 "use client";
 
+import CoverPlaceholder from "./CoverPlaceholder";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -91,7 +92,7 @@ const RelatedArticles: React.FC<RelatedArticlesProps> = ({ destination }) => {
                     className="object-cover"
                   />
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-100 to-teal-100" />
+                  <CoverPlaceholder categorySlug={post.categorySlug} categoryName={post.categoryName} variant="thumb" />
                 )}
               </div>
 

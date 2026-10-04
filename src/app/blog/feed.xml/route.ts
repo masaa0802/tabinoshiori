@@ -1,4 +1,4 @@
-import { getAllPosts } from "@/lib/microcms/queries";
+import { getPublishedPosts } from "@/lib/microcms/queries";
 import { absoluteUrl, BLOG_DESCRIPTION, BLOG_NAME, SITE_URL } from "@/lib/site";
 
 // セグメント設定はリテラルで書くこと。定数を import して代入するとビルドが落ちる
@@ -15,7 +15,8 @@ function escapeXml(value: string): string {
 }
 
 export async function GET() {
-  const posts = await getAllPosts();
+  // 下書きをRSSに流さない。プレビュー環境でも同じ
+  const posts = await getPublishedPosts();
   const feedUrl = absoluteUrl("/blog/feed.xml");
   const lastBuildDate = new Date().toUTCString();
 

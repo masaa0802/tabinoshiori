@@ -159,6 +159,10 @@ export function toBlogPost(raw: MicroCMSBlog): BlogPost {
     ogImage: toImage(raw.ogImage),
     publishedAt: raw.publishedAt ?? raw.createdAt,
     updatedAt: raw.revisedAt ?? raw.updatedAt,
+    // publishedAt は一度も公開されていないコンテンツには付かない。
+    // 公開済みで未公開の編集がある場合（PUBLISH_AND_DRAFT）は publishedAt が
+    // 付くので公開扱いになる。記事自体は公開されているため、それでよい。
+    isDraft: !raw.publishedAt,
     featured: Boolean(raw.featured),
     priceCheckedAt: raw.priceCheckedAt || undefined,
     priceSources: splitList(raw.priceSources),

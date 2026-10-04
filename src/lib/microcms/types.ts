@@ -96,6 +96,14 @@ export type BlogPost = {
   updatedAt: string;
   featured: boolean;
   /**
+   * 下書きかどうか。microCMS で一度も公開されていないコンテンツが true。
+   *
+   * 本番では下書きがそもそも取得されないため、常に false になる。
+   * Deploy Preview とローカルでのみ true になりうる。
+   * `sitemap.xml` と `feed.xml` からは、どの環境でも必ず除外すること。
+   */
+  isDraft: boolean;
+  /**
    * 記事内の料金・相場をいつ調べたか（ISO8601）。
    * 金額を含む記事は必ず設定する。設定すると記事冒頭に注釈バナーが出る。
    */
