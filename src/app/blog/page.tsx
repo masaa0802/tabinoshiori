@@ -1,3 +1,4 @@
+import CtaLink from "@/components/blog/CtaLink";
 import Link from "next/link";
 import type { Metadata } from "next";
 import ArticleCard from "@/components/blog/ArticleCard";
@@ -139,12 +140,12 @@ export default async function BlogTopPage() {
             行き先と日程を入れるだけで、持ち物や予約情報までひとつのページに整理できます。
             登録なしで使えて、URLを送れば同行者にもそのまま共有できます。
           </p>
-          <Link
-            href="/group/new"
+          <CtaLink
+            position="blog_top"
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 font-bold text-emerald-700 shadow-lg transition-transform hover:scale-105"
           >
             無料で旅程を作ってみる
-          </Link>
+          </CtaLink>
         </section>
       </div>
     </>

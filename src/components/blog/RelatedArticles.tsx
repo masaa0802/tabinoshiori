@@ -1,6 +1,7 @@
 "use client";
 
 import CoverPlaceholder from "./CoverPlaceholder";
+import { trackRelatedClick } from "@/lib/blog-analytics";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -80,6 +81,9 @@ const RelatedArticles: React.FC<RelatedArticlesProps> = ({ destination }) => {
             <Link
               key={post.id}
               href={`/blog/${post.slug}`}
+              onClick={() =>
+                trackRelatedClick({ from: "shiori_information", toSlug: post.slug })
+              }
               className="group flex gap-3 rounded-lg border border-gray-100 p-2 transition-colors hover:bg-gray-50 sm:flex-col sm:gap-0 sm:p-0 sm:overflow-hidden"
             >
               <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md bg-gray-100 sm:h-auto sm:w-full sm:aspect-[16/9] sm:rounded-none">
