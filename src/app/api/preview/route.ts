@@ -17,6 +17,7 @@
 import { draftMode } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 import { timingSafeEqual } from "node:crypto";
+import { getPostBySlug } from "@/lib/microcms/queries";
 
 /** 長さが違うと timingSafeEqual が例外を投げるため、先に弾く */
 function matchesSecret(given: string, expected: string): boolean {
@@ -44,10 +45,8 @@ export async function GET(request: NextRequest) {
     return new NextResponse("Invalid secret", { status: 401 });
   }
 
-  if (!contentId || !draftKey) {
-    return new NextResponse("contentId and draftKey are required", {
-      status: 400,
-    });
+  if (!contentId) {
+    return new NextResponse("contentId is required", { status: 400 });
   }
 
   // contentId はそのままURLのパスになる。外部から渡る値なので、
@@ -55,6 +54,32 @@ export async function GET(request: NextRequest) {
   // これをしないと `../` などを入れられて別のパスへ飛ばされる。
   if (!/^[a-zA-Z0-9_-]+$/.test(contentId)) {
     return new NextResponse("Invalid contentId", { status: 400 });
+  }
+
+  // 公開済みで下書きが無い記事は microCMS が draftKey を空で渡してくる。
+  // エラーにせず通常の記事ページへ送る。プレビューする下書きが無いだけなので
+  if (!draftKey) {
+    return NextResponse.redirect(
+      new URL(`/blog/${contentId}`, request.nextUrl.origin)
+    );
+  }
+
+  // 転送する前に、実際に取得できるかここで確かめる。
+  // 確かめずに転送すると、記事ページ側で素っ気ない404になり、
+  // draftKey が無効なのか権限が足りないのかが分からなくなる。
+  const post = await getPostBySlug(contentId, draftKey);
+  if (!post) {
+    return new NextResponse(
+      [
+        `下書きを取得できませんでした（contentId: ${contentId}）`,
+        "",
+        "考えられる原因:",
+        "- draftKey が古い（記事を保存し直すと新しいキーが発行される）",
+        "- APIキーに下書きを取得する権限が無い",
+        "- contentId が違う",
+      ].join("\n"),
+      { status: 404, headers: { "Content-Type": "text/plain; charset=utf-8" } }
+    );
   }
 
   (await draftMode()).enable();

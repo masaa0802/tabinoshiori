@@ -111,9 +111,15 @@ export const getPostBySlug = cache(
     } catch (error) {
       // 存在しないコンテンツIDは 404。これは notFound() に委ねるだけでよい。
       // 403 や 500 は設定・障害の問題なので、気づけるようにログを残す。
+      //
+      // ただし draftKey 付きのときは 404 も記録する。プレビューを押したのに
+      // 開けない状況なので、原因が分からないと調べようがない。
       const message = error instanceof Error ? error.message : String(error);
-      if (!message.includes("404")) {
-        reportFetchFailure(`${MICROCMS_ENDPOINTS.articles}/${slug}`, error);
+      if (draftKey || !message.includes("404")) {
+        reportFetchFailure(
+          `${MICROCMS_ENDPOINTS.articles}/${slug}${draftKey ? "（下書き）" : ""}`,
+          error
+        );
       }
       return null;
     }
