@@ -93,7 +93,7 @@ Netlify のビルドが `exit code 2` で落ちていた。
 | `ArticleBody.tsx` | 本文描画。HTML（microCMS）とブロック配列（シード）を出し分け |
 | `HtmlBody.tsx` | microCMSのリッチエディタHTMLを描画。**`dangerouslySetInnerHTML` 使用** |
 | `SpotCard.tsx` | スポットカード |
-| `SouvenirGuide.tsx` | 記事内のお土産ガイド。ジャンル別カード、日本でも買えるか・買える場所・確認日を表示（仕様書6-4） |
+| `SouvenirGuide.tsx` | 記事内のお土産ガイド。ジャンル別の一覧で、日本でも買えるか・買える場所・確認日を表示（仕様書6-4） |
 | `PriceNote.tsx` | 本文中の金額ブロック。出典・調査時点が型で必須 |
 | `PriceDisclosure.tsx` | 記事冒頭の料金注釈バナー。6か月経過で警告色 |
 | `BlogHighlights.tsx` | LPに差し込む新着記事セクション（Server Component） |

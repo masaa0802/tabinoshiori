@@ -51,7 +51,6 @@ export type MicroCMSSouvenir = MicroCMSMeta & {
   name?: string;
   genre?: string;
   price?: string;
-  priceYen?: number;
   comment?: string;
   place?: string;
   address?: string;
@@ -169,7 +168,6 @@ export function toSouvenir(raw: MicroCMSSouvenir): Souvenir {
     name: raw.name?.trim() || "",
     genre: raw.genre?.trim() || UNGROUPED_GENRE,
     price: raw.price?.trim() || "",
-    priceYen: typeof raw.priceYen === "number" ? raw.priceYen : undefined,
     comment: raw.comment?.trim() || undefined,
     place: raw.place?.trim() || "",
     address: raw.address?.trim() || undefined,

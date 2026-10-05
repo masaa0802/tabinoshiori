@@ -24,14 +24,6 @@
       "required": true
     },
     {
-      "idValue": "souvenir-price-yen",
-      "fieldId": "priceYen",
-      "name": "価格（円・数値）",
-      "kind": "number",
-      "description": "ガイド冒頭の「¥300〜」に使う日本円の目安。数字のみ。",
-      "required": false
-    },
-    {
       "idValue": "souvenir-comment",
       "fieldId": "comment",
       "name": "ひとこと",
@@ -98,7 +90,7 @@
       "fieldId": "photo",
       "name": "写真",
       "kind": "media",
-      "description": "4:3で表示される。未設定ならジャンル名の入った色付きの枠になる。",
+      "description": "正方形に切り抜いて表示される。未設定ならジャンルごとの色の枠になる。",
       "required": false
     }
   ],
