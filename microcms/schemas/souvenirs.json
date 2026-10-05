@@ -1,0 +1,98 @@
+{
+  "apiFields": [
+    {
+      "idValue": "souvenir-name",
+      "fieldId": "name",
+      "name": "品名",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "idValue": "souvenir-genre",
+      "fieldId": "genre",
+      "name": "ジャンル",
+      "kind": "text",
+      "description": "記事内の見出しと目次（JUMP TO）になる。例: お菓子 / お茶・食品 / 雑貨。同じ記事内では表記を揃えること（1文字違うと別のジャンルとして分かれる）。",
+      "required": true
+    },
+    {
+      "idValue": "souvenir-price",
+      "fieldId": "price",
+      "name": "価格",
+      "kind": "text",
+      "description": "表示用。例: 10個入り 約1,500円。現地通貨で書く場合も円の目安を添える。",
+      "required": true
+    },
+    {
+      "idValue": "souvenir-comment",
+      "fieldId": "comment",
+      "name": "ひとこと",
+      "kind": "textArea",
+      "required": false
+    },
+    {
+      "idValue": "souvenir-place",
+      "fieldId": "place",
+      "name": "買える場所",
+      "kind": "text",
+      "description": "店名かエリア名。例: 迪化街の乾物店。地図リンクの検索語にもなる。",
+      "required": true
+    },
+    {
+      "idValue": "souvenir-address",
+      "fieldId": "address",
+      "name": "住所",
+      "kind": "text",
+      "description": "入れると地図リンクが正確になる。",
+      "required": false
+    },
+    {
+      "idValue": "souvenir-place-id",
+      "fieldId": "placeId",
+      "name": "Google Maps Place ID",
+      "kind": "text",
+      "required": false
+    },
+    {
+      "idValue": "souvenir-available-in-japan",
+      "fieldId": "availableInJapan",
+      "name": "日本でも買える",
+      "kind": "boolean",
+      "description": "オフのものは「現地でしか買えない」と表示される。",
+      "required": false
+    },
+    {
+      "idValue": "souvenir-japan-url",
+      "fieldId": "japanUrl",
+      "name": "日本で買えるお店のURL",
+      "kind": "text",
+      "description": "入れると「日本で買えるお店を見る」ボタンが出る。",
+      "required": false
+    },
+    {
+      "idValue": "souvenir-sponsored",
+      "fieldId": "sponsored",
+      "name": "広告リンク",
+      "kind": "boolean",
+      "description": "上のURLがアフィリエイトなど広告のリンクなら必ずオンにする。ボタン横に「PR」と表示される（ステマ規制への対応）。",
+      "required": false
+    },
+    {
+      "idValue": "souvenir-checked-at",
+      "fieldId": "checkedAt",
+      "name": "確認日",
+      "kind": "date",
+      "description": "価格・販売場所を最後に確認した日。カードに表示され、6か月を過ぎると「要確認」が付く。",
+      "required": true
+    },
+    {
+      "idValue": "souvenir-photo",
+      "fieldId": "photo",
+      "name": "写真",
+      "kind": "media",
+      "description": "正方形に切り抜いて表示される。未設定ならジャンルごとの色の枠になる。",
+      "required": false
+    }
+  ],
+  "customFields": []
+}

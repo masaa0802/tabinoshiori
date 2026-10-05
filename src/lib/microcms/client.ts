@@ -23,6 +23,7 @@ export const MICROCMS_ENDPOINTS = {
   articles: "articles",
   categories: "categories",
   spots: "spots",
+  souvenirs: "souvenirs",
 } as const;
 
 const serviceDomain = process.env.MICROCMS_SERVICE_DOMAIN;

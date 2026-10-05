@@ -33,6 +33,44 @@ export type Spot = {
 };
 
 /**
+ * お土産ガイドの1品。
+ *
+ * 記事に紐づけると、記事内にジャンル別の一覧（お土産ガイド）が出る。
+ * 読者が一目で分かるようにしたいのは「日本でも買えるか」「どこで買えるか」
+ * 「いつ時点の情報か」の3点で、いずれもカード上に必ず表示する。
+ *
+ * 価格は PriceFigure と同じ方針で、確認日（`checkedAt`）を省略できない。
+ */
+export type Souvenir = {
+  id: string;
+  name: string;
+  /** ジャンル。記事内ではこの単位で見出しと目次（JUMP TO）が作られる。例: お菓子 */
+  genre: string;
+  /** 表示用の価格。例: 1箱10個入り 約1,500円 */
+  price: string;
+  /** ひとことコメント */
+  comment?: string;
+  /** 買える場所（店名・エリア）。例: 迪化街の乾物店 */
+  place: string;
+  /** 地図リンクを正確にするための住所。省略時は `place` で検索する */
+  address?: string;
+  placeId?: string;
+  /** 日本国内でも手に入るか。false のものは「現地でしか買えない」と表示する */
+  availableInJapan: boolean;
+  /** 日本で買えるお店のURL */
+  japanUrl?: string;
+  /**
+   * `japanUrl` が広告（アフィリエイト）リンクか。
+   * true のときボタンの横に「PR」と表示し、rel="sponsored" を付ける。
+   * ステルスマーケティング規制（景品表示法）への対応のため、広告リンクなら必ず立てる。
+   */
+  sponsored: boolean;
+  /** 価格・販売場所を最後に確認した日（ISO8601） */
+  checkedAt: string;
+  photo?: BlogImage;
+};
+
+/**
  * 金額・相場を示すデータ。
  *
  * 編集方針により、金額を出すときは出典と調査時点の併記が必須。
@@ -87,6 +125,8 @@ export type BlogPost = {
   /** 関連する目的地名。しおりの destination と突き合わせる */
   destinations: string[];
   spots: Spot[];
+  /** お土産ガイドに並べる品。空なら記事内にガイドを出さない */
+  souvenirs: Souvenir[];
   seoTitle?: string;
   seoDescription?: string;
   ogImage?: BlogImage;

@@ -93,6 +93,7 @@ Netlify のビルドが `exit code 2` で落ちていた。
 | `ArticleBody.tsx` | 本文描画。HTML（microCMS）とブロック配列（シード）を出し分け |
 | `HtmlBody.tsx` | microCMSのリッチエディタHTMLを描画。**`dangerouslySetInnerHTML` 使用** |
 | `SpotCard.tsx` | スポットカード |
+| `SouvenirGuide.tsx` | 記事内のお土産ガイド。ジャンル別の一覧で、日本でも買えるか・買える場所・確認日を表示（仕様書6-4） |
 | `PriceNote.tsx` | 本文中の金額ブロック。出典・調査時点が型で必須 |
 | `PriceDisclosure.tsx` | 記事冒頭の料金注釈バナー。6か月経過で警告色 |
 | `BlogHighlights.tsx` | LPに差し込む新着記事セクション（Server Component） |
@@ -322,6 +323,10 @@ CTA自体は残している（読了後の位置は正しい）。
 11. **料金記事の棚卸し運用を決める** — 仕組み（6か月で警告色）は入っているが、
     誰がいつ見直すかの運用は未定
 12. ~~`docs/BLOG_SPECIFICATION.md` の更新~~ → 全章対応済み
+13. **お土産ガイドを使うなら microCMS に `souvenirs` API を作る**（仕様書5-4・6-4）。
+    `docs/MICROCMS_SETUP.md` セクション2の手順で作り、`articles` の `souvenirs` の参照先を設定する。
+    シードの `taipei-souvenir-guide` はレイアウト確認用で、価格・販売場所・日本での取り扱いは
+    すべて仮の値。CSV・インポートスクリプトには入れていない
 
 ---
 

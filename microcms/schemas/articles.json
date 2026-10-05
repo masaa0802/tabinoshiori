@@ -89,6 +89,14 @@
       "required": false
     },
     {
+      "idValue": "article-souvenirs",
+      "fieldId": "souvenirs",
+      "name": "お土産ガイド",
+      "kind": "relationList",
+      "description": "参照先APIは管理画面で souvenirs に設定すること（スキーマJSONでは指定できない）。選ぶと本文の直後にジャンル別のお土産一覧が出る。並び順がそのまま表示順になる。",
+      "required": false
+    },
+    {
       "idValue": "article-seo-title",
       "fieldId": "seoTitle",
       "name": "SEOタイトル",

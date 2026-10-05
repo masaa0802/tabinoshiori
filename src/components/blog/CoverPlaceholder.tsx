@@ -47,6 +47,7 @@ const PALETTE_BY_SLUG: Record<string, number> = {
   "destination-guide": 0,
   preparation: 1,
   "model-course": 2,
+  souvenir: 4,
 };
 
 /**
