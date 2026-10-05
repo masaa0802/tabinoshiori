@@ -1,5 +1,7 @@
 "use client";
 
+import { trackEvent } from "@/lib/analytics";
+import { readBlogSource, clearBlogSource } from "@/lib/blog-analytics";
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -126,6 +128,23 @@ export default function Group() {
       }
 
       const itineraryId = itineraryData.insert_itineraries.returning[0].id;
+
+      // 旅程が作られた。ブログ経由ならどの記事から来たかを付けて送る。
+      // これが「記事が役に立ったか」を判断する唯一の指標になるので、
+      // 遷移より先に送ること（遷移後だと送信前にページが破棄されうる）
+      const blogSource = readBlogSource();
+      trackEvent("itinerary_created", {
+        ...(blogSource
+          ? {
+              source: "blog",
+              source_article: blogSource.slug,
+              source_category: blogSource.category,
+              source_cta_position: blogSource.position,
+            }
+          : { source: "direct" }),
+      });
+      // 二重に計上しないよう、使ったら消す
+      clearBlogSource();
 
       // しおり作成画面に遷移
       router.push(`/group/${token}/travelplanner/${itineraryId}`);

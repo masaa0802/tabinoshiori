@@ -24,6 +24,7 @@
 ---
 
 ### 📝 [BLOG_HANDOVER.md](./BLOG_HANDOVER.md)
+- [BLOG_ANALYTICS.md](BLOG_ANALYTICS.md) ブログの効果測定と改善。何を測り、どう判断し、何を直すか
 ブログ機能の引き継ぎドキュメント。**ブログ関連の作業はここから読むこと。**
 
 **内容:**

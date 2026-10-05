@@ -6,6 +6,8 @@ import { draftMode } from "next/headers";
 import ArticleBody from "@/components/blog/ArticleBody";
 import ArticleCard from "@/components/blog/ArticleCard";
 import CoverPlaceholder from "@/components/blog/CoverPlaceholder";
+import CtaLink from "@/components/blog/CtaLink";
+import ReadTracker from "@/components/blog/ReadTracker";
 import PriceDisclosure from "@/components/blog/PriceDisclosure";
 import SpotCard from "@/components/blog/SpotCard";
 import { anxietyTagsOf, freeTagsOf } from "@/lib/microcms/tags";
@@ -274,6 +276,14 @@ export default async function BlogArticlePage({
           </div>
         )}
 
+        {/* ここまで到達したら読了とみなす。本文の直後に置くこと。
+            CTAより後ろに置くと、CTAを見た人を読了に数え損ねる */}
+        <ReadTracker
+          slug={post.slug}
+          category={post.category.slug}
+          readingMinutes={readingMinutes}
+        />
+
         {/* 読了後のCTA。製品を知らない読者にも通じる言い回しにすること */}
         <section className="mt-14 rounded-2xl border border-emerald-100 bg-emerald-50/70 p-6 sm:p-8">
           <h2 className="text-xl font-bold leading-snug text-gray-900">
@@ -283,8 +293,10 @@ export default async function BlogArticlePage({
             行き先と日程を入れると、訪問先・持ち物・予約情報をひとつのページにまとめられます。
             登録は不要で、URLを送れば同行者もそのまま見られます。
           </p>
-          <Link
-            href="/group/new"
+          <CtaLink
+            position="article_footer"
+            slug={post.slug}
+            category={post.category.slug}
             className="mt-6 inline-flex items-center gap-2 rounded-full bg-emerald-600 px-7 py-3 font-bold text-white transition-colors hover:bg-emerald-700"
           >
             無料で旅程を作ってみる
@@ -298,7 +310,7 @@ export default async function BlogArticlePage({
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-          </Link>
+          </CtaLink>
         </section>
 
         {/* 関連記事 */}

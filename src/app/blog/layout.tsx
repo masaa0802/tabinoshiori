@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CtaLink from "@/components/blog/CtaLink";
 import { BLOG_NAME, SITE_NAME } from "@/lib/site";
 
 export default function BlogLayout({
@@ -17,12 +18,14 @@ export default function BlogLayout({
             </span>
           </Link>
 
-          <Link
-            href="/group/new"
+          {/* ヘッダーのCTAは記事を特定できないため slug を渡さない。
+              記事別の紐付けは記事末尾のCTAで取る */}
+          <CtaLink
+            position="header"
             className="flex-shrink-0 rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
           >
             旅程を作る
-          </Link>
+          </CtaLink>
         </div>
       </header>
 
