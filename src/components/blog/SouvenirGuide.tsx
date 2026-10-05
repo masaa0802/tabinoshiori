@@ -124,14 +124,15 @@ function SouvenirCard({ item }: { item: Souvenir }) {
   });
 
   return (
-    <article className="flex gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:h-28 sm:w-28">
+    <article className="flex overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      {/* 写真はカードの端まで広げ、カードの高さいっぱいに伸ばす。余白は文字側だけに持たせる */}
+      <div className="relative min-h-[8rem] w-32 flex-shrink-0 self-stretch bg-gray-100 sm:min-h-[11rem] sm:w-44">
         {item.photo ? (
           <Image
-            src={optimizedImageUrl(item.photo.url, 240)}
+            src={optimizedImageUrl(item.photo.url, 400)}
             alt={item.name}
             fill
-            sizes="112px"
+            sizes="(max-width: 640px) 128px, 176px"
             className="object-cover"
           />
         ) : (
@@ -143,7 +144,7 @@ function SouvenirCard({ item }: { item: Souvenir }) {
         )}
       </div>
 
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 p-4 sm:p-5">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <h3 className="font-bold text-gray-900">{item.name}</h3>
           {/* いちばん知りたい「日本でも買えるか」は品名のすぐ横に出す */}
