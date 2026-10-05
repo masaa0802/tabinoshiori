@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { Spot } from "@/lib/microcms/types";
-import { optimizedImageUrl } from "@/lib/microcms/format";
+import { googleMapsUrl, optimizedImageUrl } from "@/lib/microcms/format";
 
 /**
  * 記事内で紹介するスポットのカード。
@@ -13,13 +13,10 @@ type SpotCardProps = {
 };
 
 const SpotCard: React.FC<SpotCardProps> = ({ spot }) => {
-  const mapQuery = spot.placeId
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        spot.name
-      )}&query_place_id=${spot.placeId}`
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        spot.address || spot.name
-      )}`;
+  const mapQuery = googleMapsUrl(spot.name, {
+    placeId: spot.placeId,
+    address: spot.address,
+  });
 
   return (
     <div className="flex gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">

@@ -19,7 +19,7 @@
 2. 管理画面URL `https://<サービスID>.microcms.io` の `<サービスID>` が
    `MICROCMS_SERVICE_DOMAIN` に入る値
 
-## 2. API を3つ作る
+## 2. API を4つ作る
 
 `microcms/schemas/` にスキーマJSONを置いてある。管理画面からインポートできる。
 
@@ -28,6 +28,7 @@
 | 記事 | `articles` | リスト形式 | `microcms/schemas/articles.json` |
 | カテゴリ | `categories` | リスト形式 | `microcms/schemas/categories.json` |
 | スポット | `spots` | リスト形式 | `microcms/schemas/spots.json` |
+| お土産 | `souvenirs` | リスト形式 | `microcms/schemas/souvenirs.json` |
 
 **エンドポイント名は上記のとおりにすること。** `src/lib/microcms/client.ts` の
 `MICROCMS_ENDPOINTS` と一致している必要がある。
@@ -39,7 +40,7 @@ API スキーマの画面で「スキーマのインポート」から JSON を�
 セレクトフィールドの選択肢と複数選択の設定も、このインポートで反映される
 （2026-10-02 に `articles` で確認済み）。手で入れ直す必要はない。
 
-### 2-1. インポート後に手動で設定する箇所（2つ）
+### 2-1. インポート後に手動で設定する箇所（3つ）
 
 スキーマJSONでは参照先APIを指定できないため、`articles` API の以下2フィールドは
 管理画面で参照先を設定する必要がある。
@@ -48,6 +49,11 @@ API スキーマの画面で「スキーマのインポート」から JSON を�
 |---|---|---|
 | `category` | コンテンツ参照 | `categories` |
 | `spots` | 複数コンテンツ参照 | `spots` |
+| `souvenirs` | 複数コンテンツ参照 | `souvenirs` |
+
+`souvenirs` は既存の `articles` に後から足したフィールド。すでに `articles` を
+作成済みなら、スキーマを再インポートするか、管理画面で「お土産ガイド」
+（fieldId: `souvenirs`、複数コンテンツ参照）を追加する。
 
 ## 3. APIキーを発行する
 

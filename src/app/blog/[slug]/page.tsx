@@ -9,6 +9,7 @@ import CoverPlaceholder from "@/components/blog/CoverPlaceholder";
 import CtaLink from "@/components/blog/CtaLink";
 import ReadTracker from "@/components/blog/ReadTracker";
 import PriceDisclosure from "@/components/blog/PriceDisclosure";
+import SouvenirGuide from "@/components/blog/SouvenirGuide";
 import SpotCard from "@/components/blog/SpotCard";
 import { anxietyTagsOf, freeTagsOf } from "@/lib/microcms/tags";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/microcms/queries";
@@ -238,6 +239,9 @@ export default async function BlogArticlePage({
         <div className="mt-4">
           <ArticleBody body={post.body} />
         </div>
+
+        {/* お土産ガイド。本文を導入にして、その直後に一覧を置く */}
+        <SouvenirGuide souvenirs={post.souvenirs} />
 
         {/* 記事内で紹介したスポット */}
         {post.spots.length > 0 && (

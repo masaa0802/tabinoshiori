@@ -108,3 +108,21 @@ export function optimizedImageUrl(url: string, width: number): string {
   const separator = url.includes("?") ? "&" : "?";
   return `${url}${separator}w=${width}&fm=webp&q=80`;
 }
+
+/**
+ * Google マップの検索URL。Place ID があればその場所を、無ければ住所か名前で検索する。
+ * スポットとお土産の「買える場所」で共通に使う。
+ */
+export function googleMapsUrl(
+  name: string,
+  { placeId, address }: { placeId?: string; address?: string } = {}
+): string {
+  if (placeId) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      name
+    )}&query_place_id=${placeId}`;
+  }
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    address || name
+  )}`;
+}

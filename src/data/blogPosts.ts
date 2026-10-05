@@ -4,7 +4,7 @@
  * microCMS の環境変数が未設定のときに queries.ts がフォールバック先として使う。
  * 実記事の入稿が完了したら、このファイルと queries.ts のフォールバック分岐を削除する。
  */
-import type { BlogPost, Category, Spot } from "@/lib/microcms/types";
+import type { BlogPost, Category, Souvenir, Spot } from "@/lib/microcms/types";
 
 export const seedCategories: Category[] = [
   {
@@ -27,6 +27,13 @@ export const seedCategories: Category[] = [
     name: "モデルコース",
     description: "日数別の回り方の例。そのまま真似できる形で紹介します。",
     order: 3,
+  },
+  {
+    id: "souvenir",
+    slug: "souvenir",
+    name: "お土産ガイド",
+    description: "現地で買えるお土産を、買える場所と確認日つきで紹介します。",
+    order: 4,
   },
 ];
 
@@ -92,6 +99,98 @@ const taipeiSpots: Spot[] = [
   },
 ];
 
+/**
+ * お土産ガイドのレイアウト確認用サンプル。
+ * **価格・販売場所・日本での取り扱いはいずれも仮の値で、調査した事実ではない。**
+ * サンプルと分かるよう、価格の表記に「サンプル」と入れてある。
+ */
+const taipeiSouvenirs: Souvenir[] = [
+  {
+    id: "pineapple-cake",
+    name: "パイナップルケーキ",
+    genre: "お菓子",
+    price: "10個入り 約1,500円（サンプル）",
+    priceYen: 1500,
+    comment: "定番中の定番。店ごとに餡の酸味がかなり違うので、試食できる店で選ぶと外れにくい。",
+    place: "台北駅の地下街",
+    availableInJapan: true,
+    japanUrl: "https://www.amazon.co.jp/s?k=%E3%83%91%E3%82%A4%E3%83%8A%E3%83%83%E3%83%97%E3%83%AB%E3%82%B1%E3%83%BC%E3%82%AD",
+    sponsored: false,
+    checkedAt: "2026-09-12T00:00:00.000Z",
+  },
+  {
+    id: "nougat",
+    name: "ヌガー（牛軋糖）",
+    genre: "お菓子",
+    price: "1袋 約800円（サンプル）",
+    priceYen: 800,
+    comment: "ナッツ入りのやわらかいヌガー。夏は溶けやすいので、持ち帰りは保冷バッグがあると安心。",
+    place: "迪化街の菓子店",
+    availableInJapan: false,
+    sponsored: false,
+    checkedAt: "2026-09-12T00:00:00.000Z",
+  },
+  {
+    id: "dried-mango",
+    name: "ドライマンゴー",
+    genre: "お菓子",
+    price: "1袋 約700円（サンプル）",
+    priceYen: 700,
+    place: "迪化街の乾物店",
+    availableInJapan: false,
+    sponsored: false,
+    checkedAt: "2026-02-20T00:00:00.000Z",
+  },
+  {
+    id: "oolong-tea",
+    name: "台湾烏龍茶（高山茶）",
+    genre: "お茶・食品",
+    price: "茶葉75g 約2,000円（サンプル）",
+    priceYen: 2000,
+    comment: "量り売りの店なら、試飲してから少量ずつ買える。真空パックにしてもらうと香りが長持ちする。",
+    place: "永康街の茶葉店",
+    availableInJapan: true,
+    sponsored: false,
+    checkedAt: "2026-09-12T00:00:00.000Z",
+  },
+  {
+    id: "karasumi",
+    name: "からすみ",
+    genre: "お茶・食品",
+    price: "1枚 約3,000円（サンプル）",
+    priceYen: 3000,
+    comment: "真空パックのものを選ぶと持ち帰りやすい。贈り物にすると喜ばれやすい一品。",
+    place: "迪化街の乾物店",
+    availableInJapan: false,
+    sponsored: false,
+    checkedAt: "2026-09-12T00:00:00.000Z",
+  },
+  {
+    id: "hakka-pouch",
+    name: "客家花布のポーチ",
+    genre: "雑貨",
+    price: "1個 約600円（サンプル）",
+    priceYen: 600,
+    comment: "赤やピンクの大きな花柄が目印の布小物。軽くてかさばらないので、配る用にまとめ買いしやすい。",
+    place: "迪化街の布市場",
+    availableInJapan: false,
+    sponsored: false,
+    checkedAt: "2026-09-12T00:00:00.000Z",
+  },
+  {
+    id: "easycard-design",
+    name: "キャラクター柄の悠遊カード",
+    genre: "雑貨",
+    price: "1枚 約500円（サンプル）",
+    priceYen: 500,
+    comment: "見た目は雑貨だが、交通系ICカードとしてそのまま使える。次の台湾旅行でも出番がある。",
+    place: "台北市内のコンビニ",
+    availableInJapan: false,
+    sponsored: false,
+    checkedAt: "2026-09-12T00:00:00.000Z",
+  },
+];
+
 export const seedPosts: BlogPost[] = [
   {
     id: "kyoto-2days-guide",
@@ -109,6 +208,7 @@ export const seedPosts: BlogPost[] = [
     tags: ["段取りの不安", "国内旅行", "1泊2日", "寺社巡り"],
     destinations: ["京都", "日本"],
     spots: kyotoSpots,
+    souvenirs: [],
     publishedAt: "2026-07-14T09:00:00.000Z",
     updatedAt: "2026-08-05T09:00:00.000Z",
     featured: true,
@@ -179,6 +279,7 @@ export const seedPosts: BlogPost[] = [
     tags: ["手続きの不安", "持ち物", "海外旅行", "はじめての旅行"],
     destinations: [],
     spots: [],
+    souvenirs: [],
     publishedAt: "2026-07-28T09:00:00.000Z",
     updatedAt: "2026-07-28T09:00:00.000Z",
     featured: false,
@@ -246,6 +347,7 @@ export const seedPosts: BlogPost[] = [
     tags: ["お金の不安", "費用", "航空券", "節約"],
     destinations: [],
     spots: [],
+    souvenirs: [],
     publishedAt: "2026-08-11T09:00:00.000Z",
     updatedAt: "2026-08-11T09:00:00.000Z",
     featured: false,
@@ -342,6 +444,7 @@ export const seedPosts: BlogPost[] = [
     tags: ["現地の不安", "台湾", "アジア", "はじめての旅行"],
     destinations: ["台湾", "台北"],
     spots: taipeiSpots,
+    souvenirs: [],
     publishedAt: "2026-08-18T09:00:00.000Z",
     updatedAt: "2026-08-18T09:00:00.000Z",
     featured: false,
@@ -387,6 +490,33 @@ export const seedPosts: BlogPost[] = [
         {
           type: "paragraph",
           text: "午後に着く便なら、初日は宿の周辺と夜市だけにしておくのがおすすめです。移動と両替、カードの購入で思ったより時間を使います。本格的な観光は翌日からにすると、初日に予定が崩れて焦ることがありません。",
+        },
+      ],
+    },
+  },
+  {
+    id: "taipei-souvenir-guide",
+    slug: "taipei-souvenir-guide",
+    title: "【サンプル】台北のお土産ガイド — 現地でしか買えないものを先に",
+    excerpt:
+      "日本でも買えるものと、台北でしか手に入らないものを分けて紹介します。買える場所と確認日つきなので、旅程に組み込みやすくなっています。",
+    category: category("souvenir"),
+    tags: ["お金の不安", "台湾", "お土産"],
+    destinations: ["台湾", "台北"],
+    spots: [],
+    souvenirs: taipeiSouvenirs,
+    publishedAt: "2026-09-15T09:00:00.000Z",
+    updatedAt: "2026-09-15T09:00:00.000Z",
+    featured: false,
+    isDraft: false,
+    priceCheckedAt: "2026-09-12T00:00:00.000Z",
+    priceSources: ["サンプル（レイアウト確認用の仮の値）"],
+    body: {
+      format: "blocks",
+      blocks: [
+        {
+          type: "paragraph",
+          text: "お土産選びで迷う原因は、候補が多いことより「それ、日本でも買えるのでは？」が分からないことにあります。ここではジャンルごとに分けたうえで、日本で手に入るかどうかを写真の上に表示しています。現地でしか買えないものから優先して選んでください。",
         },
       ],
     },

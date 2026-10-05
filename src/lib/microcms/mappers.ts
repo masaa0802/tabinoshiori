@@ -9,6 +9,7 @@ import type {
   BlogPost,
   BlogPostSummary,
   Category,
+  Souvenir,
   Spot,
 } from "./types";
 import { estimateReadingMinutes } from "./format";
@@ -46,6 +47,23 @@ export type MicroCMSSpot = MicroCMSMeta & {
   photo?: MicroCMSImageField;
 };
 
+export type MicroCMSSouvenir = MicroCMSMeta & {
+  name?: string;
+  genre?: string;
+  price?: string;
+  priceYen?: number;
+  comment?: string;
+  place?: string;
+  address?: string;
+  placeId?: string;
+  availableInJapan?: boolean;
+  japanUrl?: string;
+  sponsored?: boolean;
+  /** 価格・販売場所を確認した日 */
+  checkedAt?: string;
+  photo?: MicroCMSImageField;
+};
+
 export type MicroCMSBlog = MicroCMSMeta & {
   title?: string;
   excerpt?: string;
@@ -63,6 +81,7 @@ export type MicroCMSBlog = MicroCMSMeta & {
   /** microCMS に文字列配列型がないため、カンマ区切りのテキストで入稿する */
   destination?: string;
   spots?: MicroCMSSpot[];
+  souvenirs?: MicroCMSSouvenir[];
   seoTitle?: string;
   seoDescription?: string;
   ogImage?: MicroCMSImageField;
@@ -141,6 +160,30 @@ export function toSpot(raw: MicroCMSSpot): Spot {
   };
 }
 
+/** ジャンル未入力の品をまとめる見出し */
+const UNGROUPED_GENRE = "その他";
+
+export function toSouvenir(raw: MicroCMSSouvenir): Souvenir {
+  return {
+    id: raw.id,
+    name: raw.name?.trim() || "",
+    genre: raw.genre?.trim() || UNGROUPED_GENRE,
+    price: raw.price?.trim() || "",
+    priceYen: typeof raw.priceYen === "number" ? raw.priceYen : undefined,
+    comment: raw.comment?.trim() || undefined,
+    place: raw.place?.trim() || "",
+    address: raw.address?.trim() || undefined,
+    placeId: raw.placeId?.trim() || undefined,
+    availableInJapan: Boolean(raw.availableInJapan),
+    japanUrl: raw.japanUrl?.trim() || undefined,
+    sponsored: Boolean(raw.sponsored),
+    // スキーマでは必須。入れ忘れた古いデータでも日付が消えないよう、
+    // コンテンツ自体の最終更新日で代用する（確認日より新しくなることはあっても古くはならない）
+    checkedAt: raw.checkedAt || raw.revisedAt || raw.updatedAt,
+    photo: toImage(raw.photo),
+  };
+}
+
 export function toBlogPost(raw: MicroCMSBlog): BlogPost {
   return {
     // microCMS のコンテンツIDをそのまま記事URLのスラッグに使う
@@ -154,6 +197,7 @@ export function toBlogPost(raw: MicroCMSBlog): BlogPost {
     tags: toTagList(raw.tags, raw.freeTags),
     destinations: splitList(raw.destination),
     spots: (raw.spots ?? []).map(toSpot),
+    souvenirs: (raw.souvenirs ?? []).map(toSouvenir),
     seoTitle: raw.seoTitle?.trim() || undefined,
     seoDescription: raw.seoDescription?.trim() || undefined,
     ogImage: toImage(raw.ogImage),
