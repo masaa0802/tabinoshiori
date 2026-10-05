@@ -124,15 +124,17 @@ function SouvenirCard({ item }: { item: Souvenir }) {
   });
 
   return (
-    <article className="flex overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-      {/* 写真はカードの端まで広げ、カードの高さいっぱいに伸ばす。余白は文字側だけに持たせる */}
-      <div className="relative min-h-[8rem] w-32 flex-shrink-0 self-stretch bg-gray-100 sm:min-h-[11rem] sm:w-44">
+    <article className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm sm:flex-row">
+      {/* 写真はカードの端まで広げる。余白は文字側だけに持たせる。
+          スマホは横に並べると写真が細くなりすぎるので、上に全幅で置く。
+          sm 以上は左に置き、カードの高さいっぱいに伸ばす */}
+      <div className="relative aspect-[4/3] w-full flex-shrink-0 bg-gray-100 sm:aspect-auto sm:min-h-[11rem] sm:w-44 sm:self-stretch">
         {item.photo ? (
           <Image
-            src={optimizedImageUrl(item.photo.url, 400)}
+            src={optimizedImageUrl(item.photo.url, 800)}
             alt={item.name}
             fill
-            sizes="(max-width: 640px) 128px, 176px"
+            sizes="(max-width: 640px) 100vw, 176px"
             className="object-cover"
           />
         ) : (
