@@ -3,6 +3,9 @@ import { useMutation } from "@apollo/client";
 import { INSERT_ACTIVITIES } from "@/graphql/mutates";
 import LoadingAirplane from "@/components/LoadingAirplane";
 import { useGoogleMaps } from "@/components/GoogleMapsProvider";
+import { validateFile } from "@/lib/cloudinary";
+import { CATEGORIES } from "../information/components/InformationContent";
+import { MAX_DOCUMENT_FILES, categoryForActivityType, useCreateTravelDocument } from "../information/documentUtils";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -46,8 +49,34 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
   const [lat, setLat] = useState<number | null>(null);
   const [lng, setLng] = useState<number | null>(null);
   const [placeId, setPlaceId] = useState("");
+  // 情報タブに一緒に保存するファイル。カテゴリーは選ばれるまでタイプから決める
+  const [attachFiles, setAttachFiles] = useState<File[]>([]);
+  const [attachCategory, setAttachCategory] = useState<string | null>(null);
+  const [isAttaching, setIsAttaching] = useState(false);
 
-  const [insertActivity, { loading: isSubmitting }] = useMutation(INSERT_ACTIVITIES);
+  const [insertActivity, { loading: isInserting }] = useMutation(INSERT_ACTIVITIES);
+  const createTravelDocument = useCreateTravelDocument();
+  const isSubmitting = isInserting || isAttaching;
+  const documentCategory = attachCategory ?? categoryForActivityType(type);
+
+  const handleAttachFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const incoming = Array.from(e.target.files ?? []);
+    e.target.value = "";
+    const validFiles: File[] = [];
+    for (const file of incoming) {
+      if (attachFiles.length + validFiles.length >= MAX_DOCUMENT_FILES) {
+        alert(`ファイルは最大${MAX_DOCUMENT_FILES}個まで追加できます`);
+        break;
+      }
+      const validation = validateFile(file);
+      if (!validation.valid) {
+        alert(validation.error);
+        continue;
+      }
+      validFiles.push(file);
+    }
+    setAttachFiles(prev => [...prev, ...validFiles]);
+  };
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
   const placesService = useRef<google.maps.places.PlacesService | null>(null);
   // ① SessionToken: 入力開始〜候補選択までを1セッションとして課金をまとめる
@@ -196,6 +225,25 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
         },
       });
 
+      // ファイルが選ばれていれば、この予定の名前と日付で情報タブにも保存する
+      if (attachFiles.length > 0) {
+        setIsAttaching(true);
+        try {
+          await createTravelDocument({
+            itineraryId: itinerary_id,
+            title: activityName,
+            category: documentCategory,
+            date,
+            files: attachFiles,
+          });
+        } catch (attachError) {
+          console.error('Error attaching documents:', attachError);
+          alert('アクティビティは追加しましたが、情報タブへのファイルの追加に失敗しました。情報タブからもう一度追加してください。');
+        } finally {
+          setIsAttaching(false);
+        }
+      }
+
       setTime("");
       setLocation("");
       setPlaceName("");
@@ -206,6 +254,8 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
       setLat(null);
       setLng(null);
       setPlaceId("");
+      setAttachFiles([]);
+      setAttachCategory(null);
       sessionToken.current = null;
 
       if (onActivityAdded) onActivityAdded({ name: activityName, type });
@@ -233,7 +283,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: '#0000004d' }}>
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto p-6 relative">
         <button className="absolute top-2 right-4 text-gray-400 hover:text-gray-600" onClick={onClose}>×</button>
         <h2 className="text-lg font-bold mb-4">アクティビティを追加</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -310,6 +360,64 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
                 <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
+          </div>
+          <div>
+            <span className="block text-sm font-medium mb-1">
+              情報タブにファイルを追加 <span className="text-gray-400 font-normal">（任意）</span>
+            </span>
+            {attachFiles.length < MAX_DOCUMENT_FILES && (
+              <>
+                <input
+                  type="file"
+                  multiple
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={handleAttachFiles}
+                  className="hidden"
+                  id="activity-attach-files"
+                />
+                <label
+                  htmlFor="activity-attach-files"
+                  className="flex items-center justify-center gap-1 w-full border border-dashed border-gray-300 rounded px-3 py-2 text-sm text-blue-600 cursor-pointer hover:bg-gray-50"
+                >
+                  ＋ ファイルを選択
+                </label>
+              </>
+            )}
+            <p className="mt-1 text-xs text-gray-500">
+              チケットや予約確認書など（PDF, JPG, PNG・最大10MB・{MAX_DOCUMENT_FILES}個まで）。この予定の名前と日付で情報タブに保存されます。
+            </p>
+            {attachFiles.length > 0 && (
+              <div className="mt-2 space-y-2">
+                <ul className="space-y-1">
+                  {attachFiles.map((file, index) => (
+                    <li key={`${file.name}-${index}`} className="flex items-center justify-between gap-2 border rounded px-2 py-1 text-sm">
+                      <span className="truncate text-gray-700">{file.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => setAttachFiles(prev => prev.filter((_, i) => i !== index))}
+                        className="text-gray-400 hover:text-red-500"
+                        aria-label={`${file.name}を外す`}
+                      >
+                        ×
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <div>
+                  <label htmlFor="activity-attach-category" className="block text-xs text-gray-600 mb-1">情報タブのカテゴリー</label>
+                  <select
+                    id="activity-attach-category"
+                    className="w-full border rounded px-3 py-2 text-sm"
+                    value={documentCategory}
+                    onChange={e => setAttachCategory(e.target.value)}
+                  >
+                    {CATEGORIES.map(category => (
+                      <option key={category.value} value={category.value}>{category.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
           <div className="flex justify-end">
             <button type="button" className="mr-2 px-4 py-2 rounded bg-gray-200 text-gray-700" onClick={onClose} disabled={isSubmitting}>キャンセル</button>

@@ -34,6 +34,7 @@ import {
   useIllustrationVariant,
 } from "@/lib/illustrationExperiment";
 import ActivityCardIllustration from "../components/ActivityCardIllustration";
+import { dayNumberOf, todayInTrip } from "../information/documentUtils";
 
 interface GroupData {
   groupName: string;
@@ -257,6 +258,34 @@ export default function TravelPlanner() {
     };
     createItinerary();
   }, [isNewGroup, groupData, createdGroupId, createdItineraryId, groupToken, insertItinerary]);
+
+  // 旅行中に開いたら、今日の日を最初に表示する（しおりごとに1回だけ。その後はユーザーの選択を優先）
+  const autoSelectedPlanRef = useRef<string | null>(null);
+  const scrollToDayRef = useRef<number | null>(null);
+  const planForToday = isNewGroup ? groupData : itineraryData?.itineraries?.[0];
+  const planStartDate: string | undefined = isNewGroup ? groupData?.startDate : planForToday?.start_date;
+  const planEndDate: string | undefined = isNewGroup ? groupData?.endDate : planForToday?.end_date;
+  useEffect(() => {
+    if (!planStartDate || !planEndDate) return;
+    const planKey = travelPlannerId ?? "new";
+    if (autoSelectedPlanRef.current === planKey) return;
+    autoSelectedPlanRef.current = planKey;
+    const today = todayInTrip(planStartDate, planEndDate);
+    const todayDay = today ? dayNumberOf(today, planStartDate, planEndDate) : undefined;
+    if (todayDay) {
+      setSelectedDay(todayDay);
+      scrollToDayRef.current = todayDay;
+    }
+  }, [travelPlannerId, planStartDate, planEndDate]);
+
+  // 今日の日のタブがスマホの横スクロールで隠れないよう、見える位置まで送る
+  useEffect(() => {
+    if (scrollToDayRef.current === null) return;
+    const tab = document.querySelector(`[data-mobile-day-tab="${scrollToDayRef.current}"]`);
+    if (!tab) return;
+    scrollToDayRef.current = null;
+    tab.scrollIntoView({ inline: "center", block: "nearest" });
+  });
 
   // イラストの A/B テスト（docs/ILLUSTRATION_EXPERIMENT.md）。null の間はまだ群が決まっていない
   const illustrationVariant = useIllustrationVariant();
@@ -756,6 +785,7 @@ export default function TravelPlanner() {
                           : "text-gray-600 hover:bg-gray-100"
                       }`}
                       onClick={() => setSelectedDay(dayNumber)}
+                      data-mobile-day-tab={dayNumber}
                     >
                       {dayNumber}日目 {formattedDate}日
                     </button>
@@ -1089,6 +1119,7 @@ export default function TravelPlanner() {
         isOpen={selectedActivityForDetail !== null}
         tripActivities={activitiesToProcess}
         tripStartDate={travelPlan.start_date}
+        tripEndDate={travelPlan.end_date}
         onClose={() => setSelectedActivityForDetail(null)}
         onOpenBudget={() => {
           if (selectedActivityForDetail) setSelectedDay(day(selectedActivityForDetail.date));

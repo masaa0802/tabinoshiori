@@ -30,9 +30,11 @@ interface DocumentCardProps {
   document: Document;
   onUpdate: () => void;
   itineraryId: number;
+  startDate?: string;
+  endDate?: string;
 }
 
-const DocumentCard: React.FC<DocumentCardProps> = ({ document, onUpdate, itineraryId }) => {
+const DocumentCard: React.FC<DocumentCardProps> = ({ document, onUpdate, itineraryId, startDate, endDate }) => {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
 
   const [deleteDocument] = useMutation(DELETE_TRAVEL_DOCUMENT);
@@ -135,6 +137,8 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ document, onUpdate, itinera
           onClose={() => setIsViewerOpen(false)}
           onDeleted={onUpdate}
           itineraryId={itineraryId}
+          startDate={startDate}
+          endDate={endDate}
         />
       )}
     </>

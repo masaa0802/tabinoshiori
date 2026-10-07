@@ -5,8 +5,7 @@ import { useMutation } from '@apollo/client';
 import { UPDATE_TRAVEL_DOCUMENT, INSERT_DOCUMENT_FILE, DELETE_DOCUMENT_FILE } from '@/graphql/mutates';
 import { CATEGORIES, CategoryIcon } from './InformationContent';
 import { uploadToCloudinary, validateFile, formatFileSize } from '@/lib/cloudinary';
-
-const MAX_FILES = 5;
+import { MAX_DOCUMENT_FILES as MAX_FILES, tripDateOptions } from '../documentUtils';
 
 interface DocumentFile {
   id: number;
@@ -33,6 +32,8 @@ interface EditDocumentModalProps {
   document: Document;
   itineraryId: number;
   onDocumentUpdated: () => void;
+  startDate?: string;
+  endDate?: string;
 }
 
 const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
@@ -41,7 +42,11 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
   document: travelDocument,
   itineraryId,
   onDocumentUpdated,
+  startDate,
+  endDate,
 }) => {
+  const [title, setTitle] = useState(travelDocument.title);
+  const [date, setDate] = useState(travelDocument.date ?? '');
   const [category, setCategory] = useState(travelDocument.category);
   const [existingFiles, setExistingFiles] = useState<DocumentFile[]>(travelDocument.files);
   const [removedFileIds, setRemovedFileIds] = useState<number[]>([]);
@@ -54,6 +59,7 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
   const [deleteDocumentFile] = useMutation(DELETE_DOCUMENT_FILE);
 
   const totalFileCount = existingFiles.length + newFiles.length;
+  const dateOptions = tripDateOptions(startDate, endDate);
 
   const addFiles = (fileList: FileList | null) => {
     if (!fileList) return;
@@ -153,13 +159,19 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
         ),
       ]);
 
-      if (category !== travelDocument.category) {
+      const newTitle = title.trim() || travelDocument.title;
+      const newDate = date || null;
+      if (
+        category !== travelDocument.category ||
+        newTitle !== travelDocument.title ||
+        newDate !== (travelDocument.date ?? null)
+      ) {
         await updateTravelDocument({
           variables: {
             id: travelDocument.id,
-            title: travelDocument.title,
+            title: newTitle,
             category,
-            date: travelDocument.date ?? null,
+            date: newDate,
             reservation_number: travelDocument.reservation_number ?? null,
             notes: travelDocument.notes ?? null,
           },
@@ -202,6 +214,47 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
         <div className="p-3 sm:p-5 overflow-y-auto max-h-[calc(85vh-52px)]">
 
         <form onSubmit={handleSubmit} className="space-y-3">
+          {/* タイトル */}
+          <div>
+            <label htmlFor="document-edit-title" className="block text-xs font-medium text-gray-700 mb-1">タイトル</label>
+            <input
+              id="document-edit-title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              maxLength={255}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+            />
+          </div>
+
+          {/* 日付 */}
+          <div>
+            <label htmlFor="document-edit-date" className="block text-xs font-medium text-gray-700 mb-1">日付</label>
+            {dateOptions.length > 0 ? (
+              <select
+                id="document-edit-date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              >
+                <option value="">指定しない</option>
+                {/* 旅行期間外の日付が入っている時も選択肢から消さない */}
+                {date && !dateOptions.some(o => o.value === date) && <option value={date}>{date}</option>}
+                {dateOptions.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                id="document-edit-date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              />
+            )}
+          </div>
+
           {/* ファイルアップロード */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
