@@ -52,6 +52,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
   // 情報タブに一緒に保存するファイル。カテゴリーは選ばれるまでタイプから決める
   const [attachFiles, setAttachFiles] = useState<File[]>([]);
   const [attachCategory, setAttachCategory] = useState<string | null>(null);
+  const [attachTitle, setAttachTitle] = useState("");
   const [isAttaching, setIsAttaching] = useState(false);
 
   const [insertActivity, { loading: isInserting }] = useMutation(INSERT_ACTIVITIES);
@@ -231,7 +232,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
         try {
           await createTravelDocument({
             itineraryId: itinerary_id,
-            title: activityName,
+            title: attachTitle.trim() || activityName,
             category: documentCategory,
             date,
             files: attachFiles,
@@ -256,6 +257,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
       setPlaceId("");
       setAttachFiles([]);
       setAttachCategory(null);
+      setAttachTitle("");
       sessionToken.current = null;
 
       if (onActivityAdded) onActivityAdded({ name: activityName, type });
@@ -365,6 +367,19 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
             <span className="block text-sm font-medium mb-1">
               情報タブにファイルを追加 <span className="text-gray-400 font-normal">（任意）</span>
             </span>
+            <div className="mb-2">
+              <label htmlFor="activity-attach-title" className="block text-xs text-gray-600 mb-1">タイトル</label>
+              <input
+                id="activity-attach-title"
+                type="text"
+                className="w-full border bg-white rounded px-3 py-2 text-sm"
+                value={attachTitle}
+                onChange={e => setAttachTitle(e.target.value)}
+                placeholder={placeName || location || "例: 入場チケット、予約確認書"}
+                maxLength={255}
+              />
+              <p className="mt-0.5 text-[11px] text-gray-500">未入力の場合は予定の名前がタイトルになります</p>
+            </div>
             {attachFiles.length < MAX_DOCUMENT_FILES && (
               <>
                 <input
@@ -384,7 +399,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
               </>
             )}
             <p className="mt-1 text-xs text-gray-500">
-              チケットや予約確認書など（PDF, JPG, PNG・最大10MB・{MAX_DOCUMENT_FILES}個まで）。この予定の名前と日付で情報タブに保存されます。
+              チケットや予約確認書など（PDF, JPG, PNG・最大10MB・{MAX_DOCUMENT_FILES}個まで）。この予定の日付で情報タブに保存されます。
             </p>
             {attachFiles.length > 0 && (
               <div className="mt-2 space-y-2">
