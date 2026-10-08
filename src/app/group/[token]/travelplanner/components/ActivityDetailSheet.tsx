@@ -540,7 +540,7 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
               <button
                 type="button"
                 onClick={() => setAddDocumentOpen(true)}
-                className="mt-2 text-xs font-medium text-blue-600"
+                className="mt-2 w-full rounded-xl border-2 border-dashed border-blue-200 bg-white/60 py-2.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors"
               >
                 ＋ 情報タブにファイルを追加する
               </button>

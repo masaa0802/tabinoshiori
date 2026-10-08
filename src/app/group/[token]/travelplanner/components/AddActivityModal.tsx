@@ -361,7 +361,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
               ))}
             </select>
           </div>
-          <div>
+          <div className="rounded-lg border-2 border-dashed border-blue-200 bg-blue-50/40 p-3">
             <span className="block text-sm font-medium mb-1">
               情報タブにファイルを追加 <span className="text-gray-400 font-normal">（任意）</span>
             </span>
@@ -377,7 +377,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
                 />
                 <label
                   htmlFor="activity-attach-files"
-                  className="flex items-center justify-center gap-1 w-full border border-dashed border-gray-300 rounded px-3 py-2 text-sm text-blue-600 cursor-pointer hover:bg-gray-50"
+                  className="flex items-center justify-center gap-1 w-full border border-blue-200 bg-white rounded px-3 py-2 text-sm text-blue-600 cursor-pointer hover:bg-blue-50"
                 >
                   ＋ ファイルを選択
                 </label>
@@ -390,7 +390,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
               <div className="mt-2 space-y-2">
                 <ul className="space-y-1">
                   {attachFiles.map((file, index) => (
-                    <li key={`${file.name}-${index}`} className="flex items-center justify-between gap-2 border rounded px-2 py-1 text-sm">
+                    <li key={`${file.name}-${index}`} className="flex items-center justify-between gap-2 border bg-white rounded px-2 py-1 text-sm">
                       <span className="truncate text-gray-700">{file.name}</span>
                       <button
                         type="button"
@@ -407,7 +407,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
                   <label htmlFor="activity-attach-category" className="block text-xs text-gray-600 mb-1">情報タブのカテゴリー</label>
                   <select
                     id="activity-attach-category"
-                    className="w-full border rounded px-3 py-2 text-sm"
+                    className="w-full border bg-white rounded px-3 py-2 text-sm"
                     value={documentCategory}
                     onChange={e => setAttachCategory(e.target.value)}
                   >
