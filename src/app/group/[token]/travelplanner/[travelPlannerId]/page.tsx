@@ -861,6 +861,8 @@ export default function TravelPlanner() {
                 isNewGroup={isNewGroup}
                 groupData={groupData}
                 itinerary_id={travelPlan.id}
+                startDate={travelPlan.start_date}
+                endDate={travelPlan.end_date}
               />
             </div>
           ) : activeTab === "budget" ? (

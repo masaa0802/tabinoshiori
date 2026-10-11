@@ -7,6 +7,7 @@ import { GET_ACTIVITIES } from '@/graphql/queries';
 import { useGoogleMaps } from '@/components/GoogleMapsProvider';
 import LoadingAirplane from '@/components/LoadingAirplane';
 import ActivityImage from '@/components/ActivityImage';
+import { parseLocalDate } from '@/lib/openingHours';
 
 interface Activity {
   id: number;
@@ -39,7 +40,22 @@ interface MapContentProps {
   isNewGroup?: boolean;
   groupData?: GroupData | null;
   itinerary_id?: number;
+  /** 旅行の初日と最終日。プランのタブと同じく初日を1日目として数える */
+  startDate?: string;
+  endDate?: string;
 }
+
+/**
+ * 旅行の初日から数えて何日目か。プランのタブと同じく、期間外の予定は
+ * 初日／最終日に寄せる（同じ日付の予定がタブ間で別の日に出ないようにする）
+ */
+const dayNumberInTrip = (date: string, startDate: string, endDate?: string) => {
+  const diff = Math.round((parseLocalDate(date).getTime() - parseLocalDate(startDate).getTime()) / 86_400_000) + 1;
+  const lastDay = endDate
+    ? Math.round((parseLocalDate(endDate).getTime() - parseLocalDate(startDate).getTime()) / 86_400_000) + 1
+    : Infinity;
+  return Math.min(Math.max(diff, 1), lastDay);
+};
 
 const containerStyle = {
   width: '100%',
@@ -56,7 +72,9 @@ const MapContent: React.FC<MapContentProps> = ({
   groupToken,
   isNewGroup = false,
   groupData,
-  itinerary_id
+  itinerary_id,
+  startDate,
+  endDate,
 }) => {
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [activitiesByDay, setActivitiesByDay] = useState<{[key: number]: Activity[]}>({});
@@ -90,13 +108,14 @@ const MapContent: React.FC<MapContentProps> = ({
 
     if (activities.length > 0) {
       const grouped: {[key: number]: Activity[]} = {};
-      const baseDate = isNewGroup && groupData
-        ? new Date(groupData.startDate)
-        : new Date(Math.min(...activities.map((a: Activity) => new Date(a.date).getTime())));
+      // 一番早い予定の日ではなく、旅行の初日を1日目にする（初日に予定が無い・期間外の予定があるとずれるため）
+      const tripStart = (startDate ?? groupData?.startDate)?.slice(0, 10);
+      const tripEnd = (endDate ?? groupData?.endDate)?.slice(0, 10);
+      const firstActivityDate = activities.map((a: Activity) => a.date).sort()[0];
+      const baseDate = tripStart || firstActivityDate;
 
       activities.forEach((activity: Activity) => {
-        const activityDate = new Date(activity.date);
-        const dayNumber = Math.floor((activityDate.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+        const dayNumber = dayNumberInTrip(activity.date, baseDate, tripStart ? tripEnd : undefined);
         if (!grouped[dayNumber]) grouped[dayNumber] = [];
         if (activity.lat && activity.lng) grouped[dayNumber].push(activity);
       });
@@ -105,7 +124,7 @@ const MapContent: React.FC<MapContentProps> = ({
     } else {
       setActivitiesByDay({});
     }
-  }, [activitiesData, localActivities, isNewGroup, groupData, itinerary_id]);
+  }, [activitiesData, localActivities, isNewGroup, groupData, itinerary_id, startDate, endDate]);
 
   const { isLoaded } = useGoogleMaps();
 
