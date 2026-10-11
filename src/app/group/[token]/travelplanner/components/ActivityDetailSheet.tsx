@@ -6,7 +6,11 @@ import { useQuery } from "@apollo/client";
 import { useGoogleMaps } from "@/components/GoogleMapsProvider";
 import { getActivityTypeImage } from "@/lib/activityTypeImage";
 import { checkOpenAt, hoursTextFor, parseLocalDate, type OpenStatus } from "@/lib/openingHours";
-import { GET_BUDGETS } from "@/graphql/queries";
+import { GET_BUDGETS, GET_TRAVEL_DOCUMENTS } from "@/graphql/queries";
+import { CATEGORIES, CategoryIcon } from "../information/components/InformationContent";
+import AddDocumentModal from "../information/components/AddDocumentModal";
+import DocumentViewerModal from "../information/components/DocumentViewerModal";
+import { categoryForActivityType } from "../information/documentUtils";
 import { activityEventParams, trackIllustrationEvent, useIllustrationVariant } from "@/lib/illustrationExperiment";
 
 interface Activity {
@@ -33,6 +37,16 @@ interface Budget {
   currency?: string;
 }
 
+interface TravelDocument {
+  id: number;
+  title: string;
+  category: string;
+  date?: string;
+  reservation_number?: string;
+  notes?: string;
+  files: { id: number; file_url: string; file_type: string; file_name: string; file_size?: number; mime_type?: string }[];
+}
+
 interface PlaceDetails {
   formatted_address?: string;
   formatted_phone_number?: string;
@@ -48,6 +62,8 @@ interface ActivityDetailSheetProps {
   tripActivities: Activity[];
   /** 旅行の初日（「◯日目」の計算に使う） */
   tripStartDate?: string;
+  /** 旅行の最終日（情報を追加する時の日付の選択肢に使う） */
+  tripEndDate?: string;
   onClose: () => void;
   onEdit: (activity: Activity) => void;
   onDelete: (activity: Activity) => void;
@@ -128,6 +144,7 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
   isOpen,
   tripActivities,
   tripStartDate,
+  tripEndDate,
   onClose,
   onEdit,
   onDelete,
@@ -135,6 +152,8 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
 }) => {
   const [visible, setVisible] = useState(false);
   const [placeDetails, setPlaceDetails] = useState<PlaceDetails | null>(null);
+  const [addDocumentOpen, setAddDocumentOpen] = useState(false);
+  const [viewingDocument, setViewingDocument] = useState<TravelDocument | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const openedAtRef = useRef(0);
   const placesService = useRef<google.maps.places.PlacesService | null>(null);
@@ -146,6 +165,20 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
     skip: !isOpen || !activity,
     fetchPolicy: "cache-and-network",
   });
+
+  const { data: documentsData, refetch: refetchDocuments } = useQuery(GET_TRAVEL_DOCUMENTS, {
+    variables: { itinerary_id: activity?.itinerary_id },
+    skip: !isOpen || !activity,
+    fetchPolicy: "cache-and-network",
+  });
+
+  // 別の予定に切り替えたり閉じたりしたら、上に重ねた情報の画面も閉じる
+  useEffect(() => {
+    setAddDocumentOpen(false);
+    setViewingDocument(null);
+  }, [isOpen, activity?.id]);
+
+  const nestedModalOpen = addDocumentOpen || viewingDocument !== null;
 
   useEffect(() => {
     if (!isOpen) {
@@ -162,7 +195,8 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
   useEffect(() => {
     if (!isOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      // 情報の追加・閲覧を重ねている間はシートを閉じない
+      if (e.key === "Escape" && !nestedModalOpen) onClose();
     };
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -171,7 +205,7 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
       document.body.style.overflow = prevOverflow;
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, nestedModalOpen]);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
@@ -265,6 +299,10 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
 
   const budgets: Budget[] = (budgetsData?.budgets ?? []).filter((b: Budget) => b.activity_id === activity.id);
   const budgetTotal = budgets.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
+
+  const dayDocuments: TravelDocument[] = (documentsData?.travel_documents ?? []).filter(
+    (d: TravelDocument) => d.date && d.date === activity.date
+  );
 
   const openStatus = checkOpenAt(placeDetails?.opening_hours?.periods, activity.date, activity.time);
   const hoursText = hoursTextFor(placeDetails?.opening_hours?.weekday_text, activity.date);
@@ -464,6 +502,50 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
               )}
             </section>
 
+            {/* 情報タブのファイル */}
+            <section>
+              <SectionTitle>この日の情報</SectionTitle>
+              {dayDocuments.length > 0 ? (
+                <ul className="bg-white rounded-xl divide-y divide-stone-100">
+                  {dayDocuments.map((doc) => {
+                    const category = CATEGORIES.find((c) => c.value === doc.category);
+                    return (
+                      <li key={doc.id}>
+                        <button
+                          type="button"
+                          onClick={() => setViewingDocument(doc)}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-stone-50 transition-colors"
+                        >
+                          <span
+                            className="w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center"
+                            style={{ backgroundColor: `${category?.color}15`, color: category?.color }}
+                          >
+                            <CategoryIcon category={doc.category} className="w-4 h-4" />
+                          </span>
+                          <span className="flex-1 min-w-0">
+                            <span className="block text-sm font-medium truncate">{doc.title}</span>
+                            <span className="block text-[11px] text-stone-400">
+                              {category?.label} ・ ファイル{doc.files.length}件
+                            </span>
+                          </span>
+                          <span className="text-stone-300" aria-hidden>›</span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p className="text-sm text-stone-400">航空券や予約確認書などのファイルはまだありません。</p>
+              )}
+              <button
+                type="button"
+                onClick={() => setAddDocumentOpen(true)}
+                className="mt-2 w-full rounded-xl border-2 border-dashed border-blue-200 bg-white/60 py-2.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors"
+              >
+                ＋ 情報タブにファイルを追加する
+              </button>
+            </section>
+
             {/* メモ */}
             {activity.notes && (
               <section>
@@ -551,6 +633,35 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
           </button>
         </div>
       </div>
+
+      {/* シートは transform で動くため、重ねる画面はシートの外に置く（fixed がシート基準にならないように） */}
+      {addDocumentOpen && (
+        <AddDocumentModal
+          isOpen={addDocumentOpen}
+          onClose={() => setAddDocumentOpen(false)}
+          itineraryId={activity.itinerary_id}
+          onDocumentAdded={() => {
+            refetchDocuments();
+            setAddDocumentOpen(false);
+          }}
+          startDate={tripStartDate}
+          endDate={tripEndDate}
+          defaultTitle={activity.name}
+          defaultDate={activity.date}
+          defaultCategory={categoryForActivityType(activity.type)}
+        />
+      )}
+      {viewingDocument && (
+        <DocumentViewerModal
+          document={viewingDocument}
+          isOpen
+          onClose={() => setViewingDocument(null)}
+          onDeleted={() => refetchDocuments()}
+          itineraryId={activity.itinerary_id}
+          startDate={tripStartDate}
+          endDate={tripEndDate}
+        />
+      )}
     </div>
   );
 };

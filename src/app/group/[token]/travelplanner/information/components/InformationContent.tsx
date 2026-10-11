@@ -6,6 +6,7 @@ import { GET_TRAVEL_DOCUMENTS } from '@/graphql/queries';
 import DocumentCard from './DocumentCard';
 import AddDocumentModal from './AddDocumentModal';
 import RelatedArticles from '@/components/blog/RelatedArticles';
+import { dayNumberOf, formatDocumentDate, todayInTrip, todayString } from '../documentUtils';
 
 interface InformationContentProps {
   itinerary_id?: number;
@@ -89,7 +90,7 @@ export const CATEGORIES = [
   { value: 'other', label: 'その他', color: '#6B7280' },
 ];
 
-const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id, destination }) => {
+const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id, startDate, endDate, destination }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -107,6 +108,21 @@ const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id, d
 
     return data.travel_documents.filter((doc: any) => doc.category === selectedCategory);
   }, [data, selectedCategory]);
+
+  // 日付ごとに区切る。日付のあるものを日付順に並べ、日付なしは最後にまとめる
+  const documentsByDate = useMemo(() => {
+    const groups = new Map<string, typeof documents>();
+    for (const doc of documents) {
+      const key = doc.date ?? '';
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push(doc);
+    }
+    return Array.from(groups.entries())
+      .sort(([a], [b]) => (a === '' ? 1 : b === '' ? -1 : a.localeCompare(b)))
+      .map(([date, docs]) => ({ date, docs }));
+  }, [documents]);
+
+  const today = todayString();
 
   const handleDocumentAdded = () => {
     refetch();
@@ -198,15 +214,41 @@ const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id, d
             </button>
           </div>
         ) : (
-          <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
-            {documents.map((document: any) => (
-              <DocumentCard
-                key={document.id}
-                document={document}
-                onUpdate={handleDocumentUpdated}
-                itineraryId={itinerary_id}
-              />
-            ))}
+          <div className="space-y-5">
+            {documentsByDate.map(({ date, docs }) => {
+              const dayNumber = date ? dayNumberOf(date, startDate, endDate) : undefined;
+              return (
+                <section key={date || 'no-date'}>
+                  <h3 className="flex items-center gap-2 mb-2 text-sm font-bold text-gray-700">
+                    {date ? (
+                      <>
+                        {dayNumber !== undefined && <span className="text-sky-600">{dayNumber}日目</span>}
+                        <span>{formatDocumentDate(date)}</span>
+                        {date === today && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500 text-white font-medium">今日</span>
+                        )}
+                      </>
+                    ) : (
+                      <span className="text-gray-500">日付なし</span>
+                    )}
+                    <span className="flex-1 border-b border-gray-200" />
+                    <span className="text-xs font-normal text-gray-400">{docs.length}件</span>
+                  </h3>
+                  <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
+                    {docs.map((document: any) => (
+                      <DocumentCard
+                        key={document.id}
+                        document={document}
+                        onUpdate={handleDocumentUpdated}
+                        itineraryId={itinerary_id}
+                        startDate={startDate}
+                        endDate={endDate}
+                      />
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
           </div>
         )}
 
@@ -221,6 +263,9 @@ const InformationContent: React.FC<InformationContentProps> = ({ itinerary_id, d
           onClose={() => setIsAddModalOpen(false)}
           itineraryId={itinerary_id}
           onDocumentAdded={handleDocumentAdded}
+          startDate={startDate}
+          endDate={endDate}
+          defaultDate={todayInTrip(startDate, endDate)}
         />
       )}
     </div>

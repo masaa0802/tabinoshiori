@@ -31,6 +31,8 @@ interface DocumentViewerModalProps {
   onClose: () => void;
   onDeleted: () => void;
   itineraryId: number;
+  startDate?: string;
+  endDate?: string;
 }
 
 const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
@@ -39,6 +41,8 @@ const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
   onClose,
   onDeleted,
   itineraryId,
+  startDate,
+  endDate,
 }) => {
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -229,6 +233,8 @@ const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
         document={travelDocument}
         itineraryId={itineraryId}
         onDocumentUpdated={handleDocumentUpdated}
+        startDate={startDate}
+        endDate={endDate}
       />
     )}
     </>

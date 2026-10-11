@@ -1,18 +1,22 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useMutation } from '@apollo/client';
-import { INSERT_TRAVEL_DOCUMENT } from '@/graphql/mutates';
 import { CATEGORIES, CategoryIcon } from './InformationContent';
-import { uploadToCloudinary, validateFile } from '@/lib/cloudinary';
-
-const MAX_FILES = 5;
+import { validateFile } from '@/lib/cloudinary';
+import { MAX_DOCUMENT_FILES as MAX_FILES, tripDateOptions, useCreateTravelDocument } from '../documentUtils';
 
 interface AddDocumentModalProps {
   isOpen: boolean;
   onClose: () => void;
   itineraryId: number;
   onDocumentAdded: () => void;
+  /** 旅行期間（日付の選択肢に使う） */
+  startDate?: string;
+  endDate?: string;
+  /** 初期値。アクティビティから追加する時はその予定の名前・日付を入れておく */
+  defaultTitle?: string;
+  defaultDate?: string;
+  defaultCategory?: string;
 }
 
 const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
@@ -20,13 +24,21 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
   onClose,
   itineraryId,
   onDocumentAdded,
+  startDate,
+  endDate,
+  defaultTitle = '',
+  defaultDate = '',
+  defaultCategory = CATEGORIES[0].value,
 }) => {
-  const [category, setCategory] = useState(CATEGORIES[0].value);
+  const [title, setTitle] = useState(defaultTitle);
+  const [date, setDate] = useState(defaultDate);
+  const [category, setCategory] = useState(defaultCategory);
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
-  const [insertDocument] = useMutation(INSERT_TRAVEL_DOCUMENT);
+  const createTravelDocument = useCreateTravelDocument();
+  const dateOptions = tripDateOptions(startDate, endDate);
 
   const addFiles = (fileList: FileList | null) => {
     if (!fileList) return;
@@ -86,44 +98,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
     setUploading(true);
 
     try {
-      // ファイルをCloudinaryにアップロード
-      let uploadedFiles;
-      try {
-        uploadedFiles = await Promise.all(
-          files.map((file, index) =>
-            uploadToCloudinary(file, `travel-planner/${itineraryId}/documents`).then(result => ({
-              ...result,
-              display_order: index,
-            }))
-          )
-        );
-      } catch (uploadError) {
-        console.error('ファイルアップロードに失敗しました:', uploadError);
-        alert(`ファイルのアップロードに失敗しました: ${uploadError instanceof Error ? uploadError.message : String(uploadError)}`);
-        return;
-      }
-
-      // ドキュメントをデータベースに保存
-      await insertDocument({
-        variables: {
-          itinerary_id: itineraryId,
-          title: files[0]?.name.replace(/\.[^/.]+$/, '') || category,
-          category,
-          date: null,
-          reservation_number: null,
-          notes: null,
-          files: uploadedFiles.map(file => ({
-            file_url: file.file_url,
-            file_type: file.file_type,
-            file_name: file.file_name,
-            file_size: file.file_size,
-            mime_type: file.mime_type,
-            cloudinary_public_id: file.cloudinary_public_id,
-            display_order: file.display_order,
-          })),
-        },
-      });
-
+      await createTravelDocument({ itineraryId, title, category, date: date || null, files });
       onDocumentAdded();
       resetForm();
     } catch (error) {
@@ -136,7 +111,9 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
   };
 
   const resetForm = () => {
-    setCategory(CATEGORIES[0].value);
+    setTitle(defaultTitle);
+    setDate(defaultDate);
+    setCategory(defaultCategory);
     setFiles([]);
   };
 
@@ -167,6 +144,49 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
         <div className="p-3 sm:p-5 overflow-y-auto max-h-[calc(85vh-52px)]">
 
         <form onSubmit={handleSubmit} className="space-y-3">
+          {/* タイトル */}
+          <div>
+            <label htmlFor="document-title" className="block text-xs font-medium text-gray-700 mb-1">タイトル</label>
+            <input
+              id="document-title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="例: 行きの航空券、ホテルの予約確認"
+              maxLength={255}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+            />
+            <p className="mt-0.5 text-[10px] text-gray-400">未入力の場合はファイル名がタイトルになります</p>
+          </div>
+
+          {/* 日付 */}
+          <div>
+            <label htmlFor="document-date" className="block text-xs font-medium text-gray-700 mb-1">日付</label>
+            {dateOptions.length > 0 ? (
+              <select
+                id="document-date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              >
+                <option value="">指定しない</option>
+                {/* 旅行期間外の日付が入っている時も選択肢から消さない */}
+                {date && !dateOptions.some(o => o.value === date) && <option value={date}>{date}</option>}
+                {dateOptions.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                id="document-date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              />
+            )}
+          </div>
+
           {/* ファイルアップロード */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
