@@ -3,6 +3,7 @@ import { useMutation } from "@apollo/client";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { UPDATE_ACTIVITY } from "@/graphql/mutates";
 import LoadingAirplane from "@/components/LoadingAirplane";
+import { formatDocumentDate, tripDateOptions } from "../information/documentUtils";
 
 const LIBRARIES: ("places")[] = ["places"];
 
@@ -23,6 +24,9 @@ interface EditActivityModalProps {
     lng?: number;
     place_id?: string;
   } | null;
+  /** 旅行期間。日付はこの範囲からだけ選べる */
+  startDate?: string;
+  endDate?: string;
 }
 
 const typeOptions = [
@@ -44,7 +48,7 @@ function inferActivityType(placeTypes: string[]): string | null {
   return null;
 }
 
-const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, activity }) => {
+const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, activity, startDate, endDate }) => {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [location, setLocation] = useState("");
@@ -82,10 +86,16 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
     }
   }, [isLoaded]);
 
+  const dateOptions = tripDateOptions(startDate, endDate);
+  // 旅行期間外の日付が入っている予定（期間変更前に登録したものなど）は、選び直してもらう
+  const originalDate = activity?.date?.slice(0, 10) ?? "";
+  const isOriginalOutOfTrip = dateOptions.length > 0 && !!originalDate && !dateOptions.some(o => o.value === originalDate);
+
   useEffect(() => {
     if (activity) {
-      const activityDate = new Date(activity.date);
-      setDate(activityDate.toISOString().split('T')[0]);
+      const activityDate = activity.date.slice(0, 10);
+      const inTrip = !startDate || !endDate || (activityDate >= startDate.slice(0, 10) && activityDate <= endDate.slice(0, 10));
+      setDate(inTrip ? activityDate : "");
       setTime(activity.time.substring(0, 5));
       setLocation(activity.location);
       setPlaceName(activity.name);
@@ -95,7 +105,7 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
       setLng(activity.lng || null);
       setPlaceId(activity.place_id || "");
     }
-  }, [activity]);
+  }, [activity, startDate, endDate]);
 
   // ③ 実際の検索処理（1リクエストに統合）
   const fetchSuggestions = useCallback((value: string) => {
@@ -232,7 +242,21 @@ const EditActivityModal: React.FC<EditActivityModalProps> = ({ isOpen, onClose, 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">日付</label>
-            <input type="date" className="w-full border rounded px-3 py-2" value={date || ""} onChange={e => setDate(e.target.value)} required />
+            {dateOptions.length > 0 ? (
+              <select className="w-full border rounded px-3 py-2" value={date} onChange={e => setDate(e.target.value)} required>
+                <option value="">日付を選択してください</option>
+                {dateOptions.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            ) : (
+              <input type="date" className="w-full border rounded px-3 py-2" value={date || ""} onChange={e => setDate(e.target.value)} required />
+            )}
+            {isOriginalOutOfTrip && (
+              <p className="mt-1 text-xs text-amber-700">
+                登録されている日付（{formatDocumentDate(originalDate)}）は旅行期間外です。期間内の日付を選び直してください。
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">時間</label>

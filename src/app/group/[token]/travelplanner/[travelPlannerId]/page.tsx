@@ -1115,6 +1115,8 @@ export default function TravelPlanner() {
           refetchActivities(); // データを再取得
         }}
         activity={editingActivity}
+        startDate={travelPlan.start_date}
+        endDate={travelPlan.end_date}
       />
       <ActivityDetailSheet
         activity={selectedActivityForDetail}
