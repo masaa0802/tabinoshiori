@@ -30,3 +30,27 @@ array_relationships:
         table:
           name: travel_documents
           schema: public
+select_permissions:
+  - role: group_member
+    permission:
+      columns: '*'
+      filter:
+        group_id:
+          _eq: X-Hasura-Group-Id
+update_permissions:
+  - role: group_member
+    permission:
+      columns:
+        - title
+        - destination
+        - start_date
+        - end_date
+        - travel_purpose
+        - location_type
+        - total_budget
+      filter:
+        group_id:
+          _eq: X-Hasura-Group-Id
+      check:
+        group_id:
+          _eq: X-Hasura-Group-Id

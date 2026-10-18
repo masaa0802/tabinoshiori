@@ -13,3 +13,59 @@ array_relationships:
         table:
           name: budgets
           schema: public
+insert_permissions:
+  - role: group_member
+    permission:
+      check:
+        itinerary:
+          group_id:
+            _eq: X-Hasura-Group-Id
+      columns:
+        - itinerary_id
+        - name
+        - location
+        - notes
+        - type
+        - date
+        - time
+        - photo_url
+        - lat
+        - lng
+        - place_id
+select_permissions:
+  - role: group_member
+    permission:
+      columns: '*'
+      filter:
+        itinerary:
+          group_id:
+            _eq: X-Hasura-Group-Id
+update_permissions:
+  - role: group_member
+    permission:
+      columns:
+        - name
+        - location
+        - notes
+        - type
+        - date
+        - time
+        - photo_url
+        - lat
+        - lng
+        - place_id
+      filter:
+        itinerary:
+          group_id:
+            _eq: X-Hasura-Group-Id
+      check:
+        itinerary:
+          group_id:
+            _eq: X-Hasura-Group-Id
+delete_permissions:
+  - role: group_member
+    permission:
+      filter:
+        itinerary:
+          group_id:
+            _eq: X-Hasura-Group-Id

@@ -8,3 +8,67 @@ object_relationships:
   - name: itinerary
     using:
       foreign_key_constraint_on: itinerary_id
+insert_permissions:
+  - role: group_member
+    permission:
+      check:
+        _and:
+          - itinerary:
+              group_id:
+                _eq: X-Hasura-Group-Id
+          - _or:
+              - activity_id:
+                  _is_null: true
+              - activity:
+                  itinerary:
+                    group_id:
+                      _eq: X-Hasura-Group-Id
+      columns:
+        - itinerary_id
+        - date
+        - activity_id
+        - category
+        - amount
+        - description
+        - currency
+select_permissions:
+  - role: group_member
+    permission:
+      columns: '*'
+      filter:
+        itinerary:
+          group_id:
+            _eq: X-Hasura-Group-Id
+update_permissions:
+  - role: group_member
+    permission:
+      columns:
+        - date
+        - activity_id
+        - category
+        - amount
+        - description
+        - currency
+      filter:
+        itinerary:
+          group_id:
+            _eq: X-Hasura-Group-Id
+      check:
+        _and:
+          - itinerary:
+              group_id:
+                _eq: X-Hasura-Group-Id
+          - _or:
+              - activity_id:
+                  _is_null: true
+              - activity:
+                  itinerary:
+                    group_id:
+                      _eq: X-Hasura-Group-Id
+delete_permissions:
+  - role: group_member
+    permission:
+      filter:
+        itinerary:
+          group_id:
+            _eq: X-Hasura-Group-Id

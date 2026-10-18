@@ -10,12 +10,36 @@ insert_permissions:
     permission:
       check: {}
       columns: '*'
+  - role: group_member
+    permission:
+      check:
+        travel_document:
+          itinerary:
+            group_id:
+              _eq: X-Hasura-Group-Id
+      columns:
+        - travel_document_id
+        - file_url
+        - file_type
+        - file_name
+        - file_size
+        - mime_type
+        - cloudinary_public_id
+        - display_order
 select_permissions:
   - role: anonymous
     permission:
       columns: '*'
       filter: {}
       allow_aggregations: true
+  - role: group_member
+    permission:
+      columns: '*'
+      filter:
+        travel_document:
+          itinerary:
+            group_id:
+              _eq: X-Hasura-Group-Id
 update_permissions:
   - role: anonymous
     permission:
@@ -26,3 +50,10 @@ delete_permissions:
   - role: anonymous
     permission:
       filter: {}
+  - role: group_member
+    permission:
+      filter:
+        travel_document:
+          itinerary:
+            group_id:
+              _eq: X-Hasura-Group-Id
