@@ -70,8 +70,12 @@ export default function Group() {
     );
   };
 
+  // トークンはグループURLそのもので、知っていればグループを操作できる。
+  // 推測されないよう Math.random ではなく暗号論的乱数で 128bit 作る
   const generateGroupToken = () => {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
