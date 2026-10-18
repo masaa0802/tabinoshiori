@@ -74,6 +74,8 @@ Issue #16 の残課題。PR #38（無認証経路をふさぐ）の続き。
 
 ### リポジトリのメタデータと本番のずれ（重要）
 
+> **2026-10-18 追記**: 本番のメタデータを export して `hasura-project/metadata` に取り込み、`travel-planner/` と `travel-planner-prd/` は削除した。いまのリポジトリのメタデータは本番と同じ（`playing_with_neon` だけ除外）で、`group_member` の permission も本番と一致している。詳細は [hasura-project/README.md](../hasura-project/README.md)。それでも本番に `hasura metadata apply` はしない方針は変わらない。以下は取り込み前の状況の記録。
+
 `hasura-project/metadata` は本番と一致していない。
 
 - `databases.yaml` には `default`（ローカル用）しか無い。`travel-planner-prd/` はどこからも参照されていない。
@@ -160,7 +162,8 @@ Issue #16 の残課題。PR #38（無認証経路をふさぐ）の続き。
   ```
 
   エラー（`x-hasura-admin-secret required` など）なら問題なし。データが返ったら要対応。
-- **`hasura-project/config-production.yaml` に本番の admin secret が平文でコミットされている**。リポジトリは private だが、admin secret のローテーションと、ファイルからの削除（環境変数で渡す形）を推奨する。
-- **本番メタデータのリポジトリへの取り込み**: 本番を `hasura metadata export` して `travel-planner-prd/` を実態に合わせ、`databases.yaml` との関係も整理する。
+- **`hasura-project/config-production.yaml` に本番の admin secret が平文でコミットされている**。リポジトリは private だが、admin secret のローテーションと、ファイルからの削除（環境変数で渡す形）を推奨する。（2026-10-18: ファイルからは削除済み。ローテーションは別途）
+- **本番メタデータのリポジトリへの取り込み**: 本番を `hasura metadata export` して `travel-planner-prd/` を実態に合わせ、`databases.yaml` との関係も整理する。（2026-10-18: 対応済み。`hasura-project/README.md`）
+- **`documents` テーブルの `anonymous` 権限**（取り込みで判明）: 本番の `documents` に `anonymous` の select / insert / delete（条件なし）がある。上の `travel_documents` と同じく、本番で `HASURA_GRAPHQL_UNAUTHORIZED_ROLE=anonymous` が設定されていれば admin secret 無しで読み書き・削除できる。同じ curl の query を `{ documents(limit: 1) { id } }` にして確認できる。
 - **使われていないコード**: `src/app/group/[token]/travelplanner/[travelPlannerId]/page.tsx` の新規作成用の分岐（`insertGroup` / `insertItinerary` を呼ぶ `useEffect`）は、このルートでは `travelPlannerId` が必ずあるため実行されない。今後この経路を使うと権限エラーになるので、削除してよい。`src/app/group/[token]/travelplanner/new/page.tsx` の `GET_GROUP`（`group_by_pk`）は必須の変数 `$id` を渡しておらず、もともと動いていない。
 - **レート制限**: インメモリのため、Netlify の関数インスタンスごとに別カウントになる。`/api/groups` の連打対策としては弱い。

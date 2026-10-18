@@ -14,10 +14,6 @@ array_relationships:
           name: document_files
           schema: public
 insert_permissions:
-  - role: anonymous
-    permission:
-      check: {}
-      columns: '*'
   - role: group_member
     permission:
       check:
@@ -32,11 +28,6 @@ insert_permissions:
         - reservation_number
         - notes
 select_permissions:
-  - role: anonymous
-    permission:
-      columns: '*'
-      filter: {}
-      allow_aggregations: true
   - role: group_member
     permission:
       columns: '*'
@@ -45,11 +36,6 @@ select_permissions:
           group_id:
             _eq: X-Hasura-Group-Id
 update_permissions:
-  - role: anonymous
-    permission:
-      columns: '*'
-      filter: {}
-      check: null
   - role: group_member
     permission:
       columns:
@@ -68,9 +54,6 @@ update_permissions:
           group_id:
             _eq: X-Hasura-Group-Id
 delete_permissions:
-  - role: anonymous
-    permission:
-      filter: {}
   - role: group_member
     permission:
       filter:

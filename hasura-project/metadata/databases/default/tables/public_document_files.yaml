@@ -6,10 +6,6 @@ object_relationships:
     using:
       foreign_key_constraint_on: travel_document_id
 insert_permissions:
-  - role: anonymous
-    permission:
-      check: {}
-      columns: '*'
   - role: group_member
     permission:
       check:
@@ -27,11 +23,6 @@ insert_permissions:
         - cloudinary_public_id
         - display_order
 select_permissions:
-  - role: anonymous
-    permission:
-      columns: '*'
-      filter: {}
-      allow_aggregations: true
   - role: group_member
     permission:
       columns: '*'
@@ -40,16 +31,7 @@ select_permissions:
           itinerary:
             group_id:
               _eq: X-Hasura-Group-Id
-update_permissions:
-  - role: anonymous
-    permission:
-      columns: '*'
-      filter: {}
-      check: null
 delete_permissions:
-  - role: anonymous
-    permission:
-      filter: {}
   - role: group_member
     permission:
       filter:
