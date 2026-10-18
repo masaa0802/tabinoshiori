@@ -1,6 +1,14 @@
+# 本番 Hasura（Hasura Cloud）の接続先メモ。
+# admin secret はこのファイルに書かない。Hasura CLI は環境変数 HASURA_GRAPHQL_ADMIN_SECRET を読む。
+# CLI はこのファイルを直接読まない（config.yaml だけを読む）ので、本番に向けるときは環境変数で上書きする:
+#
+#   HASURA_GRAPHQL_ENDPOINT=https://travel-planner.hasura.app \
+#   HASURA_GRAPHQL_ADMIN_SECRET=<本番の admin secret> \
+#   hasura metadata export --project hasura-project --output json > /tmp/prod-metadata.json
+#
+# 本番に `hasura metadata apply` はしないこと（README.md の「本番との関係」を参照）。
 version: 3
 endpoint: https://travel-planner.hasura.app
-admin_secret: cMv0MBpz27N2gf3eUEXdewaBqo1WK4t0yCZhEgXVyNHHXMiEdPONcCqAV9RrMKHb
 metadata_directory: metadata
 actions:
   kind: synchronous
