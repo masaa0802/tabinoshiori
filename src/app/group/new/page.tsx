@@ -6,16 +6,12 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useMutation } from '@apollo/client';
-import { INSERT_GROUP, INSERT_ITINERARY } from '@/graphql/mutates';
 import { regions, prefectures } from '@/data/countries';
 import LoadingAirplane from '@/components/LoadingAirplane';
 
 export default function Group() {
   const router = useRouter();
-  const [insertGroup, { loading: groupLoading }] = useMutation(INSERT_GROUP);
-  const [insertItinerary, { loading: itineraryLoading }] = useMutation(INSERT_ITINERARY);
-  const isSubmitting = groupLoading || itineraryLoading;
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [tripType, setTripType] = useState('domestic');
   const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
@@ -70,14 +66,6 @@ export default function Group() {
     );
   };
 
-  // トークンはグループURLそのもので、知っていればグループを操作できる。
-  // 推測されないよう Math.random ではなく暗号論的乱数で 128bit 作る
-  const generateGroupToken = () => {
-    const bytes = new Uint8Array(16);
-    crypto.getRandomValues(bytes);
-    return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -95,43 +83,27 @@ export default function Group() {
       return;
     }
 
+    setIsSubmitting(true);
     try {
-      // グループトークン生成
-      const token = generateGroupToken();
-
-      // グループをデータベースに保存
-      const { data: groupData } = await insertGroup({
-        variables: {
-          name: groupName.trim(),
-          token: token,
-        },
-      });
-
-      if (!groupData?.insert_groups?.returning?.[0]) {
-        throw new Error('グループの作成に失敗しました');
-      }
-
-      const groupId = groupData.insert_groups.returning[0].id;
-
-      // 旅程をデータベースに保存
+      // グループと旅程はサーバーでまとめて作る。トークン（しおりのURL）もサーバーが発行する
       const destinations = tripType === 'domestic' ? selectedPrefectures : selectedCountries;
-      const { data: itineraryData } = await insertItinerary({
-        variables: {
-          group_id: groupId,
-          title: groupName.trim(),
+      const res = await fetch('/api/groups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: groupName.trim(),
           destination: destinations.join(', '), // 配列を文字列に変換
           start_date: startDate,
           end_date: endDate,
           travel_purpose: purposes.join(', '), // 配列を文字列に変換
           location_type: tripType,
-        },
+        }),
       });
-
-      if (!itineraryData?.insert_itineraries?.returning?.[0]) {
-        throw new Error('旅程の作成に失敗しました');
+      const created: { token?: string; itineraryId?: number } = await res.json().catch(() => ({}));
+      if (!res.ok || !created.token || !created.itineraryId) {
+        throw new Error(`しおりの作成に失敗しました (${res.status})`);
       }
-
-      const itineraryId = itineraryData.insert_itineraries.returning[0].id;
+      const { token, itineraryId } = created;
 
       // 旅程が作られた。ブログ経由ならどの記事から来たかを付けて送る。
       // これが「記事が役に立ったか」を判断する唯一の指標になるので、
@@ -155,6 +127,7 @@ export default function Group() {
     } catch (error) {
       console.error('エラーが発生しました:', error);
       alert('データの保存に失敗しました。もう一度お試しください。');
+      setIsSubmitting(false);
     }
   };
 
