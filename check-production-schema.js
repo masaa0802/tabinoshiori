@@ -1,7 +1,11 @@
 const fetch = require('node-fetch');
 
 const HASURA_ENDPOINT = 'https://travel-planner.hasura.app/v1/graphql';
-const ADMIN_SECRET = 'cMv0MBpz27N2gf3eUEXdewaBqo1WK4t0yCZhEgXVyNHHXMiEdPONcCqAV9RrMKHb';
+const ADMIN_SECRET = process.env.HASURA_GRAPHQL_ADMIN_SECRET;
+if (!ADMIN_SECRET) {
+  console.error('HASURA_GRAPHQL_ADMIN_SECRET を環境変数で指定してください');
+  process.exit(1);
+}
 
 // Check current schema by querying introspection
 const introspectionQuery = `

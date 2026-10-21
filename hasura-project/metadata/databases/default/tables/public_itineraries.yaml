@@ -23,6 +23,13 @@ array_relationships:
         table:
           name: budgets
           schema: public
+  - name: documents
+    using:
+      foreign_key_constraint_on:
+        column: itinerary_id
+        table:
+          name: documents
+          schema: public
   - name: travel_documents
     using:
       foreign_key_constraint_on:

@@ -3,8 +3,8 @@
  * group_member ロールの permission を Hasura に足す／外すスクリプト。
  * 設計と本番での手順は docs/GROUP_SCOPED_ACCESS.md。
  *
- * リポジトリのメタデータ（hasura-project/metadata）は本番とずれているため、
- * `hasura metadata apply` でディレクトリごと流すと本番のリレーション等を消してしまう。
+ * 本番に `hasura metadata apply` でディレクトリごと流すと、リポジトリに取り込んだあとに
+ * 本番で行われた変更を消してしまう（hasura-project/README.md）。
  * このスクリプトは本番の今のメタデータを読んで、足りないリレーションと
  * group_member の permission だけを metadata API で追加する。
  *

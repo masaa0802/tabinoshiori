@@ -1,6 +1,10 @@
 table:
   name: documents
   schema: public
+object_relationships:
+  - name: itinerary
+    using:
+      foreign_key_constraint_on: itinerary_id
 insert_permissions:
   - role: anonymous
     permission:
