@@ -27,13 +27,10 @@ import { BLOG_NAME } from "@/lib/site";
 export const revalidate = 3600;
 
 // 記事ページの広告ユニット。位置ごとに分けておくと AdSense の管理画面で
-// どちらが稼いでいるかを比べられる。未作成のうちは LP の FAQ 用ユニットで代用する
-const AD_SLOT_ARTICLE_MID =
-  process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_MID ||
-  process.env.NEXT_PUBLIC_ADSENSE_SLOT_FAQ;
-const AD_SLOT_ARTICLE_BOTTOM =
-  process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_BOTTOM ||
-  process.env.NEXT_PUBLIC_ADSENSE_SLOT_FAQ;
+// どちらが稼いでいるかを比べられる。未設定の位置には広告を出さない
+// （LP の FAQ 用ユニットでは代用しない。記事への掲載を位置ごとに始められるようにするため）
+const AD_SLOT_ARTICLE_MID = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_MID;
+const AD_SLOT_ARTICLE_BOTTOM = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_BOTTOM;
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -252,7 +249,7 @@ export default async function BlogArticlePage({
           <ArticleBody
             body={post.body}
             midContent={
-              showAds && (
+              showAds && AD_SLOT_ARTICLE_MID && (
                 <AdSlot
                   key={`${post.slug}-mid`}
                   slot={AD_SLOT_ARTICLE_MID}
@@ -341,7 +338,7 @@ export default async function BlogArticlePage({
         </section>
 
         {/* 記事末尾の広告。読了とCTAの後に置き、旅程作成の導線と競合させない */}
-        {showAds && (
+        {showAds && AD_SLOT_ARTICLE_BOTTOM && (
           <AdSlot
             key={`${post.slug}-bottom`}
             slot={AD_SLOT_ARTICLE_BOTTOM}
