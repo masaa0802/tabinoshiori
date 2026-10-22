@@ -16,7 +16,7 @@
 
 ### 1. Hasura Cloud Console にアクセス
 1. ブラウザで [https://travel-planner.hasura.app/console](https://travel-planner.hasura.app/console) を開く
-2. Admin Secret を入力: `cMv0MBpz27N2gf3eUEXdewaBqo1WK4t0yCZhEgXVyNHHXMiEdPONcCqAV9RrMKHb`
+2. Admin Secret を入力（値はリポジトリに置かない。Hasura Cloud のプロジェクト設定で確認する）
 
 ### 2. SQL タブで以下のコマンドを実行
 

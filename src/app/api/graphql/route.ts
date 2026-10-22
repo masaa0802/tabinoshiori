@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { validateGroupToken } from '@/lib/validate-group-token';
+import { resolveGroupId } from '@/lib/validate-group-token';
 
 const HASURA_ENDPOINT =
   process.env.HASURA_GRAPHQL_ENDPOINT ??
@@ -7,8 +7,10 @@ const HASURA_ENDPOINT =
 const HASURA_ADMIN_SECRET =
   process.env.HASURA_GRAPHQL_ADMIN_SECRET;
 
-// グループ未作成時に呼ばれる操作（トークン不要）
-const PUBLIC_OPERATIONS = new Set(['InsertGroup', 'InsertItinerary']);
+// Hasura にはこのロールで転送し、permission で x-hasura-group-id のグループの行だけに絞らせる。
+// admin secret は「ロールを名乗るため」にだけ使い、admin 権限のままでは転送しない。
+// permission の定義は hasura-project/scripts/group-member-permissions.mjs（設計は docs/GROUP_SCOPED_ACCESS.md）
+const HASURA_ROLE = 'group_member';
 
 // シンプルなIPベースのレートリミッター（60req/分）
 const rateLimiter = new Map<string, { count: number; resetAt: number }>();
@@ -50,13 +52,25 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const body = await req.text();
+  // グループの作成は /api/groups がサーバー側で行うので、ここにトークン不要の操作は無い
+  const groupToken = req.headers.get('x-group-token');
+  if (!groupToken) {
+    return NextResponse.json(
+      { errors: [{ message: 'Unauthorized' }] },
+      { status: 401 }
+    );
+  }
+  const groupId = await resolveGroupId(groupToken);
+  if (!groupId) {
+    return NextResponse.json(
+      { errors: [{ message: 'Unauthorized: invalid group token' }] },
+      { status: 403 }
+    );
+  }
 
-  let operationName: string | null = null;
+  const body = await req.text();
   try {
-    const parsed = JSON.parse(body);
-    operationName =
-      typeof parsed.operationName === 'string' ? parsed.operationName : null;
+    JSON.parse(body);
   } catch {
     return NextResponse.json(
       { errors: [{ message: 'Invalid request body' }] },
@@ -64,29 +78,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // パブリック操作以外はグループトークン必須
-  if (!operationName || !PUBLIC_OPERATIONS.has(operationName)) {
-    const groupToken = req.headers.get('x-group-token');
-    if (!groupToken) {
-      return NextResponse.json(
-        { errors: [{ message: 'Unauthorized' }] },
-        { status: 401 }
-      );
-    }
-    const valid = await validateGroupToken(groupToken);
-    if (!valid) {
-      return NextResponse.json(
-        { errors: [{ message: 'Unauthorized: invalid group token' }] },
-        { status: 403 }
-      );
-    }
-  }
-
+  // クライアントのヘッダーは転送しない（x-hasura-* を名乗られないよう、ここで組み立てたものだけ送る）
   const res = await fetch(HASURA_ENDPOINT, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'x-hasura-admin-secret': HASURA_ADMIN_SECRET,
+      'x-hasura-role': HASURA_ROLE,
+      'x-hasura-group-id': groupId,
     },
     body,
   });
