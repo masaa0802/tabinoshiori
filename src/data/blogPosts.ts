@@ -275,7 +275,7 @@ export const seedPosts: BlogPost[] = [
     souvenirs: [],
     publishedAt: "2026-07-28T09:00:00.000Z",
     updatedAt: "2026-07-28T09:00:00.000Z",
-    featured: false,
+    featured: true,
     isDraft: false,
     priceSources: [],
     seoDescription:
@@ -440,7 +440,7 @@ export const seedPosts: BlogPost[] = [
     souvenirs: [],
     publishedAt: "2026-08-18T09:00:00.000Z",
     updatedAt: "2026-08-18T09:00:00.000Z",
-    featured: false,
+    featured: true,
     isDraft: false,
     priceSources: [],
     seoDescription:

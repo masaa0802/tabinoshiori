@@ -24,7 +24,8 @@ const ArticleBody: React.FC<ArticleBodyProps> = ({ body }) => {
             return (
               <h2
                 key={index}
-                className="text-2xl font-bold text-gray-900 mt-12 mb-4 pb-2 border-b border-gray-200"
+                id={block.id}
+                className="scroll-mt-24 text-2xl font-bold text-gray-900 mt-12 mb-4 pb-2 border-b border-gray-200"
               >
                 {block.text}
               </h2>

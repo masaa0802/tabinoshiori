@@ -125,7 +125,7 @@
       "fieldId": "featured",
       "name": "注目記事",
       "kind": "boolean",
-      "description": "ブログトップの大きな枠に表示する。",
+      "description": "ブログトップの「はじめての方へ」の帯に表示する。新しい順に最大3本。はじめての読者に最初に読んでほしい記事だけをオンにする。",
       "required": false
     },
     {

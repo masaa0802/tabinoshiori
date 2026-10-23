@@ -98,7 +98,12 @@ export type PriceFigure = {
  * microCMS のリッチエディタは HTML 文字列を返すため、実記事の入稿後は使わなくなる。
  */
 export type ArticleBlock =
-  | { type: "heading"; text: string }
+  | {
+      type: "heading";
+      text: string;
+      /** 目次のリンク先。toc.ts が付ける */
+      id?: string;
+    }
   | { type: "paragraph"; text: string }
   | { type: "list"; items: string[] }
   | { type: "quote"; text: string }

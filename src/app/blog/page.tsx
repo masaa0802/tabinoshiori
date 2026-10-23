@@ -1,10 +1,11 @@
 import CtaLink from "@/components/blog/CtaLink";
 import Link from "next/link";
 import type { Metadata } from "next";
+import AnxietyTiles from "@/components/blog/AnxietyTiles";
 import ArticleCard from "@/components/blog/ArticleCard";
-import { getAllCategories, getAllPosts, getFeaturedPost } from "@/lib/microcms/queries";
+import { getAllCategories, getAllPosts, getPickupPosts } from "@/lib/microcms/queries";
 import { blogJsonLd, itemListJsonLd, jsonLdScript } from "@/lib/microcms/jsonLd";
-import { ANXIETY_TAGS } from "@/lib/microcms/tags";
+import { ANXIETY_TAGS, anxietyTagsOf } from "@/lib/microcms/tags";
 import { BLOG_DESCRIPTION, BLOG_NAME } from "@/lib/site";
 
 // セグメント設定はリテラルで書くこと。定数を import して代入するとビルドが落ちる
@@ -31,13 +32,22 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogTopPage() {
-  const [posts, categories, featured] = await Promise.all([
+  const [posts, categories, pickups] = await Promise.all([
     getAllPosts(),
     getAllCategories(),
-    getFeaturedPost(),
+    getPickupPosts(),
   ]);
 
-  const rest = featured ? posts.filter((post) => post.slug !== featured.slug) : posts;
+  // 帯に出した記事は新着一覧から外す。同じ記事が上下に2回並ばないように
+  const pickupSlugs = new Set(pickups.map((post) => post.slug));
+  const rest = posts.filter((post) => !pickupSlugs.has(post.slug));
+
+  const anxietyCounts: Record<string, number> = {};
+  for (const post of posts) {
+    for (const tag of anxietyTagsOf(post.tags)) {
+      anxietyCounts[tag.slug] = (anxietyCounts[tag.slug] ?? 0) + 1;
+    }
+  }
 
   return (
     <>
@@ -63,22 +73,13 @@ export default async function BlogTopPage() {
           </p>
         </section>
 
-        {/* 不安の種類で探す。読者が自分の悩みから入れるようにするための軸 */}
-        <nav className="mt-8" aria-label="不安の種類">
-          <h2 className="mb-3 text-sm font-bold tracking-wide text-gray-400">
-            気になっていることから探す
+        {/* 不安の種類で探す。読者が自分の悩みから入れるようにするための軸。
+            ブログトップでいちばん目立つ入口にしたいので、タグではなくタイルで出す */}
+        <nav className="mt-10" aria-label="不安の種類">
+          <h2 className="mb-4 text-lg font-bold text-gray-900">
+            何が不安？から探す
           </h2>
-          <div className="flex flex-wrap gap-2">
-            {ANXIETY_TAGS.map((tag) => (
-              <Link
-                key={tag.slug}
-                href={`/blog/tag/${tag.slug}`}
-                className="rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-800 transition-colors hover:border-amber-400 hover:bg-amber-100"
-              >
-                {tag.label}
-              </Link>
-            ))}
-          </div>
+          <AnxietyTiles tags={ANXIETY_TAGS} counts={anxietyCounts} />
         </nav>
 
         {/* カテゴリ（情報の種類）。不安タグと直交する軸 */}
@@ -101,13 +102,27 @@ export default async function BlogTopPage() {
           </nav>
         )}
 
-        {/* 注目記事 */}
-        {featured && (
-          <section className="mt-12">
-            <h2 className="mb-4 text-sm font-bold tracking-wide text-gray-400">
-              注目の記事
+        {/* はじめての方へ。microCMS で「注目記事」をオンにした記事を最大3本。
+            スマホでは画面の端まで広げて、帯として目立たせる */}
+        {pickups.length > 0 && (
+          <section
+            aria-labelledby="pickup-heading"
+            className="-mx-4 mt-14 bg-emerald-700 px-4 py-10 sm:mx-0 sm:rounded-3xl sm:px-8 sm:py-12"
+          >
+            <span className="inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-emerald-50">
+              はじめての方へ
+            </span>
+            <h2 id="pickup-heading" className="mt-3 text-2xl font-bold text-white">
+              まずはこの記事から
             </h2>
-            <ArticleCard post={featured} featured />
+            <p className="mt-2 text-sm leading-relaxed text-emerald-50/90">
+              旅行の準備で最初につまずきやすいところを、先に押さえておける記事です。
+            </p>
+            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {pickups.map((post) => (
+                <ArticleCard key={post.id} post={post} />
+              ))}
+            </div>
           </section>
         )}
 

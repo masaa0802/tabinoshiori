@@ -10,6 +10,7 @@ import CtaLink from "@/components/blog/CtaLink";
 import ReadTracker from "@/components/blog/ReadTracker";
 import PriceDisclosure from "@/components/blog/PriceDisclosure";
 import SouvenirGuide from "@/components/blog/SouvenirGuide";
+import TableOfContents from "@/components/blog/TableOfContents";
 import SpotCard from "@/components/blog/SpotCard";
 import { anxietyTagsOf, freeTagsOf } from "@/lib/microcms/tags";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/microcms/queries";
@@ -20,6 +21,7 @@ import {
   toDateAttribute,
 } from "@/lib/microcms/format";
 import { articleJsonLd, breadcrumbJsonLd, jsonLdScript } from "@/lib/microcms/jsonLd";
+import { buildToc } from "@/lib/microcms/toc";
 import { BLOG_NAME } from "@/lib/site";
 
 // セグメント設定はリテラルで書くこと。定数を import して代入するとビルドが落ちる
@@ -118,6 +120,8 @@ export default async function BlogArticlePage({
   const readingMinutes = estimateReadingMinutes(post.body);
   const anxietyTags = anxietyTagsOf(post.tags);
   const freeTags = freeTagsOf(post.tags);
+  // 見出しに id を付けた本文と、目次の項目を同時に作る
+  const toc = buildToc(post.body);
 
   const breadcrumbs = [
     { name: BLOG_NAME, path: "/blog" },
@@ -236,8 +240,10 @@ export default async function BlogArticlePage({
           sources={post.priceSources}
         />
 
+        <TableOfContents items={toc.items} />
+
         <div className="mt-4">
-          <ArticleBody body={post.body} />
+          <ArticleBody body={toc.body} />
         </div>
 
         {/* お土産ガイド。本文を導入にして、その直後に一覧を置く */}

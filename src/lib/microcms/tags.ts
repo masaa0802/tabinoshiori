@@ -20,6 +20,12 @@ export type AnxietyTag = {
   label: string;
   /** 一覧ページの見出し下に出す説明 */
   description: string;
+  /** ブログトップのタイルに大きく出す短い名前 */
+  shortLabel: string;
+  /** ブログトップのタイルのアイコン */
+  emoji: string;
+  /** ブログトップのタイルに出すひとこと。1行に収まる長さにする */
+  lead: string;
 };
 
 export const ANXIETY_TAGS: AnxietyTag[] = [
@@ -28,24 +34,36 @@ export const ANXIETY_TAGS: AnxietyTag[] = [
     label: "お金の不安",
     description:
       "旅行は高い、予算が読めない。費用の見当をつけるための記事を集めています。",
+    shortLabel: "お金",
+    emoji: "💰",
+    lead: "予算が読めない・高くつきそう",
   },
   {
     slug: "paperwork",
     label: "手続きの不安",
     description:
       "何を準備すればいいか分からない。パスポート・ビザ・保険・持ち物の記事を集めています。",
+    shortLabel: "手続き",
+    emoji: "📄",
+    lead: "パスポート・保険・持ち物",
   },
   {
     slug: "onsite",
     label: "現地の不安",
     description:
       "言葉・移動・治安が心配。着いた日から困らないための記事を集めています。",
+    shortLabel: "現地",
+    emoji: "🧭",
+    lead: "言葉・移動・治安",
   },
   {
     slug: "planning",
     label: "段取りの不安",
     description:
       "日程が組めない、詰め込みすぎてしまう。旅程の立て方の記事を集めています。",
+    shortLabel: "段取り",
+    emoji: "🗓️",
+    lead: "日程の組み方・詰め込みすぎ",
   },
 ];
 

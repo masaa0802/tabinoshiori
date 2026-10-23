@@ -4,6 +4,8 @@
  * 注意: サニタイズしていない。入稿者が運営のみである前提（仕様書2章）。
  * 外部ライターに入稿権限を渡す場合は sanitize-html 等によるサニタイズの追加が必須。
  *
+ * 見出しの scroll-mt は、目次から飛んだときに固定ヘッダーの下に隠れないようにするため。
+ *
  * @tailwindcss/typography は未導入のため、見出し・段落のスタイルは
  * 子要素セレクタ（[&_h2]:… ）で当てている。
  */
@@ -16,6 +18,7 @@ const HtmlBody: React.FC<HtmlBodyProps> = ({ html }) => {
     <div
       className="
         max-w-none text-gray-700 leading-relaxed
+        [&_h2]:scroll-mt-24 [&_h3]:scroll-mt-24
         [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:mt-12 [&_h2]:mb-4 [&_h2]:pb-2 [&_h2]:border-b [&_h2]:border-gray-200
         [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-gray-900 [&_h3]:mt-8 [&_h3]:mb-3
         [&_p]:my-5 [&_p]:leading-[1.9]
