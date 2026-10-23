@@ -167,7 +167,7 @@ CSVインポート後は、参照フィールド（`category` / `spots`）と画
 | `excerpt` | 一覧と OGP に出る。120文字以内が目安 |
 | `seoDescription` | 未設定なら `excerpt` が使われる |
 | `ogImage` | 未設定なら `coverImage` が使われる |
-| `featured` | ON にした記事がブログトップの大きな枠に出る |
+| `featured` | ON にした記事がブログトップの「はじめての方へ」の帯に出る（新しい順に最大3本）。1本も無ければ帯ごと出ない |
 | `priceCheckedAt` | **金額を書いたら必ず設定する**（下記参照） |
 | `priceSources` | 同上。カンマ区切り |
 

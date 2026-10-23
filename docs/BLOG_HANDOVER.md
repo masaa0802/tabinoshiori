@@ -74,7 +74,8 @@ Netlify のビルドが `exit code 2` で落ちていた。
 | `types.ts` | `BlogPost` / `Category` / `Spot` / `ArticleBody` の型定義 |
 | `format.ts` | 読了時間・日付整形・画像URL変換・料金の鮮度判定。**クライアントからも読むので server-only にしないこと** |
 | `jsonLd.ts` | 構造化データ生成（Article / BreadcrumbList / Blog / ItemList） |
-| `tags.ts` | 「不安の種類」タグの定義。ここを編集すると一覧ページ・sitemap・ナビに反映される |
+| `tags.ts` | 「不安の種類」タグの定義。ここを編集すると一覧ページ・sitemap・ブログトップのタイルに反映される |
+| `toc.ts` | 本文の h2・h3 から目次を作り、見出しに id を付ける |
 
 ### ページ `src/app/blog/`
 | パス | 内容 |
@@ -89,7 +90,10 @@ Netlify のビルドが `exit code 2` で落ちていた。
 ### コンポーネント `src/components/blog/`
 | ファイル | 役割 |
 |---|---|
-| `ArticleCard.tsx` | 記事カード（一覧で使用）。`featured` で大きい表示に切り替わる |
+| `ArticleCard.tsx` | 記事カード（一覧で使用）。`featured` で大きい表示に切り替わる（現在は未使用） |
+| `AnxietyTiles.tsx` | ブログトップの「何が不安？から探す」タイル。色はタグの slug ごとに固定 |
+| `AnxietyIcon.tsx` | タイルのアイコン。たびのまえに用に描いた線画（財布・パスポート・方位磁針・道のり） |
+| `TableOfContents.tsx` | 記事冒頭の目次。h2 が2つ未満なら出さない |
 | `ArticleBody.tsx` | 本文描画。HTML（microCMS）とブロック配列（シード）を出し分け |
 | `HtmlBody.tsx` | microCMSのリッチエディタHTMLを描画。**`dangerouslySetInnerHTML` 使用** |
 | `SpotCard.tsx` | スポットカード |
@@ -240,7 +244,10 @@ Netlify のビルドが `exit code 2` で落ちていた。
 不安タグを増減するときは **2か所を揃える**。`src/lib/microcms/tags.ts` の
 `ANXIETY_TAGS` と、microCMS の `tags` フィールドの選択肢。片方だけ変えると、
 一覧ページはあるのに選べない（または選べるのに一覧に出ない）状態になる。
-一覧ページ・sitemap・ブログトップのナビは `ANXIETY_TAGS` から自動生成される。
+一覧ページ・sitemap・ブログトップのタイルは `ANXIETY_TAGS` から自動生成される。
+タグを足すときは、タイル用の `shortLabel`・`lead` も書き、
+`AnxietyTiles.tsx` の `TONES` に色を、`AnxietyIcon.tsx` に絵を足す
+（足し忘れてもグレーの丸で表示される）。
 
 **(2) メディア名** — 確定・**対応済み**
 

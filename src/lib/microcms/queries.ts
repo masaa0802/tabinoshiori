@@ -66,7 +66,7 @@ function sortByPublishedAtDesc(posts: BlogPost[]): BlogPost[] {
  *
  * `cache()` で包んでいるのは、1ページの描画中に何度呼ばれても microCMS への
  * リクエストを1回に抑えるため。generateMetadata と本体の両方から呼ばれるページや、
- * 内部で本関数を使う getFeaturedPost などを重ねて呼んでも通信は増えない。
+ * 内部で本関数を使う getPickupPosts などを重ねて呼んでも通信は増えない。
  * microCMS はプランごとにAPIリクエスト数の上限があるため、ここは効かせておく。
  */
 export const getAllPosts = cache(async (): Promise<BlogPost[]> => {
@@ -180,10 +180,15 @@ export async function getPostsByAnxietyTag(slug: string): Promise<BlogPost[]> {
   return posts.filter((post) => post.tags.includes(tag.label));
 }
 
-/** 注目記事。featured が複数あれば最新のもの、無ければ最新記事を返す */
-export async function getFeaturedPost(): Promise<BlogPost | null> {
+/**
+ * ブログトップの「はじめての方へ」の帯に出す記事。featured の記事を新しい順に返す。
+ *
+ * 1本も無ければ空を返し、帯ごと出さない。最新記事で埋めないのは、
+ * すぐ下の新着一覧と同じ記事が並んでしまうため。
+ */
+export async function getPickupPosts(limit = 3): Promise<BlogPost[]> {
   const posts = await getAllPosts();
-  return posts.find((post) => post.featured) ?? posts[0] ?? null;
+  return posts.filter((post) => post.featured).slice(0, limit);
 }
 
 /**
