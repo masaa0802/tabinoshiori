@@ -100,7 +100,9 @@ Next.jsアプリをデプロイする最も簡単な方法は、Next.jsの作者
 
 ```env
 # Database Configuration
-DATABASE_URL="postgresql://masaaki:Tatakomaki4649@localhost:5432/mydb?schema=public"
+# docker-compose の postgres が初回起動時に使うパスワード（未設定なら postgrespassword）
+POSTGRES_PASSWORD="your-local-db-password"
+DATABASE_URL="postgresql://masaaki:your-local-db-password@localhost:5432/mydb?schema=public"
 
 # Hasura Configuration
 NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT="http://localhost:8080/v1/graphql"

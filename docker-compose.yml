@@ -20,7 +20,8 @@ services:
     environment:
       POSTGRES_DB: mydb
       POSTGRES_USER: masaaki
-      POSTGRES_PASSWORD: Tatakomaki4649
+      # 初回起動時（db_data ボリュームが無いとき）だけ使われる。実際の値は .env で渡す
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-postgrespassword}"
   graphql-engine:
     image: hasura/graphql-engine:v2.46.0
     ports:
