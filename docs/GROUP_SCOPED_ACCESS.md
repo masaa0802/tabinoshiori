@@ -153,17 +153,8 @@ Issue #16 の残課題。PR #38（無認証経路をふさぐ）の続き。
 
 ## 8. 今回の範囲外（別対応）
 
-- **`anonymous` ロールの権限**: `travel_documents` / `document_files` に `anonymous` の select/insert/update/delete（条件なし）がリポジトリのメタデータにある。本番 Hasura で `HASURA_GRAPHQL_UNAUTHORIZED_ROLE=anonymous` が設定されていると、**admin secret 無しで Hasura を直接たたいて全グループの予約情報を読み書きできる**。アプリは使っていないので、本番の設定を確認のうえ外すのが望ましい。確認方法（読み取りのみ）:
-
-  ```bash
-  curl -s -X POST https://<本番の Hasura>.hasura.app/v1/graphql \
-    -H 'content-type: application/json' \
-    -d '{"query":"{ travel_documents(limit: 1) { id } }"}'
-  ```
-
-  エラー（`x-hasura-admin-secret required` など）なら問題なし。データが返ったら要対応。
-- **`hasura-project/config-production.yaml` に本番の admin secret が平文でコミットされている**。リポジトリは private だが、admin secret のローテーションと、ファイルからの削除（環境変数で渡す形）を推奨する。（2026-10-18: ファイルからは削除済み。ローテーションは別途）
+- **`anonymous` ロールの権限**（2026-10-25: 本番で実害なしを確認。権限の定義は残っている）: メタデータの `documents` / `travel_documents` / `document_files` には、`anonymous` ロールの条件なしの権限（select / insert / delete など）が定義されている。本番 Hasura は `HASURA_GRAPHQL_UNAUTHORIZED_ROLE` を設定していないため、admin secret の無いリクエストはすべて `access-denied` で拒否され、この権限は使われない。アプリも `anonymous` を使っていない。ただし今後 `HASURA_GRAPHQL_UNAUTHORIZED_ROLE=anonymous` を設定すると、その時点で全グループのデータが誰でも読み書きできるようになる。設定する予定は無いが、事故を防ぐためにメタデータから外すのが望ましい。
+- **`hasura-project/config-production.yaml` に本番の admin secret が平文でコミットされていた**。（2026-10-18: ファイルから削除済み。2026-10-25: ローテーション済みを確認。git 履歴に残っている古い値は無効）
 - **本番メタデータのリポジトリへの取り込み**: 本番を `hasura metadata export` して `travel-planner-prd/` を実態に合わせ、`databases.yaml` との関係も整理する。（2026-10-18: 対応済み。`hasura-project/README.md`）
-- **`documents` テーブルの `anonymous` 権限**（取り込みで判明）: 本番の `documents` に `anonymous` の select / insert / delete（条件なし）がある。上の `travel_documents` と同じく、本番で `HASURA_GRAPHQL_UNAUTHORIZED_ROLE=anonymous` が設定されていれば admin secret 無しで読み書き・削除できる。同じ curl の query を `{ documents(limit: 1) { id } }` にして確認できる。
 - **使われていないコード**: `src/app/group/[token]/travelplanner/[travelPlannerId]/page.tsx` の新規作成用の分岐（`insertGroup` / `insertItinerary` を呼ぶ `useEffect`）は、このルートでは `travelPlannerId` が必ずあるため実行されない。今後この経路を使うと権限エラーになるので、削除してよい。`src/app/group/[token]/travelplanner/new/page.tsx` の `GET_GROUP`（`group_by_pk`）は必須の変数 `$id` を渡しておらず、もともと動いていない。
 - **レート制限**: インメモリのため、Netlify の関数インスタンスごとに別カウントになる。`/api/groups` の連打対策としては弱い。
