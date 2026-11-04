@@ -82,29 +82,75 @@ function renderBubble(speaker: Speaker, text: string): string {
   );
 }
 
+// 空白とみなす文字。リッチエディタへの貼り付けで &nbsp; やゼロ幅スペースが混ざることがある
+const SPACE = "(?:\\s|&nbsp;|\\u00a0|\\u200b|\\ufeff)*";
+
+// 段落の中の改行（Shift+Enter で入る <br>）。連続した <br> はまとめて1つの区切りとみなす
+const LINE_BREAK = /((?:\s*<br\s*\/?>\s*)+)/i;
+
+const PARAGRAPH = /<p(\s[^>]*)?>([\s\S]*?)<\/p>/gi;
+
+/**
+ * 段落を吹き出しに置き換える。
+ *
+ * 「名前：」は段落の先頭だけでなく、段落の中の改行（<br>）の直後でも拾う。
+ * リッチエディタで Shift+Enter で改行すると、見た目は別の段落でも
+ * HTML 上は同じ <p> の中に <br> 区切りで入るため。
+ * その場合は段落を分けて、吹き出しの前後を普通の段落として残す。
+ */
 export function renderAuthorComments(html: string, authors: Author[] = []): string {
   const speakers = buildSpeakerMap(authors);
 
   // 長い名前から試す。「後藤」と「後藤さん」が両方いても正しく拾うため
   const names = [...speakers.keys()].sort((a, b) => b.length - a.length).map(escapeRegExp);
 
-  // <p>名前：本文</p>。全角・半角のコロンどちらでもよい。
+  // 行の先頭の「名前：」。全角・半角のコロンどちらでもよい。
   // 先頭に <strong> などが挟まっても拾えるよう、開きタグは読み飛ばす
-  const pattern = new RegExp(
-    `<p(?:\\s[^>]*)?>\\s*((?:<(?:strong|b|span)(?:\\s[^>]*)?>\\s*)*)(${names.join("|")})\\s*[：:]\\s*((?:</(?:strong|b|span)>\\s*)*)([\\s\\S]*?)</p>`,
-    "g"
+  const marker = new RegExp(
+    `^${SPACE}((?:<(?:strong|b|span)(?:\\s[^>]*)?>${SPACE})*)(${names.join("|")})${SPACE}[：:︰]${SPACE}((?:</(?:strong|b|span)>${SPACE})*)([\\s\\S]*)$`
   );
 
-  return html.replace(
-    pattern,
-    (whole, openTags: string, name: string, closeTags: string, inner: string) => {
-      const speaker = speakers.get(name);
-      // 「名前：」だけを太字にしていた場合は、開き・閉じタグを両方捨てる。
-      // 段落全体を太字にしていた場合は、閉じタグが本文側に残るので開きタグを戻す
-      const prefix = closeTags ? "" : openTags;
-      const text = `${prefix}${inner}`.trim();
-      if (!speaker || !text) return whole;
-      return renderBubble(speaker, text);
+  /** 1行ぶんの HTML が「名前：」で始まっていれば吹き出しにする。違えば null */
+  const toBubble = (line: string): string | null => {
+    const match = line.match(marker);
+    if (!match) return null;
+    const [, openTags, name, closeTags, inner] = match;
+    const speaker = speakers.get(name);
+    // 「名前：」だけを太字にしていた場合は、開き・閉じタグを両方捨てる。
+    // 段落全体を太字にしていた場合は、閉じタグが本文側に残るので開きタグを戻す
+    const prefix = closeTags ? "" : openTags;
+    const text = `${prefix}${inner}`.trim();
+    if (!speaker || !text) return null;
+    return renderBubble(speaker, text);
+  };
+
+  return html.replace(PARAGRAPH, (whole, attributes: string | undefined, inner: string) => {
+    // split にキャプチャを付けているので、[行, 区切り, 行, 区切り, 行…] の順に並ぶ
+    const parts = inner.split(LINE_BREAK);
+    const output: string[] = [];
+    let pending = "";
+    let replaced = false;
+
+    const flush = () => {
+      if (pending.trim()) output.push(`<p${attributes ?? ""}>${pending}</p>`);
+      pending = "";
+    };
+
+    for (let index = 0; index < parts.length; index += 2) {
+      const line = parts[index];
+      const separator = index > 0 ? parts[index - 1] : "";
+      const bubble = toBubble(line);
+      if (bubble) {
+        flush();
+        output.push(bubble);
+        replaced = true;
+      } else {
+        pending += pending ? `${separator}${line}` : line;
+      }
     }
-  );
+
+    if (!replaced) return whole;
+    flush();
+    return output.join("");
+  });
 }
