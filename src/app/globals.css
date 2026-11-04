@@ -199,3 +199,69 @@
   animation: orbit 2s linear infinite;
   transform-origin: center center;
 }
+
+/*
+ * 記事本文の「筆者：」吹き出し（src/lib/microcms/authorComment.ts が出力する）。
+ * HtmlBody の [&_p] [&_img] の指定より優先させるため、レイヤーに入れずに書いている。
+ */
+.author-comment {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  margin: 1.75rem 0;
+}
+.author-comment .author-comment__avatar {
+  flex-shrink: 0;
+  width: 3.5rem;
+  margin: 0;
+  text-align: center;
+}
+.author-comment .author-comment__avatar img {
+  display: block;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0;
+  border-radius: 9999px;
+  border: 2px solid #a7f3d0;
+  object-fit: cover;
+}
+.author-comment .author-comment__avatar figcaption {
+  margin-top: 0.25rem;
+  font-size: 0.6875rem;
+  color: #6b7280;
+}
+.author-comment .author-comment__bubble {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  padding: 0.875rem 1.125rem;
+  border: 1px solid #a7f3d0;
+  border-radius: 1rem;
+  background: #ecfdf5;
+}
+/* しっぽ。枠線の色と塗りの色を2枚重ねて作る */
+.author-comment .author-comment__bubble::before,
+.author-comment .author-comment__bubble::after {
+  content: "";
+  position: absolute;
+  top: 1.125rem;
+  border-style: solid;
+  border-color: transparent;
+}
+.author-comment .author-comment__bubble::before {
+  left: -9px;
+  border-width: 8px 9px 8px 0;
+  border-right-color: #a7f3d0;
+}
+.author-comment .author-comment__bubble::after {
+  left: -7px;
+  border-width: 7px 8px 7px 0;
+  border-top-width: 7px;
+  margin-top: 1px;
+  border-right-color: #ecfdf5;
+}
+.author-comment .author-comment__bubble p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.8;
+}
