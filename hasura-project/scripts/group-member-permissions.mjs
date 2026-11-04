@@ -35,6 +35,10 @@ const OWN_TRAVEL_DOCUMENT = { travel_document: { itinerary: { group_id: OWN_GROU
 const OWN_ACTIVITY_OR_NONE = {
   _or: [{ activity_id: { _is_null: true } }, { activity: OWN_ITINERARY }],
 };
+// 情報タブの情報に紐づけるアクティビティは、同じ旅程のものに限る（["$", 列] は permission を判定している行の列を指す）
+const SAME_ITINERARY_ACTIVITY_OR_NONE = {
+  _or: [{ activity_id: { _is_null: true } }, { activity: { itinerary_id: { _ceq: ['$', 'itinerary_id'] } } }],
+};
 
 // insert / update の列は、いまアプリが送っている列だけに絞る（src/graphql/mutates.ts）。
 // これらはアプリが本番で使えている列なので、本番に存在することが分かっている
@@ -81,13 +85,13 @@ const PERMISSIONS = {
   travel_documents: {
     select: { columns: '*', filter: OWN_ITINERARY },
     insert: {
-      columns: ['itinerary_id', 'title', 'category', 'date', 'reservation_number', 'notes'],
-      check: OWN_ITINERARY,
+      columns: ['itinerary_id', 'title', 'category', 'date', 'reservation_number', 'notes', 'activity_id'],
+      check: { _and: [OWN_ITINERARY, SAME_ITINERARY_ACTIVITY_OR_NONE] },
     },
     update: {
-      columns: ['title', 'category', 'date', 'reservation_number', 'notes', 'updated_at'],
+      columns: ['title', 'category', 'date', 'reservation_number', 'notes', 'updated_at', 'activity_id'],
       filter: OWN_ITINERARY,
-      check: OWN_ITINERARY,
+      check: { _and: [OWN_ITINERARY, SAME_ITINERARY_ACTIVITY_OR_NONE] },
     },
     delete: { filter: OWN_ITINERARY },
   },
@@ -110,6 +114,8 @@ const REQUIRED_RELATIONSHIPS = [
   { table: 'budgets', name: 'itinerary', column: 'itinerary_id' },
   { table: 'budgets', name: 'activity', column: 'activity_id' },
   { table: 'travel_documents', name: 'itinerary', column: 'itinerary_id' },
+  // 9_add_activity_id_to_travel_documents の列。マイグレーションを先に流しておく必要がある
+  { table: 'travel_documents', name: 'activity', column: 'activity_id' },
   { table: 'document_files', name: 'travel_document', column: 'travel_document_id' },
   // /api/groups が旅程からグループをネストして作るのに使う
   { table: 'itineraries', name: 'group', column: 'group_id' },

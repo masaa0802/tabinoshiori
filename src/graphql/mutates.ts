@@ -384,6 +384,7 @@ export const INSERT_TRAVEL_DOCUMENT = gql`
     $date: date
     $reservation_number: String
     $notes: String
+    $activity_id: Int
     $files: [document_files_insert_input!]!
   ) {
     insert_travel_documents_one(
@@ -394,6 +395,7 @@ export const INSERT_TRAVEL_DOCUMENT = gql`
         date: $date
         reservation_number: $reservation_number
         notes: $notes
+        activity_id: $activity_id
         document_files: { data: $files }
       }
     ) {
@@ -403,6 +405,7 @@ export const INSERT_TRAVEL_DOCUMENT = gql`
       date
       reservation_number
       notes
+      activity_id
       created_at
       document_files {
         id
@@ -425,6 +428,7 @@ export const UPDATE_TRAVEL_DOCUMENT = gql`
     $date: date
     $reservation_number: String
     $notes: String
+    $activity_id: Int
   ) {
     update_travel_documents_by_pk(
       pk_columns: { id: $id }
@@ -434,6 +438,7 @@ export const UPDATE_TRAVEL_DOCUMENT = gql`
         date: $date
         reservation_number: $reservation_number
         notes: $notes
+        activity_id: $activity_id
         updated_at: "now()"
       }
     ) {
@@ -443,6 +448,7 @@ export const UPDATE_TRAVEL_DOCUMENT = gql`
       date
       reservation_number
       notes
+      activity_id
       updated_at
     }
   }

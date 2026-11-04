@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { CATEGORIES, CategoryIcon } from './InformationContent';
 import { validateFile } from '@/lib/cloudinary';
 import { MAX_DOCUMENT_FILES as MAX_FILES, tripDateOptions, useCreateTravelDocument } from '../documentUtils';
+import ActivitySelect from './ActivitySelect';
 
 interface AddDocumentModalProps {
   isOpen: boolean;
@@ -17,6 +18,8 @@ interface AddDocumentModalProps {
   defaultTitle?: string;
   defaultDate?: string;
   defaultCategory?: string;
+  /** 初期値。アクティビティから追加する時はその予定に紐づけておく */
+  defaultActivityId?: number | null;
 }
 
 const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
@@ -29,10 +32,12 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
   defaultTitle = '',
   defaultDate = '',
   defaultCategory = CATEGORIES[0].value,
+  defaultActivityId = null,
 }) => {
   const [title, setTitle] = useState(defaultTitle);
   const [date, setDate] = useState(defaultDate);
   const [category, setCategory] = useState(defaultCategory);
+  const [activityId, setActivityId] = useState<number | null>(defaultActivityId);
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -98,7 +103,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
     setUploading(true);
 
     try {
-      await createTravelDocument({ itineraryId, title, category, date: date || null, files });
+      await createTravelDocument({ itineraryId, title, category, date: date || null, activityId, files });
       onDocumentAdded();
       resetForm();
     } catch (error) {
@@ -114,6 +119,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
     setTitle(defaultTitle);
     setDate(defaultDate);
     setCategory(defaultCategory);
+    setActivityId(defaultActivityId);
     setFiles([]);
   };
 
@@ -185,6 +191,24 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             )}
+          </div>
+
+          {/* 紐づける予定 */}
+          <div>
+            <label htmlFor="document-activity" className="block text-xs font-medium text-gray-700 mb-1">関連する予定</label>
+            <ActivitySelect
+              id="document-activity"
+              itineraryId={itineraryId}
+              value={activityId}
+              onChange={(activity) => {
+                setActivityId(activity?.id ?? null);
+                // 日付が未選択なら予定の日付に合わせる
+                if (activity && !date) setDate(activity.date);
+              }}
+              startDate={startDate}
+              endDate={endDate}
+            />
+            <p className="mt-0.5 text-[10px] text-gray-400">選ぶと、その予定の詳細画面からこのファイルを開けます</p>
           </div>
 
           {/* ファイルアップロード */}

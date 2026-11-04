@@ -44,6 +44,8 @@ interface TravelDocument {
   date?: string;
   reservation_number?: string;
   notes?: string;
+  activity_id?: number | null;
+  activity?: { id: number; name: string; date: string; time?: string | null } | null;
   files: { id: number; file_url: string; file_type: string; file_name: string; file_size?: number; mime_type?: string }[];
 }
 
@@ -300,8 +302,12 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
   const budgets: Budget[] = (budgetsData?.budgets ?? []).filter((b: Budget) => b.activity_id === activity.id);
   const budgetTotal = budgets.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
 
-  const dayDocuments: TravelDocument[] = (documentsData?.travel_documents ?? []).filter(
-    (d: TravelDocument) => d.date && d.date === activity.date
+  const allDocuments: TravelDocument[] = documentsData?.travel_documents ?? [];
+  // この予定に紐づけた情報
+  const linkedDocuments = allDocuments.filter((d) => d.activity_id === activity.id);
+  // 同じ日付で、まだどの予定にも紐づいていない情報（紐づけ機能より前に登録したものを含む）
+  const dayDocuments = allDocuments.filter(
+    (d) => d.activity_id == null && d.date && d.date === activity.date
   );
 
   const openStatus = checkOpenAt(placeDetails?.opening_hours?.periods, activity.date, activity.time);
@@ -323,6 +329,37 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
     if (Date.now() - openedAtRef.current < BACKDROP_GUARD_MS) return;
     onClose();
   };
+
+  const renderDocumentList = (docs: TravelDocument[]) => (
+    <ul className="bg-white rounded-xl divide-y divide-stone-100">
+      {docs.map((doc) => {
+        const category = CATEGORIES.find((c) => c.value === doc.category);
+        return (
+          <li key={doc.id}>
+            <button
+              type="button"
+              onClick={() => setViewingDocument(doc)}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-stone-50 transition-colors"
+            >
+              <span
+                className="w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: `${category?.color}15`, color: category?.color }}
+              >
+                <CategoryIcon category={doc.category} className="w-4 h-4" />
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block text-sm font-medium truncate">{doc.title}</span>
+                <span className="block text-[11px] text-stone-400">
+                  {category?.label} ・ ファイル{doc.files.length}件
+                </span>
+              </span>
+              <span className="text-stone-300" aria-hidden>›</span>
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
 
   // 切符の下段に出す前後の予定。別の日なら日付も添える
   const stubRow = (label: string, a: Activity, emphasis: boolean, note?: string) => (
@@ -504,36 +541,9 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
 
             {/* 情報タブのファイル */}
             <section>
-              <SectionTitle>この日の情報</SectionTitle>
-              {dayDocuments.length > 0 ? (
-                <ul className="bg-white rounded-xl divide-y divide-stone-100">
-                  {dayDocuments.map((doc) => {
-                    const category = CATEGORIES.find((c) => c.value === doc.category);
-                    return (
-                      <li key={doc.id}>
-                        <button
-                          type="button"
-                          onClick={() => setViewingDocument(doc)}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-stone-50 transition-colors"
-                        >
-                          <span
-                            className="w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center"
-                            style={{ backgroundColor: `${category?.color}15`, color: category?.color }}
-                          >
-                            <CategoryIcon category={doc.category} className="w-4 h-4" />
-                          </span>
-                          <span className="flex-1 min-w-0">
-                            <span className="block text-sm font-medium truncate">{doc.title}</span>
-                            <span className="block text-[11px] text-stone-400">
-                              {category?.label} ・ ファイル{doc.files.length}件
-                            </span>
-                          </span>
-                          <span className="text-stone-300" aria-hidden>›</span>
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
+              <SectionTitle>この予定のファイル</SectionTitle>
+              {linkedDocuments.length > 0 ? (
+                renderDocumentList(linkedDocuments)
               ) : (
                 <p className="text-sm text-stone-400">航空券や予約確認書などのファイルはまだありません。</p>
               )}
@@ -542,8 +552,15 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
                 onClick={() => setAddDocumentOpen(true)}
                 className="mt-2 w-full rounded-xl border-2 border-dashed border-blue-200 bg-white/60 py-2.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors"
               >
-                ＋ 情報タブにファイルを追加する
+                ＋ この予定にファイルを追加する
               </button>
+              {dayDocuments.length > 0 && (
+                <div className="mt-4">
+                  <p className="mb-1.5 text-xs text-stone-500">同じ日の情報（予定に紐づいていないもの）</p>
+                  {renderDocumentList(dayDocuments)}
+                  <p className="mt-1 text-[11px] text-stone-400">開いて「編集」から、この予定に紐づけられます。</p>
+                </div>
+              )}
             </section>
 
             {/* メモ */}
@@ -649,6 +666,7 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
           defaultTitle={activity.name}
           defaultDate={activity.date}
           defaultCategory={categoryForActivityType(activity.type)}
+          defaultActivityId={activity.id}
         />
       )}
       {viewingDocument && (

@@ -174,6 +174,13 @@ export const GET_TRAVEL_DOCUMENTS = gql`
       notes
       created_at
       updated_at
+      activity_id
+      activity {
+        id
+        name
+        date
+        time
+      }
       files: document_files(order_by: { display_order: asc }) {
         id
         file_url
@@ -198,6 +205,13 @@ export const GET_TRAVEL_DOCUMENT = gql`
       notes
       created_at
       updated_at
+      activity_id
+      activity {
+        id
+        name
+        date
+        time
+      }
       files: document_files(order_by: { display_order: asc }) {
         id
         file_url
@@ -227,6 +241,7 @@ export const GET_DOCUMENTS_BY_CATEGORY = gql`
       date
       reservation_number
       notes
+      activity_id
       files: document_files(order_by: { display_order: asc }) {
         id
         file_url
