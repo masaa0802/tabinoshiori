@@ -5,6 +5,7 @@
  * スキーマを変更したときは、こちらも必ず合わせて更新すること。
  */
 import type {
+  Author,
   BlogImage,
   BlogPost,
   BlogPostSummary,
@@ -34,6 +35,12 @@ export type MicroCMSCategory = MicroCMSMeta & {
   slug?: string;
   description?: string;
   order?: number;
+};
+
+export type MicroCMSAuthor = MicroCMSMeta & {
+  name?: string;
+  icon?: MicroCMSImageField;
+  isDefault?: boolean;
 };
 
 export type MicroCMSSpot = MicroCMSMeta & {
@@ -142,6 +149,18 @@ export function toCategory(raw?: MicroCMSCategory | null): Category {
     name: raw.name?.trim() || "未分類",
     description: raw.description?.trim() || undefined,
     order: raw.order,
+  };
+}
+
+/** 表示名が空の筆者は吹き出しの目印にできないので null を返す */
+export function toAuthor(raw: MicroCMSAuthor): Author | null {
+  const name = raw.name?.trim();
+  if (!name) return null;
+  return {
+    id: raw.id,
+    name,
+    icon: toImage(raw.icon),
+    isDefault: raw.isDefault === true,
   };
 }
 

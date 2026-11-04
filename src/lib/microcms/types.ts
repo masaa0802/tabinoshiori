@@ -19,6 +19,20 @@ export type Category = {
   order?: number;
 };
 
+/**
+ * 記事に登場する筆者。本文の吹き出し（authorComment.ts）で使う。
+ * ゲストの寄稿者や同行者もここに登録する。
+ */
+export type Author = {
+  /** microCMS のコンテンツID */
+  id: string;
+  /** 表示名。本文で「表示名：」と書くとこの人の吹き出しになる */
+  name: string;
+  icon?: BlogImage;
+  /** 本文で「筆者：」と書いたときに使う人か */
+  isDefault: boolean;
+};
+
 export type Spot = {
   id: string;
   name: string;

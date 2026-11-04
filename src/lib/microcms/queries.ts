@@ -18,8 +18,15 @@
 import "server-only";
 import { cache } from "react";
 import { isMicroCMSConfigured, microcmsClient, MICROCMS_ENDPOINTS } from "./client";
-import { toBlogPost, toCategory, type MicroCMSBlog, type MicroCMSCategory } from "./mappers";
-import type { BlogPost, Category } from "./types";
+import {
+  toAuthor,
+  toBlogPost,
+  toCategory,
+  type MicroCMSAuthor,
+  type MicroCMSBlog,
+  type MicroCMSCategory,
+} from "./mappers";
+import type { Author, BlogPost, Category } from "./types";
 import { findAnxietyTagBySlug } from "./tags";
 import { seedCategories, seedPosts } from "@/data/blogPosts";
 
@@ -140,6 +147,29 @@ export const getAllCategories = cache(async (): Promise<Category[]> => {
     return response.contents.map(toCategory);
   } catch (error) {
     reportFetchFailure(MICROCMS_ENDPOINTS.categories, error);
+    return [];
+  }
+});
+
+/**
+ * 筆者の一覧（本文の吹き出しで使う）。microCMS の並び順のまま返す。
+ *
+ * authors API はあとから足したもので、まだ作っていない環境もある。
+ * 取得できなくても空を返すだけで、吹き出しは仮アイコンの「筆者」で表示される。
+ */
+export const getAllAuthors = cache(async (): Promise<Author[]> => {
+  if (!isMicroCMSConfigured || !microcmsClient) return [];
+
+  try {
+    const response = await microcmsClient.getList<MicroCMSAuthor>({
+      endpoint: MICROCMS_ENDPOINTS.authors,
+      queries: { limit: FETCH_LIMIT },
+    });
+    return response.contents
+      .map(toAuthor)
+      .filter((author): author is Author => author !== null);
+  } catch (error) {
+    reportFetchFailure(MICROCMS_ENDPOINTS.authors, error);
     return [];
   }
 });

@@ -3,17 +3,19 @@
  * microCMS から来た HTML と、シードデータのブロック配列を出し分ける。
  * 実記事の入稿後は format: "html" のみになる。
  */
-import type { ArticleBody as ArticleBodyType } from "@/lib/microcms/types";
+import type { ArticleBody as ArticleBodyType, Author } from "@/lib/microcms/types";
 import HtmlBody from "./HtmlBody";
 import PriceNote from "./PriceNote";
 
 type ArticleBodyProps = {
   body: ArticleBodyType;
+  /** 本文の吹き出しに出せる筆者（HtmlBody に渡す） */
+  authors?: Author[];
 };
 
-const ArticleBody: React.FC<ArticleBodyProps> = ({ body }) => {
+const ArticleBody: React.FC<ArticleBodyProps> = ({ body, authors }) => {
   if (body.format === "html") {
-    return <HtmlBody html={body.html} />;
+    return <HtmlBody html={body.html} authors={authors} />;
   }
 
   return (

@@ -1,0 +1,29 @@
+{
+  "apiFields": [
+    {
+      "idValue": "author-name",
+      "fieldId": "name",
+      "name": "表示名",
+      "kind": "text",
+      "description": "吹き出しのアイコンの下に出る名前。本文で「この名前：」と書くと、この人の吹き出しになる。",
+      "required": true
+    },
+    {
+      "idValue": "author-icon",
+      "fieldId": "icon",
+      "name": "アイコン",
+      "kind": "media",
+      "description": "正方形の画像。丸く切り抜いて表示する。未設定なら共通の仮アイコンを使う。",
+      "required": false
+    },
+    {
+      "idValue": "author-isDefault",
+      "fieldId": "isDefault",
+      "name": "「筆者：」で使う人",
+      "kind": "boolean",
+      "description": "本文で「筆者：」と書いたときに出る人。ONにするのは1人だけ。誰もONでなければ一覧の先頭の人を使う。",
+      "required": false
+    }
+  ],
+  "customFields": []
+}

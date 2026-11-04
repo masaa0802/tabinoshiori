@@ -13,7 +13,12 @@ import SouvenirGuide from "@/components/blog/SouvenirGuide";
 import TableOfContents from "@/components/blog/TableOfContents";
 import SpotCard from "@/components/blog/SpotCard";
 import { anxietyTagsOf, freeTagsOf } from "@/lib/microcms/tags";
-import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/microcms/queries";
+import {
+  getAllAuthors,
+  getAllPosts,
+  getPostBySlug,
+  getRelatedPosts,
+} from "@/lib/microcms/queries";
 import {
   estimateReadingMinutes,
   formatDate,
@@ -116,7 +121,7 @@ export default async function BlogArticlePage({
     notFound();
   }
 
-  const related = await getRelatedPosts(post);
+  const [related, authors] = await Promise.all([getRelatedPosts(post), getAllAuthors()]);
   const readingMinutes = estimateReadingMinutes(post.body);
   const anxietyTags = anxietyTagsOf(post.tags);
   const freeTags = freeTagsOf(post.tags);
@@ -244,7 +249,7 @@ export default async function BlogArticlePage({
         <TableOfContents items={toc.items} />
 
         <div className="mt-4">
-          <ArticleBody body={toc.body} />
+          <ArticleBody body={toc.body} authors={authors} />
         </div>
 
         {/* お土産ガイド。本文を導入にして、その直後に一覧を置く */}
