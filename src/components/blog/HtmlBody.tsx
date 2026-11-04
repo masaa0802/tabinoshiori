@@ -6,9 +6,14 @@
  *
  * 見出しの scroll-mt は、目次から飛んだときに固定ヘッダーの下に隠れないようにするため。
  *
+ * 「筆者：」で始まる段落は吹き出しに置き換える（authorComment.ts）。
+ * 吹き出しの見た目は globals.css の .author-comment にある。
+ *
  * @tailwindcss/typography は未導入のため、見出し・段落のスタイルは
  * 子要素セレクタ（[&_h2]:… ）で当てている。
  */
+import { renderAuthorComments } from "@/lib/microcms/authorComment";
+
 type HtmlBodyProps = {
   html: string;
 };
@@ -33,7 +38,7 @@ const HtmlBody: React.FC<HtmlBodyProps> = ({ html }) => {
         [&_td]:border [&_td]:border-gray-200 [&_td]:px-3 [&_td]:py-2
         [&_code]:bg-gray-100 [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-sm
       "
-      dangerouslySetInnerHTML={{ __html: html }}
+      dangerouslySetInnerHTML={{ __html: renderAuthorComments(html) }}
     />
   );
 };
