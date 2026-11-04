@@ -83,15 +83,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <head>
+        {/*
+          AdSense のサイト審査はクローラーが最初の HTML の <head> にあるコードを探す。
+          next/script の beforeInteractive は <script> タグを HTML に出さず、
+          ブラウザ側で後から差し込むため、素の <script> で直接書く。
+        */}
         {ADSENSE_CLIENT_ID && (
-          <Script
+          <script
             async
-            strategy="beforeInteractive"
             crossOrigin="anonymous"
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
           />
         )}
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Script
           strategy="afterInteractive"
           src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_MEASUREMENT_ID}`}
