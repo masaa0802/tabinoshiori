@@ -213,7 +213,8 @@ export default async function BlogArticlePage({
           {post.coverImage ? (
             <Image
               src={optimizedImageUrl(post.coverImage.url, 1200)}
-              alt=""
+              // 画像検索からの流入のため、空にせず記事タイトルを入れる
+              alt={post.title}
               fill
               priority
               sizes="(max-width: 768px) 100vw, 768px"
