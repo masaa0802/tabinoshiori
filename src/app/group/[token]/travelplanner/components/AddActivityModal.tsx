@@ -210,7 +210,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
     e.preventDefault();
     try {
       const activityName = placeName || location;
-      await insertActivity({
+      const { data: inserted } = await insertActivity({
         variables: {
           itinerary_id,
           date,
@@ -235,6 +235,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
             title: attachTitle.trim() || activityName,
             category: documentCategory,
             date,
+            activityId: inserted?.insert_activities?.returning?.[0]?.id ?? null,
             files: attachFiles,
           });
         } catch (attachError) {

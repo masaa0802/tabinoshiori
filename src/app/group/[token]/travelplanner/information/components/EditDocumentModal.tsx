@@ -6,6 +6,7 @@ import { UPDATE_TRAVEL_DOCUMENT, INSERT_DOCUMENT_FILE, DELETE_DOCUMENT_FILE } fr
 import { CATEGORIES, CategoryIcon } from './InformationContent';
 import { uploadToCloudinary, validateFile, formatFileSize } from '@/lib/cloudinary';
 import { MAX_DOCUMENT_FILES as MAX_FILES, tripDateOptions } from '../documentUtils';
+import ActivitySelect from './ActivitySelect';
 
 interface DocumentFile {
   id: number;
@@ -23,6 +24,8 @@ interface Document {
   date?: string;
   reservation_number?: string;
   notes?: string;
+  activity_id?: number | null;
+  activity?: { id: number; name: string; date: string; time?: string | null } | null;
   files: DocumentFile[];
 }
 
@@ -48,6 +51,7 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
   const [title, setTitle] = useState(travelDocument.title);
   const [date, setDate] = useState(travelDocument.date ?? '');
   const [category, setCategory] = useState(travelDocument.category);
+  const [activityId, setActivityId] = useState<number | null>(travelDocument.activity_id ?? null);
   const [existingFiles, setExistingFiles] = useState<DocumentFile[]>(travelDocument.files);
   const [removedFileIds, setRemovedFileIds] = useState<number[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
@@ -164,7 +168,8 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
       if (
         category !== travelDocument.category ||
         newTitle !== travelDocument.title ||
-        newDate !== (travelDocument.date ?? null)
+        newDate !== (travelDocument.date ?? null) ||
+        activityId !== (travelDocument.activity_id ?? null)
       ) {
         await updateTravelDocument({
           variables: {
@@ -174,6 +179,7 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
             date: newDate,
             reservation_number: travelDocument.reservation_number ?? null,
             notes: travelDocument.notes ?? null,
+            activity_id: activityId,
           },
         });
       }
@@ -253,6 +259,22 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             )}
+          </div>
+
+          {/* 紐づける予定 */}
+          <div>
+            <label htmlFor="document-edit-activity" className="block text-xs font-medium text-gray-700 mb-1">関連する予定</label>
+            <ActivitySelect
+              id="document-edit-activity"
+              itineraryId={itineraryId}
+              value={activityId}
+              onChange={(activity) => {
+                setActivityId(activity?.id ?? null);
+                if (activity && !date) setDate(activity.date);
+              }}
+              startDate={startDate}
+              endDate={endDate}
+            />
           </div>
 
           {/* ファイルアップロード */}

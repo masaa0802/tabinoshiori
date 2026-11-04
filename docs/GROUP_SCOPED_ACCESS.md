@@ -48,13 +48,13 @@ Issue #16 の残課題。PR #38（無認証経路をふさぐ）の続き。
 | itineraries | `group_id = G` | なし（`/api/groups` が作る） | `group_id = G`。列は title, destination, start_date, end_date, travel_purpose, location_type, total_budget（**group_id は変更不可**） | なし |
 | activities | `itinerary.group_id = G` | 同左を check | 同左（itinerary_id は変更不可） | 同左 |
 | budgets | `itinerary.group_id = G` | 同左 **かつ** `activity_id` が null か自グループのアクティビティ | 同左 | 同左 |
-| travel_documents | `itinerary.group_id = G` | 同左を check | 同左（updated_at を含む） | 同左 |
+| travel_documents | `itinerary.group_id = G` | 同左 **かつ** `activity_id` が null か同じ旅程のアクティビティ | 同左（updated_at・activity_id を含む） | 同左 |
 | document_files | `travel_document.itinerary.group_id = G` | 同左を check（`InsertTravelDocument` のネスト insert も含む） | なし（使っていない） | 同左 |
 | users / group_members / documents | なし | なし | なし | なし |
 
 - insert / update の列は、**いまアプリが送っている列だけ**（`src/graphql/mutates.ts`）。アプリが本番で使えている列なので、本番に存在することが分かっている。
 - `groups.token` は自グループの行だけ見える。`GetItineraryByTokenAndId` が `where: { group: { token: … } }` を使うため（where に使う列は select 権限が要る）。
-- filter がたどるリレーション（`activities.itinerary`、`budgets.itinerary`、`budgets.activity`、`travel_documents.itinerary`、`document_files.travel_document`、`itineraries.group`）は、本番に無ければスクリプトが外部キーから作る。
+- filter がたどるリレーション（`activities.itinerary`、`budgets.itinerary`、`budgets.activity`、`travel_documents.itinerary`、`travel_documents.activity`、`document_files.travel_document`、`itineraries.group`）は、本番に無ければスクリプトが外部キーから作る。
 - `itineraries.group_id` が null の旅程（グループ削除で `ON DELETE SET NULL` されたもの）はどのグループからも見えなくなる。これまでは誰からでも見えていた。
 
 ## 4. 本番への影響

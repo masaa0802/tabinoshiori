@@ -6,6 +6,7 @@ import { DELETE_TRAVEL_DOCUMENT } from '@/graphql/mutates';
 import { CATEGORIES, CategoryIcon } from './InformationContent';
 import DocumentViewerModal from './DocumentViewerModal';
 import { formatFileSize } from '@/lib/cloudinary';
+import { linkedActivityLabel } from '../documentUtils';
 
 interface DocumentFile {
   id: number;
@@ -23,6 +24,8 @@ interface Document {
   date?: string;
   reservation_number?: string;
   notes?: string;
+  activity_id?: number | null;
+  activity?: { id: number; name: string; date: string; time?: string | null } | null;
   files: DocumentFile[];
 }
 
@@ -94,6 +97,15 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ document, onUpdate, itinera
               >
                 {category?.label}
               </span>
+              {document.activity && (
+                <p className="mt-1 flex items-center gap-1 text-[10px] sm:text-xs text-gray-500 min-w-0">
+                  <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                  <span className="truncate">{linkedActivityLabel(document.activity)}</span>
+                </p>
+              )}
             </div>
           </div>
 

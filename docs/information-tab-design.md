@@ -217,6 +217,25 @@ document_files (新規)
 
 ---
 
+### 3.4 アクティビティとの紐づけ（2026-11 追加）
+
+情報（`travel_documents`）を旅程のアクティビティ1件に紐づけられる。マイグレーションは `hasura-project/migrations/default/9_add_activity_id_to_travel_documents`。
+
+```sql
+ALTER TABLE travel_documents
+  ADD COLUMN IF NOT EXISTS activity_id INTEGER REFERENCES activities(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_travel_documents_activity_id ON travel_documents(activity_id);
+```
+
+- 紐づけは任意。既存の情報は `activity_id = NULL`（紐づけなし）のまま変わらない。
+- アクティビティを削除しても情報とファイルは消えず、紐づけだけが外れる（予算の `activity_id` と同じ）。
+- 紐づけられるのは同じ旅程のアクティビティだけ。Hasura の `group_member` の insert / update の check で強制している（`activity.itinerary_id` を `["$", "itinerary_id"]` と比較）。
+- 画面
+  - 情報の追加・編集に「関連する予定」を選ぶ欄がある。日付が未選択なら予定の日付が入る。
+  - 情報タブのカードとビューアーに、紐づいた予定（「10:00 那覇空港」）を出す。
+  - アクティビティの詳細画面に「この予定のファイル」を出す。その下に、同じ日付でまだどの予定にも紐づいていない情報を「同じ日の情報」として出す（紐づけ機能より前に登録したものを見失わないため）。
+  - アクティビティの詳細画面や、アクティビティ追加時に添付したファイルは、その予定に紐づけて保存する。
+
 ## 4. ファイルアップロード設計
 
 ### 4.1 Cloudinary設定

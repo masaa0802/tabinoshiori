@@ -52,6 +52,10 @@ export const tripDateOptions = (startDate?: string, endDate?: string) => {
   return options;
 };
 
+/** 紐づいた予定の表示名（「10:00 那覇空港」） */
+export const linkedActivityLabel = (activity?: { name: string; time?: string | null } | null) =>
+  activity ? `${activity.time ? `${activity.time.substring(0, 5)} ` : ''}${activity.name}` : undefined;
+
 /** アクティビティの種別から、情報タブのカテゴリーの初期値を決める */
 export const categoryForActivityType = (type?: string) => {
   switch (type) {
@@ -72,6 +76,8 @@ interface CreateTravelDocumentInput {
   title: string;
   category: string;
   date: string | null;
+  /** 紐づけるアクティビティ。紐づけない時は null か省略 */
+  activityId?: number | null;
   files: File[];
 }
 
@@ -81,7 +87,7 @@ export const useCreateTravelDocument = () => {
     refetchQueries: ['GetTravelDocuments'],
   });
 
-  return async ({ itineraryId, title, category, date, files }: CreateTravelDocumentInput) => {
+  return async ({ itineraryId, title, category, date, activityId, files }: CreateTravelDocumentInput) => {
     const uploadedFiles = await Promise.all(
       files.map((file) => uploadToCloudinary(file, `travel-planner/${itineraryId}/documents`))
     );
@@ -94,6 +100,7 @@ export const useCreateTravelDocument = () => {
         date: date || null,
         reservation_number: null,
         notes: null,
+        activity_id: activityId ?? null,
         files: uploadedFiles.map((file, index) => ({
           file_url: file.file_url,
           file_type: file.file_type,
