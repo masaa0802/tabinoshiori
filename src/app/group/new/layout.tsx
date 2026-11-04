@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "新しいグループを作成",
   description: "旅行グループを作成して、友達や家族と一緒に旅行計画を立てましょう。旅のしおりで、思い出に残る旅を簡単に計画できます。",
+  // 指定しないとルートの canonical（"/"）を引き継ぎ、トップページの重複扱いになる
+  alternates: { canonical: "/group/new" },
   openGraph: {
     title: "新しいグループを作成 | 旅のしおり",
     description: "旅行グループを作成して、友達や家族と一緒に旅行計画を立てましょう。旅のしおりで、思い出に残る旅を簡単に計画できます。",
