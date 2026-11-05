@@ -9,10 +9,15 @@
  * 「筆者：」「登録した表示名：」で始まる段落は吹き出しに置き換える（authorComment.ts）。
  * 吹き出しの見た目は globals.css の .author-comment にある。
  *
+ * 写真が2枚以上つづく箇所は横スワイプのギャラリーに、1枚だけの写真は
+ * 高さに上限をつけた表示に組み直す（photoGallery.ts）。
+ * 見た目は globals.css の .photo-gallery / .article-photo にある。
+ *
  * @tailwindcss/typography は未導入のため、見出し・段落のスタイルは
  * 子要素セレクタ（[&_h2]:… ）で当てている。
  */
 import { renderAuthorComments } from "@/lib/microcms/authorComment";
+import { renderPhotoGalleries } from "@/lib/microcms/photoGallery";
 
 import type { Author } from "@/lib/microcms/types";
 
@@ -42,7 +47,7 @@ const HtmlBody: React.FC<HtmlBodyProps> = ({ html, authors = [] }) => {
         [&_td]:border [&_td]:border-gray-200 [&_td]:px-3 [&_td]:py-2
         [&_code]:bg-gray-100 [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-sm
       "
-      dangerouslySetInnerHTML={{ __html: renderAuthorComments(html, authors) }}
+      dangerouslySetInnerHTML={{ __html: renderAuthorComments(renderPhotoGalleries(html), authors) }}
     />
   );
 };
