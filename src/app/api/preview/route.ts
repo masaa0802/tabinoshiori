@@ -59,9 +59,7 @@ export async function GET(request: NextRequest) {
   // 公開済みで下書きが無い記事は microCMS が draftKey を空で渡してくる。
   // エラーにせず通常の記事ページへ送る。プレビューする下書きが無いだけなので
   if (!draftKey) {
-    return NextResponse.redirect(
-      new URL(`/blog/${contentId}`, request.nextUrl.origin)
-    );
+    return redirectTo(`/blog/${contentId}`);
   }
 
   // 転送する前に、実際に取得できるかここで確かめる。
@@ -84,10 +82,17 @@ export async function GET(request: NextRequest) {
 
   (await draftMode()).enable();
 
-  return NextResponse.redirect(
-    new URL(
-      `/blog/${contentId}?draftKey=${encodeURIComponent(draftKey)}`,
-      request.nextUrl.origin
-    )
-  );
+  return redirectTo(`/blog/${contentId}?draftKey=${encodeURIComponent(draftKey)}`);
+}
+
+/**
+ * 同じドメインのままページへ転送する。
+ *
+ * Location は相対パスで返すこと。Netlify では request.nextUrl.origin が
+ * 本番ドメインではなくデプロイごとのURL（<id>--mitsukuru.netlify.app）になり、
+ * そこへ転送すると Draft Mode の Cookie（本番ドメインに付く）が届かず、
+ * 下書きが見えずに 404 になる（2026-11-05 に発生）。
+ */
+function redirectTo(path: string): NextResponse {
+  return new NextResponse(null, { status: 307, headers: { Location: path } });
 }
