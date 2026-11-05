@@ -12,6 +12,10 @@
  *   <figure><img src="..." alt="" width="1200" height="800"><figcaption>説明</figcaption></figure>
  * 画像にリンクを付けると <img> が <a> に包まれる。
  * 古い形式や CSV に直接書いた場合の <p><img ...></p> も同じように扱う。
+ * 1つの段落に画像だけを並べた <p><img><img></p> は、1枚ずつの写真とみなす。
+ *
+ * 写真の下には小さくタイトルを出す。figcaption があればそれを、
+ * なければ画像の代替テキスト（alt。microCMS の画像設定で入れられる）を使う。
  *
  * 「つづいている」とみなすのは、写真のあいだに空白か空の段落
  * （リッチエディタで Enter を押しただけの行）しかないとき。
@@ -29,7 +33,7 @@ const LINKED_IMG = String.raw`(?:<a\s[^>]*>${SPACE})?${IMG}(?:${SPACE}</a>)?`;
 
 // 写真1枚ぶんのブロック。<figure> 形式と、写真だけが入った <p> 形式
 const FIGURE_BLOCK = String.raw`<figure(?:\s[^>]*)?>${SPACE}${LINKED_IMG}${SPACE}(?:<figcaption(?:\s[^>]*)?>[\s\S]*?</figcaption>${SPACE})?</figure>`;
-const PARAGRAPH_BLOCK = String.raw`<p(?:\s[^>]*)?>${SPACE}${LINKED_IMG}${SPACE}(?:<br\s*/?>${SPACE})*</p>`;
+const PARAGRAPH_BLOCK = String.raw`<p(?:\s[^>]*)?>${SPACE}(?:${LINKED_IMG}${SPACE}(?:<br\s*/?>${SPACE})*)+</p>`;
 const PHOTO_BLOCK = `(?:${FIGURE_BLOCK}|${PARAGRAPH_BLOCK})`;
 
 // 写真のあいだに挟まっていてもよいもの: 空白と、空の段落（<p></p>、<p><br></p>、<p>&nbsp;</p>）
@@ -39,8 +43,10 @@ const GAP = String.raw`(?:\s|<p(?:\s[^>]*)?>${SPACE}(?:<br\s*/?>${SPACE})*</p>)*
 const PHOTO_RUN = new RegExp(`${PHOTO_BLOCK}(?:${GAP}${PHOTO_BLOCK})*`, "gi");
 const PHOTO_BLOCK_GLOBAL = new RegExp(PHOTO_BLOCK, "gi");
 
+const LINKED_IMG_GLOBAL = new RegExp(LINKED_IMG, "gi");
 const IMG_PATTERN = new RegExp(IMG, "i");
 const LINK_OPEN_PATTERN = /<a\s[^>]*>/i;
+const ALT_PATTERN = /\salt\s*=\s*"([^"]*)"/i;
 const CAPTION_PATTERN = /<figcaption(?:\s[^>]*)?>([\s\S]*?)<\/figcaption>/i;
 
 /** ギャラリーで読み込む画像の幅。スマホの高解像度画面で表示幅の約2倍 */
@@ -54,11 +60,25 @@ type Photo = {
   caption: string | null;
 };
 
-function parsePhoto(block: string): Photo | null {
-  const img = block.match(IMG_PATTERN)?.[0];
+/** 写真1枚ぶん（リンクで包まれていてもよい）の HTML から、画像とリンクとタイトルを取り出す */
+function parseImage(html: string, figcaption: string | null): Photo | null {
+  const img = html.match(IMG_PATTERN)?.[0];
   if (!img) return null;
-  const caption = block.match(CAPTION_PATTERN)?.[1]?.trim() || null;
-  return { img, linkOpen: block.match(LINK_OPEN_PATTERN)?.[0] ?? null, caption };
+  // alt は属性値なのでエスケープ済み。そのまま figcaption の中身に使える
+  const alt = img.match(ALT_PATTERN)?.[1]?.trim() || null;
+  return { img, linkOpen: html.match(LINK_OPEN_PATTERN)?.[0] ?? null, caption: figcaption || alt };
+}
+
+/** 写真ブロック1つから写真を取り出す。<p> に画像が並んでいれば複数になる */
+function parsePhotos(block: string): Photo[] {
+  if (/^<figure/i.test(block)) {
+    const figcaption = block.match(CAPTION_PATTERN)?.[1]?.trim() || null;
+    const photo = parseImage(block, figcaption);
+    return photo ? [photo] : [];
+  }
+  return (block.match(LINKED_IMG_GLOBAL) ?? [])
+    .map((html) => parseImage(html, null))
+    .filter((photo): photo is Photo => photo !== null);
 }
 
 /** img タグの属性を整える。microCMS の画像なら WebP に変換した軽いものを読む */
@@ -95,9 +115,7 @@ function renderGallery(photos: Photo[]): string {
 
 export function renderPhotoGalleries(html: string): string {
   return html.replace(PHOTO_RUN, (run) => {
-    const photos = (run.match(PHOTO_BLOCK_GLOBAL) ?? [])
-      .map(parsePhoto)
-      .filter((photo): photo is Photo => photo !== null);
+    const photos = (run.match(PHOTO_BLOCK_GLOBAL) ?? []).flatMap(parsePhotos);
 
     if (photos.length === 0) return run;
     if (photos.length === 1) {
