@@ -168,7 +168,7 @@ export default async function BlogTopPage() {
         {/* 新着記事 */}
         {rest.length > 0 && (
           <section className="mt-16">
-            <SectionHeading>新しい旅のメモ</SectionHeading>
+            <SectionHeading>新着記事</SectionHeading>
             <div className="blog-card-grid mt-8 grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
               {rest.map((post) => (
                 <ArticleCard key={post.id} post={post} />
@@ -184,13 +184,17 @@ export default async function BlogTopPage() {
         )}
 
         {/* CTA。読者の便益で書く（製品を知らない読者に通じる言い回しにすること） */}
-        <section className="mt-20 grid items-center gap-8 rounded-md bg-ink px-6 py-12 text-paper sm:px-12 md:grid-cols-[1fr_auto]">
+        <section className="relative mt-20 grid items-center gap-8 rounded-md border border-rule bg-paper-card px-6 py-12 shadow-[0_1px_0_var(--color-rule)] sm:px-12 md:grid-cols-[1fr_auto]">
+          <span
+            aria-hidden="true"
+            className="absolute -top-3 left-10 h-6 w-24 -rotate-3 bg-[rgba(194,170,120,0.55)]"
+          />
           <div>
-            <p className="font-hand text-lg text-[#f0c9a8]">調べ終わったら</p>
-            <h2 className="mt-1 font-mincho text-2xl font-extrabold leading-snug sm:text-3xl">
+            <p className="font-hand text-lg text-shu">調べ終わったら</p>
+            <h2 className="mt-1 font-mincho text-2xl font-extrabold leading-snug text-ink sm:text-3xl">
               調べた内容を、旅程の形にまとめる
             </h2>
-            <p className="mt-4 max-w-xl leading-relaxed text-[#e8e0d2]">
+            <p className="mt-4 max-w-xl leading-relaxed text-ink-soft">
               行き先と日程を入れるだけで、持ち物や予約情報までひとつのページに整理できます。
               登録なしで使えて、URLを送れば同行者にもそのまま共有できます。
             </p>

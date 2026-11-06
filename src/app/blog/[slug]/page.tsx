@@ -304,12 +304,16 @@ export default async function BlogArticlePage({
         />
 
         {/* 読了後のCTA。製品を知らない読者にも通じる言い回しにすること */}
-        <section className="mt-14 rounded-md bg-ink p-6 text-paper sm:p-8">
-          <p className="font-hand text-[15px] text-[#f0c9a8]">読み終わったら</p>
-          <h2 className="mt-1 font-mincho text-xl font-extrabold leading-snug sm:text-2xl">
+        <section className="relative mt-14 rounded-md border border-rule bg-paper-card p-6 shadow-[0_1px_0_var(--color-rule)] sm:p-8">
+          <span
+            aria-hidden="true"
+            className="absolute -top-2.5 left-8 h-5 w-20 -rotate-3 bg-[rgba(194,170,120,0.55)]"
+          />
+          <p className="font-hand text-[15px] text-shu">読み終わったら</p>
+          <h2 className="mt-1 font-mincho text-xl font-extrabold leading-snug text-ink sm:text-2xl">
             この内容をもとに、旅程を組み立てる
           </h2>
-          <p className="mt-3 text-sm leading-relaxed text-[#e8e0d2]">
+          <p className="mt-3 text-sm leading-relaxed text-ink-soft">
             行き先と日程を入れると、訪問先・持ち物・予約情報をひとつのページにまとめられます。
             登録は不要で、URLを送れば同行者もそのまま見られます。
           </p>
