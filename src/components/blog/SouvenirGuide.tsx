@@ -65,18 +65,18 @@ const SouvenirGuide: React.FC<SouvenirGuideProps> = ({ souvenirs }) => {
   return (
     <section aria-label="お土産ガイド" className="mt-12">
       {/* 概要とジャンルの目次 */}
-      <div className="rounded-xl border border-gray-200 p-5">
-        <p className="text-sm text-gray-700">
-          <span className="font-bold text-gray-900">{souvenirs.length}品</span>を紹介
+      <div className="rounded-xl border border-rule p-5">
+        <p className="text-sm text-ink-soft">
+          <span className="font-bold text-ink">{souvenirs.length}品</span>を紹介
           {localOnlyCount > 0 && (
             <>
               ・うち
-              <span className="font-bold text-emerald-700">現地限定 {localOnlyCount}品</span>
+              <span className="font-bold text-shu">現地限定 {localOnlyCount}品</span>
             </>
           )}
         </p>
         {updatedAt && (
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-ink-muted">
             最終確認{" "}
             <time dateTime={toDateAttribute(updatedAt)}>{formatDate(updatedAt)}</time>
             （価格・販売場所は品ごとに確認日を記載）
@@ -89,10 +89,10 @@ const SouvenirGuide: React.FC<SouvenirGuideProps> = ({ souvenirs }) => {
               <a
                 key={group.anchor}
                 href={`#${group.anchor}`}
-                className="rounded-full border border-gray-200 px-3.5 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700"
+                className="rounded-full border border-rule px-3.5 py-1.5 text-sm font-medium text-ink-soft transition-colors hover:border-shu hover:bg-paper-deep hover:text-shu"
               >
                 {group.genre}
-                <span className="ml-1.5 text-xs text-gray-400">{group.items.length}</span>
+                <span className="ml-1.5 text-xs text-ink-muted">{group.items.length}</span>
               </a>
             ))}
           </nav>
@@ -101,9 +101,9 @@ const SouvenirGuide: React.FC<SouvenirGuideProps> = ({ souvenirs }) => {
 
       {groups.map((group) => (
         <section key={group.anchor} id={group.anchor} className="scroll-mt-20">
-          <h2 className="mb-4 mt-12 flex items-baseline gap-2 border-b border-gray-200 pb-2 text-2xl font-bold text-gray-900">
+          <h2 className="mb-4 mt-12 flex items-baseline gap-2 border-b border-rule pb-2 text-2xl font-bold text-ink">
             {group.genre}
-            <span className="text-sm font-normal text-gray-400">{group.items.length}品</span>
+            <span className="text-sm font-normal text-ink-muted">{group.items.length}品</span>
           </h2>
           <div className="space-y-3">
             {group.items.map((item) => (
@@ -124,11 +124,11 @@ function SouvenirCard({ item }: { item: Souvenir }) {
   });
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm sm:flex-row">
+    <article className="flex flex-col overflow-hidden rounded-xl border border-rule bg-paper-card shadow-sm sm:flex-row">
       {/* 写真はカードの端まで広げる。余白は文字側だけに持たせる。
           スマホは横に並べると写真が細くなりすぎるので、上に全幅で置く。
           sm 以上は左に置き、カードの高さいっぱいに伸ばす */}
-      <div className="relative aspect-[4/3] w-full flex-shrink-0 bg-gray-100 sm:aspect-auto sm:min-h-[11rem] sm:w-44 sm:self-stretch">
+      <div className="relative aspect-[4/3] w-full flex-shrink-0 bg-paper-deep sm:aspect-auto sm:min-h-[11rem] sm:w-44 sm:self-stretch">
         {item.photo ? (
           <Image
             src={optimizedImageUrl(item.photo.url, 800)}
@@ -148,25 +148,25 @@ function SouvenirCard({ item }: { item: Souvenir }) {
 
       <div className="min-w-0 flex-1 p-4 sm:p-5">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <h3 className="font-bold text-gray-900">{item.name}</h3>
+          <h3 className="font-bold text-ink">{item.name}</h3>
           {/* いちばん知りたい「日本でも買えるか」は品名のすぐ横に出す */}
           {item.availableInJapan ? (
-            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600">
+            <span className="rounded-full bg-paper-deep px-2 py-0.5 text-[11px] font-medium text-ink-soft">
               日本でも買える
             </span>
           ) : (
-            <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+            <span className="rounded-full bg-paper-deep px-2 py-0.5 text-[11px] font-semibold text-shu">
               現地限定
             </span>
           )}
         </div>
 
         {item.price && (
-          <p className="mt-1 text-sm font-semibold text-gray-800">{item.price}</p>
+          <p className="mt-1 text-sm font-semibold text-ink">{item.price}</p>
         )}
 
         {item.comment && (
-          <p className="mt-1.5 text-sm leading-relaxed text-gray-600">{item.comment}</p>
+          <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{item.comment}</p>
         )}
 
         <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
@@ -174,12 +174,12 @@ function SouvenirCard({ item }: { item: Souvenir }) {
             href={mapUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 font-medium text-emerald-700 hover:text-emerald-800"
+            className="inline-flex items-center gap-1 font-medium text-shu hover:text-shu-dark"
           >
             <PinIcon />
             {item.place}
           </a>
-          <span className="text-gray-400">
+          <span className="text-ink-muted">
             <time dateTime={toDateAttribute(item.checkedAt)}>
               {formatDate(item.checkedAt)}
             </time>
@@ -198,12 +198,12 @@ function SouvenirCard({ item }: { item: Souvenir }) {
               href={item.japanUrl}
               target="_blank"
               rel={item.sponsored ? "sponsored noopener noreferrer" : "noopener noreferrer"}
-              className="text-gray-600 underline decoration-gray-300 underline-offset-2 hover:text-emerald-700"
+              className="text-ink-soft underline decoration-rule underline-offset-2 hover:text-shu"
             >
               日本で買えるお店を見る
             </a>
             {item.sponsored && (
-              <span className="ml-1.5 rounded border border-gray-300 px-1 text-[10px] text-gray-500">
+              <span className="ml-1.5 rounded border border-rule px-1 text-[10px] text-ink-muted">
                 PR
               </span>
             )}

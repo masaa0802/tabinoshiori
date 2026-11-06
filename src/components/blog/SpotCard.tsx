@@ -19,9 +19,9 @@ const SpotCard: React.FC<SpotCardProps> = ({ spot }) => {
   });
 
   return (
-    <div className="flex gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+    <div className="flex gap-4 rounded-xl border border-rule bg-paper-card p-4 shadow-sm">
       {spot.photo && (
-        <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:h-24 sm:w-24">
+        <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-paper-deep sm:h-24 sm:w-24">
           <Image
             src={optimizedImageUrl(spot.photo.url, 200)}
             alt=""
@@ -34,27 +34,27 @@ const SpotCard: React.FC<SpotCardProps> = ({ spot }) => {
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <h4 className="font-bold text-gray-900">{spot.name}</h4>
+          <h4 className="font-bold text-ink">{spot.name}</h4>
           {spot.activityType && (
-            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600">
+            <span className="rounded-full bg-paper-deep px-2 py-0.5 text-[11px] font-medium text-ink-soft">
               {spot.activityType}
             </span>
           )}
         </div>
 
-        <p className="mt-1.5 text-sm leading-relaxed text-gray-600">
+        <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
           {spot.description}
         </p>
 
         {spot.address && (
-          <p className="mt-2 text-xs text-gray-400">{spot.address}</p>
+          <p className="mt-2 text-xs text-ink-muted">{spot.address}</p>
         )}
 
         <a
           href={mapQuery}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:text-emerald-800"
+          className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-shu hover:text-shu-dark"
         >
           <svg
             className="h-4 w-4"
