@@ -148,3 +148,19 @@ export function trackRelatedClick(params: {
     to_slug: params.toSlug,
   });
 }
+
+/**
+ * 記事末アンケートへの投票。選んだ選択肢の文言は送らず、番号だけ送る
+ * （文言は記事ごとに違い、集計結果は投票の保存先で見られるため）。
+ */
+export function trackPollVote(params: {
+  slug: string;
+  pollId: string;
+  option: number;
+}): void {
+  trackEvent("blog_poll_vote", {
+    article_slug: params.slug,
+    poll_id: params.pollId,
+    poll_option: params.option + 1,
+  });
+}
