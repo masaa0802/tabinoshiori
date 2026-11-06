@@ -7,6 +7,29 @@
 @theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /*
+   * ブログ（たびのまえに）の配色。「旅のノート」をテーマに、生成りの紙・墨・朱でまとめる。
+   * 文字色は紙色の上でコントラスト比 4.5:1 以上になる濃さにしてある。薄くしないこと。
+   */
+  --color-paper: #f4efe6;
+  --color-paper-card: #fffdf8;
+  --color-paper-deep: #ebe3d4;
+  --color-ink: #2a2622;
+  --color-ink-soft: #4f463d;
+  --color-ink-muted: #6b6053;
+  --color-shu: #b4472a;
+  --color-shu-dark: #8f3720;
+  --color-ai: #2f5d62;
+  --color-rule: #d9cfbe;
+  --color-memo: #fbf3d9;
+}
+
+/* ブログのフォント。src/app/blog/layout.tsx の next/font が変数を定義する */
+@theme inline {
+  --font-mincho: var(--font-blog-mincho), "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-gothic: var(--font-blog-gothic), "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-hand: var(--font-blog-hand), var(--font-blog-gothic), sans-serif;
 }
 
 :root {
@@ -222,22 +245,22 @@
   height: 3.5rem;
   margin: 0;
   border-radius: 9999px;
-  border: 2px solid #a7f3d0;
+  border: 2px solid #d9cfbe;
   object-fit: cover;
 }
 .author-comment .author-comment__avatar figcaption {
   margin-top: 0.25rem;
   font-size: 0.6875rem;
-  color: #6b7280;
+  color: #6b6053;
 }
 .author-comment .author-comment__bubble {
   position: relative;
   flex: 1;
   min-width: 0;
   padding: 0.875rem 1.125rem;
-  border: 1px solid #a7f3d0;
-  border-radius: 1rem;
-  background: #ecfdf5;
+  border: 1px solid #e8d9a8;
+  border-radius: 0.25rem 1rem 1rem 1rem;
+  background: #fbf3d9;
 }
 /* しっぽ。枠線の色と塗りの色を2枚重ねて作る */
 .author-comment .author-comment__bubble::before,
@@ -251,19 +274,22 @@
 .author-comment .author-comment__bubble::before {
   left: -9px;
   border-width: 8px 9px 8px 0;
-  border-right-color: #a7f3d0;
+  border-right-color: #e8d9a8;
 }
 .author-comment .author-comment__bubble::after {
   left: -7px;
   border-width: 7px 8px 7px 0;
   border-top-width: 7px;
   margin-top: 1px;
-  border-right-color: #ecfdf5;
+  border-right-color: #fbf3d9;
 }
 .author-comment .author-comment__bubble p {
   margin: 0;
-  font-size: 0.9375rem;
-  line-height: 1.8;
+  /* 筆者のひとことは手書き風の文字にする（ブログのレイアウトで読み込むフォント） */
+  font-family: var(--font-blog-hand), var(--font-blog-gothic), sans-serif;
+  font-size: 1rem;
+  line-height: 1.85;
+  color: #2a2622;
 }
 
 /*
@@ -285,14 +311,17 @@
   height: auto;
   max-height: min(60vh, 32rem);
   margin: 0 auto;
-  border-radius: 0.75rem;
+  border-radius: 0.125rem;
+  /* 写真の白い縁。ノートに貼った写真のように見せる */
+  border: 6px solid #fffdf8;
+  box-shadow: 0 1px 0 #d9cfbe, 0 10px 24px rgba(60, 40, 20, 0.1);
 }
 .article-photo figcaption,
 .photo-gallery figcaption {
   margin-top: 0.5rem;
   font-size: 0.8125rem;
   line-height: 1.6;
-  color: #6b7280;
+  color: #6b6053;
 }
 
 .photo-gallery {
@@ -307,11 +336,11 @@
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
-  scrollbar-color: #d1d5db transparent;
+  scrollbar-color: #c9bca5 transparent;
   padding-bottom: 0.5rem;
 }
 .photo-gallery .photo-gallery__track:focus-visible {
-  outline: 2px solid #34d399;
+  outline: 2px solid #b4472a;
   outline-offset: 4px;
   border-radius: 0.75rem;
 }
@@ -331,9 +360,9 @@
   max-width: 100%;
   height: var(--photo-gallery-height);
   margin: 0;
-  border-radius: 0.75rem;
+  border-radius: 0.125rem;
   object-fit: cover;
-  background: #f3f4f6;
+  background: #ebe3d4;
 }
 /* 説明文が写真の幅を押し広げないようにする */
 .photo-gallery .photo-gallery__item figcaption {
@@ -344,7 +373,7 @@
   margin: 0.25rem 0 0;
   font-size: 0.75rem;
   line-height: 1.5;
-  color: #9ca3af;
+  color: #6b6053;
 }
 .photo-gallery .photo-gallery__hint::before {
   content: "← ";
@@ -359,5 +388,27 @@
   /* パソコンではスクロールバーで続きがわかるので、案内文は出さない */
   .photo-gallery .photo-gallery__hint {
     display: none;
+  }
+}
+
+/*
+ * ブログの記事カード（ArticleCard）の写真枠。並び順で傾きを変えて、ノートに貼ったように見せる。
+ * カーソルを載せたときはまっすぐに戻す。
+ */
+.blog-card-grid > :nth-child(3n + 1) .blog-photo-frame {
+  rotate: -1.2deg;
+}
+.blog-card-grid > :nth-child(3n + 2) .blog-photo-frame {
+  rotate: 0.9deg;
+}
+.blog-card-grid > :nth-child(3n) .blog-photo-frame {
+  rotate: -0.5deg;
+}
+.blog-card-grid > :hover .blog-photo-frame {
+  rotate: 0deg;
+}
+@media (prefers-reduced-motion: reduce) {
+  .blog-card-grid .blog-photo-frame {
+    transition: none;
   }
 }

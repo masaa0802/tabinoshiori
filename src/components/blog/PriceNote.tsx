@@ -17,20 +17,20 @@ const PriceNote: React.FC<PriceNoteProps> = ({ figure }) => {
   const stale = isPriceStale(figure.surveyedAt);
 
   return (
-    <figure className="my-8 overflow-hidden rounded-xl border border-gray-200 bg-white">
-      <div className="border-b border-gray-100 bg-gray-50 px-5 py-4">
-        <p className="text-xs font-semibold text-gray-500">{figure.label}</p>
-        <p className="mt-1 text-2xl font-bold text-gray-900">{figure.value}</p>
+    <figure className="my-8 overflow-hidden rounded-xl border border-rule bg-paper-card">
+      <div className="border-b border-rule bg-paper-deep px-5 py-4">
+        <p className="text-xs font-semibold text-ink-muted">{figure.label}</p>
+        <p className="mt-1 text-2xl font-bold text-ink">{figure.value}</p>
         {figure.note && (
-          <p className="mt-2 text-xs leading-relaxed text-gray-500">
+          <p className="mt-2 text-xs leading-relaxed text-ink-muted">
             {figure.note}
           </p>
         )}
       </div>
 
       {figure.image && (
-        <div className="border-b border-gray-100">
-          <div className="relative aspect-[16/9] bg-gray-100">
+        <div className="border-b border-rule">
+          <div className="relative aspect-[16/9] bg-paper-deep">
             <Image
               src={optimizedImageUrl(figure.image.url, 800)}
               alt={figure.image.alt}
@@ -40,21 +40,21 @@ const PriceNote: React.FC<PriceNoteProps> = ({ figure }) => {
             />
           </div>
           {figure.image.caption && (
-            <p className="px-5 py-2 text-[11px] text-gray-400">
+            <p className="px-5 py-2 text-[11px] text-ink-muted">
               {figure.image.caption}
             </p>
           )}
         </div>
       )}
 
-      <figcaption className="px-5 py-3 text-[11px] leading-relaxed text-gray-500">
+      <figcaption className="px-5 py-3 text-[11px] leading-relaxed text-ink-muted">
         <span className="font-semibold">出典:</span>{" "}
         {figure.sourceUrl ? (
           <a
             href={figure.sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-emerald-700 underline underline-offset-2 hover:text-emerald-800"
+            className="text-shu underline underline-offset-2 hover:text-shu-dark"
           >
             {figure.source}
           </a>

@@ -19,7 +19,7 @@ const ArticleBody: React.FC<ArticleBodyProps> = ({ body, authors }) => {
   }
 
   return (
-    <div className="max-w-none text-gray-700">
+    <div className="max-w-none text-[#3a332c]">
       {body.blocks.map((block, index) => {
         switch (block.type) {
           case "heading":
@@ -27,14 +27,14 @@ const ArticleBody: React.FC<ArticleBodyProps> = ({ body, authors }) => {
               <h2
                 key={index}
                 id={block.id}
-                className="scroll-mt-24 text-2xl font-bold text-gray-900 mt-12 mb-4 pb-2 border-b border-gray-200"
+                className="scroll-mt-24 mt-14 mb-5 border-b-2 border-ink pb-2.5 font-mincho text-[1.5rem] font-extrabold leading-snug text-ink"
               >
                 {block.text}
               </h2>
             );
           case "paragraph":
             return (
-              <p key={index} className="my-5 leading-[1.9]">
+              <p key={index} className="my-5 leading-[2]">
                 {block.text}
               </p>
             );
@@ -52,7 +52,7 @@ const ArticleBody: React.FC<ArticleBodyProps> = ({ body, authors }) => {
             return (
               <blockquote
                 key={index}
-                className="my-6 border-l-4 border-emerald-400 bg-emerald-50/60 px-5 py-4 rounded-r-lg text-gray-700"
+                className="my-6 border-y border-rule px-2 py-4 font-mincho text-ink-soft"
               >
                 {block.text}
               </blockquote>

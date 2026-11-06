@@ -31,7 +31,7 @@ const PriceDisclosure: React.FC<PriceDisclosureProps> = ({
       className={`mt-8 rounded-xl border p-4 text-xs leading-relaxed sm:text-sm ${
         stale
           ? "border-amber-200 bg-amber-50 text-amber-900"
-          : "border-gray-200 bg-gray-50 text-gray-600"
+          : "border-rule bg-paper-deep text-ink-soft"
       }`}
     >
       <p className="font-semibold">

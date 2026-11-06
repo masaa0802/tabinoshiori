@@ -15,44 +15,49 @@ type ArticleCardProps = {
   featured?: boolean;
 };
 
+/**
+ * 記事カード。旅のノートに写真を貼ったような見た目にしている。
+ *
+ * 傾けるのは写真の枠だけにして、文字はまっすぐ読めるようにする。
+ * 傾きの向きは一覧側（.blog-card-grid）で並び順から決める。
+ */
 const ArticleCard: React.FC<ArticleCardProps> = ({ post, featured = false }) => {
   const readingMinutes = estimateReadingMinutes(post.body);
 
   return (
-    <article
-      className={`group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden ${
-        featured ? "md:flex" : "flex flex-col h-full"
-      }`}
-    >
+    <article className={`group h-full ${featured ? "md:col-span-2" : ""}`}>
       <Link
         href={`/blog/${post.slug}`}
-        className={featured ? "md:flex md:w-full" : "flex flex-col h-full"}
+        className={`flex h-full flex-col ${featured ? "md:grid md:grid-cols-2 md:items-center md:gap-10" : ""}`}
       >
-        <div
-          className={`relative bg-gray-100 overflow-hidden ${
-            featured ? "aspect-[16/9] md:aspect-auto md:w-1/2" : "aspect-[16/9]"
-          }`}
-        >
-          {post.coverImage ? (
-            <Image
-              src={optimizedImageUrl(post.coverImage.url, featured ? 1200 : 800)}
-              alt=""
-              fill
-              sizes={featured ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 100vw, 33vw"}
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          ) : (
-            <CoverPlaceholder categorySlug={post.category.slug} categoryName={post.category.name} variant="card" />
-          )}
+        <div className="blog-photo-frame relative bg-paper-card p-2 shadow-[0_1px_0_var(--color-rule),0_10px_24px_rgba(60,40,20,0.10)] transition-[rotate] duration-300">
+          {/* マスキングテープ */}
+          <span
+            aria-hidden="true"
+            className="absolute -top-2.5 left-1/2 z-10 h-5 w-20 -translate-x-1/2 -rotate-3 bg-[rgba(194,170,120,0.5)]"
+          />
+          <div className="relative aspect-[16/9] overflow-hidden bg-paper-deep">
+            {post.coverImage ? (
+              <Image
+                src={optimizedImageUrl(post.coverImage.url, featured ? 1200 : 800)}
+                alt=""
+                fill
+                sizes={featured ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 100vw, 33vw"}
+                className="object-cover"
+              />
+            ) : (
+              <CoverPlaceholder categorySlug={post.category.slug} categoryName={post.category.name} variant="card" />
+            )}
+          </div>
         </div>
 
-        <div className={`p-5 flex flex-col flex-1 ${featured ? "md:w-1/2 md:p-8 md:justify-center" : ""}`}>
-          <span className="inline-flex self-start items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+        <div className={`flex flex-1 flex-col px-1 pt-5 ${featured ? "md:pt-0" : ""}`}>
+          <span className="inline-flex -rotate-2 self-start border-[1.5px] border-shu px-2 py-0.5 text-xs font-bold text-shu">
             {post.category.name}
           </span>
 
           <h3
-            className={`mt-3 font-bold text-gray-900 leading-snug group-hover:text-emerald-700 transition-colors ${
+            className={`mt-3 font-mincho font-extrabold leading-snug text-ink underline-offset-4 group-hover:underline group-hover:decoration-shu ${
               featured ? "text-xl md:text-3xl" : "text-lg"
             }`}
           >
@@ -60,14 +65,14 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ post, featured = false }) => 
           </h3>
 
           <p
-            className={`mt-2 text-gray-600 leading-relaxed flex-1 ${
-              featured ? "text-sm md:text-base" : "text-sm line-clamp-3"
+            className={`mt-2 flex-1 leading-relaxed text-ink-soft ${
+              featured ? "text-sm md:text-base" : "line-clamp-3 text-sm"
             }`}
           >
             {post.excerpt}
           </p>
 
-          <div className="mt-4 flex items-center gap-3 text-xs text-gray-400">
+          <div className="mt-4 flex items-center gap-3 text-xs tracking-wide text-ink-muted">
             <time dateTime={toDateAttribute(post.publishedAt)}>
               {formatDate(post.publishedAt)}
             </time>

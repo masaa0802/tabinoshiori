@@ -81,26 +81,26 @@ export default async function BlogTagPage({ params }: PageProps) {
       />
 
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
-        <nav aria-label="パンくずリスト" className="mb-6 text-xs text-gray-500">
+        <nav aria-label="パンくずリスト" className="mb-6 text-xs text-ink-muted">
           <ol className="flex flex-wrap items-center gap-1.5">
             <li>
-              <Link href="/blog" className="hover:text-gray-900">
+              <Link href="/blog" className="hover:text-shu">
                 {BLOG_NAME}
               </Link>
             </li>
             <li aria-hidden="true">/</li>
-            <li className="text-gray-900">{tag.label}</li>
+            <li className="text-ink">{tag.label}</li>
           </ol>
         </nav>
 
         <header>
-          <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+          <h1 className="font-mincho text-3xl font-extrabold text-ink sm:text-4xl">
             {tag.label}
           </h1>
-          <p className="mt-3 max-w-2xl leading-relaxed text-gray-600">
+          <p className="mt-3 max-w-2xl leading-relaxed text-ink-soft">
             {tag.description}
           </p>
-          <p className="mt-2 text-sm text-gray-400">{posts.length}件の記事</p>
+          <p className="mt-2 text-sm text-ink-muted">{posts.length}件の記事</p>
         </header>
 
         {/* 不安タグの切り替え */}
@@ -112,10 +112,10 @@ export default async function BlogTagPage({ params }: PageProps) {
                 key={item.slug}
                 href={`/blog/tag/${item.slug}`}
                 aria-current={isActive ? "page" : undefined}
-                className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                className={`rounded border px-4 py-2 text-sm font-medium transition-colors ${
                   isActive
-                    ? "border-amber-500 bg-amber-500 text-white"
-                    : "border-gray-200 text-gray-700 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700"
+                    ? "border-ink bg-ink text-paper"
+                    : "border-rule bg-paper-card text-ink-soft hover:border-shu hover:text-shu"
                 }`}
               >
                 {item.label}
@@ -125,19 +125,19 @@ export default async function BlogTagPage({ params }: PageProps) {
         </nav>
 
         {posts.length > 0 ? (
-          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="blog-card-grid mt-14 grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <ArticleCard key={post.id} post={post} />
             ))}
           </div>
         ) : (
-          <p className="mt-12 rounded-xl border border-dashed border-gray-300 p-10 text-center text-gray-500">
+          <p className="mt-12 rounded-md border border-dashed border-rule p-10 text-center text-ink-muted">
             この不安に答える記事はまだありません。
           </p>
         )}
 
-        <p className="mt-12 text-sm text-gray-500">
-          <Link href="/blog" className="text-emerald-700 hover:text-emerald-800">
+        <p className="mt-12 text-sm text-ink-muted">
+          <Link href="/blog" className="text-shu underline underline-offset-2 hover:text-shu-dark">
             すべての記事を見る
           </Link>
         </p>

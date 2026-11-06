@@ -1,51 +1,30 @@
 import Link from "next/link";
 import type { AnxietyTag } from "@/lib/microcms/tags";
-import AnxietyIcon from "./AnxietyIcon";
 
 /**
  * ブログトップの「何が不安？」から探すタイル。不安タグ1つにつき1枚。
  *
- * 色はタグごとに固定する。CoverPlaceholder のカテゴリ色と同じ系統（amber / sky /
- * rose / violet）にそろえ、ブログ全体で使う色を増やさない。
+ * 旅のノートの判子のように、丸枠の中に一文字を置く。色はタグごとに固定する。
+ * どの色も生成りの紙の上でコントラスト比 4.5:1 以上になる濃さにしてある。
  *
  * **Tailwind のクラス名は動的に組み立てないこと。** 完成形のクラス文字列を
  * slug ごとに持たせている（CoverPlaceholder と同じ理由）。
  */
 type Tone = {
-  tile: string;
-  label: string;
-  icon: string;
+  /** 判子の一文字 */
+  mark: string;
+  seal: string;
 };
 
 const TONES: Record<string, Tone> = {
-  money: {
-    tile: "bg-amber-50 border-amber-100 hover:border-amber-300",
-    label: "text-amber-900",
-    icon: "text-amber-600",
-  },
-  paperwork: {
-    tile: "bg-sky-50 border-sky-100 hover:border-sky-300",
-    label: "text-sky-900",
-    icon: "text-sky-600",
-  },
-  onsite: {
-    tile: "bg-rose-50 border-rose-100 hover:border-rose-300",
-    label: "text-rose-900",
-    icon: "text-rose-500",
-  },
-  planning: {
-    tile: "bg-violet-50 border-violet-100 hover:border-violet-300",
-    label: "text-violet-900",
-    icon: "text-violet-600",
-  },
+  money: { mark: "金", seal: "border-shu text-shu" },
+  paperwork: { mark: "券", seal: "border-ai text-ai" },
+  onsite: { mark: "地", seal: "border-[#7a5210] text-[#7a5210]" },
+  planning: { mark: "程", seal: "border-[#46498a] text-[#46498a]" },
 };
 
 /** tags.ts に不安タグを足したのに色を決め忘れても、表示は崩さない */
-const FALLBACK_TONE: Tone = {
-  tile: "bg-gray-50 border-gray-100 hover:border-gray-300",
-  label: "text-gray-900",
-  icon: "text-gray-500",
-};
+const FALLBACK_TONE: Tone = { mark: "旅", seal: "border-ink-soft text-ink-soft" };
 
 type AnxietyTilesProps = {
   tags: AnxietyTag[];
@@ -63,14 +42,17 @@ const AnxietyTiles: React.FC<AnxietyTilesProps> = ({ tags, counts }) => {
           <li key={tag.slug}>
             <Link
               href={`/blog/tag/${tag.slug}`}
-              className={`flex h-full flex-col rounded-2xl border p-4 transition-colors sm:p-5 ${tone.tile}`}
+              className="group flex h-full flex-col rounded-md border border-rule bg-paper-card p-4 transition-colors hover:border-ink-muted sm:p-5"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm">
-                <AnxietyIcon slug={tag.slug} className={`h-7 w-7 ${tone.icon}`} />
+              <span
+                aria-hidden="true"
+                className={`flex h-12 w-12 -rotate-6 items-center justify-center rounded-full border-2 font-mincho text-xl font-extrabold transition-transform group-hover:rotate-0 ${tone.seal}`}
+              >
+                {tone.mark}
               </span>
-              <span className={`mt-3 text-lg font-bold ${tone.label}`}>{tag.shortLabel}</span>
-              <span className="mt-1 flex-1 text-xs leading-relaxed text-gray-600">{tag.lead}</span>
-              <span className="mt-3 text-xs font-medium text-gray-500">
+              <span className="mt-3 font-mincho text-lg font-extrabold text-ink">{tag.shortLabel}</span>
+              <span className="mt-1 flex-1 text-xs leading-relaxed text-ink-soft">{tag.lead}</span>
+              <span className="mt-3 text-xs font-medium text-ink-muted">
                 {count > 0 ? `${count}本の記事 →` : "記事を準備中"}
               </span>
             </Link>

@@ -91,35 +91,35 @@ export default async function BlogCategoryPage({ params }: PageProps) {
       />
 
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
-        <nav aria-label="パンくずリスト" className="mb-6 text-xs text-gray-500">
+        <nav aria-label="パンくずリスト" className="mb-6 text-xs text-ink-muted">
           <ol className="flex flex-wrap items-center gap-1.5">
             <li>
-              <Link href="/blog" className="hover:text-gray-900">
+              <Link href="/blog" className="hover:text-shu">
                 {BLOG_NAME}
               </Link>
             </li>
             <li aria-hidden="true">/</li>
-            <li className="text-gray-900">{category.name}</li>
+            <li className="text-ink">{category.name}</li>
           </ol>
         </nav>
 
         <header>
-          <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+          <h1 className="font-mincho text-3xl font-extrabold text-ink sm:text-4xl">
             {category.name}
           </h1>
           {category.description && (
-            <p className="mt-3 max-w-2xl leading-relaxed text-gray-600">
+            <p className="mt-3 max-w-2xl leading-relaxed text-ink-soft">
               {category.description}
             </p>
           )}
-          <p className="mt-2 text-sm text-gray-400">{posts.length}件の記事</p>
+          <p className="mt-2 text-sm text-ink-muted">{posts.length}件の記事</p>
         </header>
 
         {/* カテゴリ切り替え */}
         <nav className="mt-8 flex flex-wrap gap-2" aria-label="カテゴリ">
           <Link
             href="/blog"
-            className="rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700"
+            className="rounded border border-rule bg-paper-card px-4 py-2 text-sm font-medium text-ink-soft transition-colors hover:border-shu hover:text-shu"
           >
             すべて
           </Link>
@@ -130,10 +130,10 @@ export default async function BlogCategoryPage({ params }: PageProps) {
                 key={item.id}
                 href={`/blog/category/${item.slug}`}
                 aria-current={isActive ? "page" : undefined}
-                className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                className={`rounded border px-4 py-2 text-sm font-medium transition-colors ${
                   isActive
-                    ? "border-emerald-600 bg-emerald-600 text-white"
-                    : "border-gray-200 text-gray-700 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700"
+                    ? "border-ink bg-ink text-paper"
+                    : "border-rule bg-paper-card text-ink-soft hover:border-shu hover:text-shu"
                 }`}
               >
                 {item.name}
@@ -143,13 +143,13 @@ export default async function BlogCategoryPage({ params }: PageProps) {
         </nav>
 
         {posts.length > 0 ? (
-          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="blog-card-grid mt-14 grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <ArticleCard key={post.id} post={post} />
             ))}
           </div>
         ) : (
-          <p className="mt-12 rounded-xl border border-dashed border-gray-300 p-10 text-center text-gray-500">
+          <p className="mt-12 rounded-md border border-dashed border-rule p-10 text-center text-ink-muted">
             このカテゴリの記事はまだありません。
           </p>
         )}

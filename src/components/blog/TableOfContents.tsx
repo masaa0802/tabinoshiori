@@ -36,26 +36,26 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
   if (sections.length < MIN_SECTIONS) return null;
 
   return (
-    <nav aria-label="目次" className="mt-8 rounded-2xl border border-gray-200 bg-white px-5 py-4 sm:px-6">
+    <nav aria-label="目次" className="mt-10 rounded-md border border-rule bg-paper-card px-5 py-4 sm:px-6">
       <details open className="group">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-1 [&::-webkit-details-marker]:hidden">
-          <span className="text-sm font-bold text-gray-900">目次</span>
-          <span className="rounded-full border border-gray-200 px-2.5 py-0.5 text-[11px] text-gray-500">
+          <span className="font-mincho text-base font-extrabold text-ink">目次</span>
+          <span className="rounded border border-rule px-2.5 py-0.5 text-[11px] text-ink-muted">
             <span className="group-open:hidden">開く</span>
             <span className="hidden group-open:inline">閉じる</span>
           </span>
         </summary>
 
-        <ol className="mt-3 space-y-2.5 border-t border-gray-100 pt-4">
+        <ol className="mt-3 space-y-2.5 border-t border-dashed border-rule pt-4">
           {sections.map((section, index) => (
             <li key={section.item.id} className="flex gap-3 text-sm leading-relaxed">
-              <span className="w-5 flex-shrink-0 pt-px font-semibold tabular-nums text-emerald-600">
+              <span className="w-5 flex-shrink-0 pt-px font-mincho font-extrabold tabular-nums text-shu">
                 {String(index + 1).padStart(2, "0")}
               </span>
               <div className="min-w-0">
                 <a
                   href={`#${section.item.id}`}
-                  className="font-medium text-gray-800 hover:text-emerald-700"
+                  className="font-medium text-ink hover:text-shu"
                 >
                   {section.item.text}
                 </a>
@@ -63,10 +63,10 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
                   <ul className="mt-1.5 space-y-1">
                     {section.children.map((child) => (
                       <li key={child.id} className="flex gap-2 text-[13px]">
-                        <span aria-hidden="true" className="text-gray-300">
+                        <span aria-hidden="true" className="text-ink-muted">
                           ・
                         </span>
-                        <a href={`#${child.id}`} className="text-gray-600 hover:text-emerald-700">
+                        <a href={`#${child.id}`} className="text-ink-soft hover:text-shu">
                           {child.text}
                         </a>
                       </li>
