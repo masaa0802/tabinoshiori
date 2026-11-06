@@ -10,7 +10,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
         <h1 className="text-lg font-bold text-gray-800">旅のしおり 管理画面</h1>
-        <LogoutButton />
+        <div className="flex items-center gap-5">
+          <a href="/admin/polls" className="text-sm text-gray-500 hover:text-gray-800 transition-colors">
+            読者アンケート
+          </a>
+          <LogoutButton />
+        </div>
       </header>
       <main className="p-6">{children}</main>
     </div>

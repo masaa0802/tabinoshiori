@@ -13,6 +13,7 @@ import SouvenirGuide from "@/components/blog/SouvenirGuide";
 import TableOfContents from "@/components/blog/TableOfContents";
 import SpotCard from "@/components/blog/SpotCard";
 import SectionHeading from "@/components/blog/SectionHeading";
+import ReaderPoll from "@/components/blog/ReaderPoll";
 import { anxietyTagsOf, freeTagsOf } from "@/lib/microcms/tags";
 import {
   getAllAuthors,
@@ -28,6 +29,7 @@ import {
 } from "@/lib/microcms/format";
 import { articleJsonLd, breadcrumbJsonLd, jsonLdScript } from "@/lib/microcms/jsonLd";
 import { buildToc } from "@/lib/microcms/toc";
+import { extractPoll } from "@/lib/microcms/poll";
 import { BLOG_NAME } from "@/lib/site";
 
 // セグメント設定はリテラルで書くこと。定数を import して代入するとビルドが落ちる
@@ -128,6 +130,10 @@ export default async function BlogArticlePage({
   const freeTags = freeTagsOf(post.tags);
   // 見出しに id を付けた本文と、目次の項目を同時に作る
   const toc = buildToc(post.body);
+  // 本文の「アンケート：」を取り出して、本文の直後にアンケートとして出す
+  const extracted = toc.body.format === "html" ? extractPoll(toc.body.html) : null;
+  const body = extracted ? { format: "html" as const, html: extracted.html } : toc.body;
+  const poll = extracted?.poll ?? null;
 
   const breadcrumbs = [
     { name: BLOG_NAME, path: "/blog" },
@@ -254,8 +260,11 @@ export default async function BlogArticlePage({
         <TableOfContents items={toc.items} />
 
         <div className="mt-4">
-          <ArticleBody body={toc.body} authors={authors} />
+          <ArticleBody body={body} authors={authors} />
         </div>
+
+        {/* 記事末の読者アンケート。本文の締めの直後に置き、本文と続けて読めるようにする */}
+        {poll && <ReaderPoll slug={post.slug} poll={poll} draftKey={draftKey} />}
 
         {/* お土産ガイド。本文を導入にして、その直後に一覧を置く */}
         <SouvenirGuide souvenirs={post.souvenirs} />
