@@ -91,6 +91,8 @@ export async function POST(request: Request) {
       pollId,
       optionCount: poll.options.length,
       option,
+      question: poll.question,
+      options: poll.options,
     });
     return NextResponse.json({ counts }, { headers: NO_STORE });
   } catch (error) {
