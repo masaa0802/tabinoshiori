@@ -47,7 +47,7 @@ export default function BlogLayout({
             <span className="truncate font-mincho text-xl font-extrabold tracking-[0.08em] text-ink sm:text-2xl">
               {BLOG_NAME}
             </span>
-            <span className="hidden text-xs text-ink-muted sm:inline">by {SITE_NAME}</span>
+            <span className="flex-shrink-0 text-[11px] text-ink-muted sm:text-xs">by {SITE_NAME}</span>
           </Link>
 
           <div className="flex items-center gap-6">
@@ -84,9 +84,9 @@ export default function BlogLayout({
         <div className="mx-auto max-w-5xl">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="font-mincho text-xl font-extrabold tracking-[0.08em]">{BLOG_NAME}</p>
-              <p className="mt-2 font-hand text-[15px] text-ink-soft">
-                実際に行って、払って、迷ったことを書いています。
+              <p className="flex items-baseline gap-2.5">
+                <span className="font-mincho text-xl font-extrabold tracking-[0.08em]">{BLOG_NAME}</span>
+                <span className="text-xs text-ink-muted">by {SITE_NAME}</span>
               </p>
             </div>
 
