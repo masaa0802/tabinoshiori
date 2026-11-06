@@ -264,7 +264,7 @@ export default async function BlogArticlePage({
         </div>
 
         {/* 記事末の読者アンケート。本文の締めの直後に置き、本文と続けて読めるようにする */}
-        {poll && <ReaderPoll slug={post.slug} poll={poll} />}
+        {poll && <ReaderPoll slug={post.slug} poll={poll} draftKey={draftKey} />}
 
         {/* お土産ガイド。本文を導入にして、その直後に一覧を置く */}
         <SouvenirGuide souvenirs={post.souvenirs} />

@@ -7,6 +7,9 @@
  *
  * 投票した人を特定する情報（IP・Cookie など）は受け取らず、保存もしない。
  * 同じ人の重複投票はブラウザ側（localStorage）で防ぐだけの簡易なもの。
+ *
+ * microCMS の下書きプレビューからは draftKey が付いてくる。そのときは下書きの本文で
+ * アンケートを確かめ、票は本番のドメインでもプレビュー用のストアに入れる（pollStore.ts）。
  */
 import { NextResponse } from "next/server";
 import { getPostBySlug } from "@/lib/microcms/queries";
@@ -17,9 +20,13 @@ export const dynamic = "force-dynamic";
 
 const NO_STORE = { "Cache-Control": "no-store" };
 
-async function findPoll(slug: string, pollId: string): Promise<ReaderPoll | null> {
+async function findPoll(
+  slug: string,
+  pollId: string,
+  draftKey?: string
+): Promise<ReaderPoll | null> {
   if (!slug || !pollId) return null;
-  const post = await getPostBySlug(slug);
+  const post = await getPostBySlug(slug, draftKey || undefined);
   if (!post || post.body.format !== "html") return null;
   const { poll } = extractPoll(post.body.html);
   return poll && poll.id === pollId ? poll : null;
@@ -33,8 +40,9 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const slug = searchParams.get("slug")?.trim() ?? "";
   const pollId = searchParams.get("pollId")?.trim() ?? "";
+  const draftKey = searchParams.get("draftKey")?.trim() ?? "";
 
-  const poll = await findPoll(slug, pollId);
+  const poll = await findPoll(slug, pollId, draftKey);
   if (!poll) {
     return NextResponse.json({ error: "not_found" }, { status: 404, headers: NO_STORE });
   }
@@ -42,6 +50,7 @@ export async function GET(request: Request) {
   try {
     const counts = await readPollCounts({
       hostname: hostnameOf(request),
+      isDraft: Boolean(draftKey),
       slug,
       pollId,
       optionCount: poll.options.length,
@@ -54,7 +63,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  let body: { slug?: unknown; pollId?: unknown; option?: unknown };
+  let body: { slug?: unknown; pollId?: unknown; option?: unknown; draftKey?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -64,8 +73,9 @@ export async function POST(request: Request) {
   const slug = typeof body.slug === "string" ? body.slug.trim() : "";
   const pollId = typeof body.pollId === "string" ? body.pollId.trim() : "";
   const option = typeof body.option === "number" ? body.option : NaN;
+  const draftKey = typeof body.draftKey === "string" ? body.draftKey.trim() : "";
 
-  const poll = await findPoll(slug, pollId);
+  const poll = await findPoll(slug, pollId, draftKey);
   if (!poll) {
     return NextResponse.json({ error: "not_found" }, { status: 404, headers: NO_STORE });
   }
@@ -76,6 +86,7 @@ export async function POST(request: Request) {
   try {
     const counts = await addPollVote({
       hostname: hostnameOf(request),
+      isDraft: Boolean(draftKey),
       slug,
       pollId,
       optionCount: poll.options.length,

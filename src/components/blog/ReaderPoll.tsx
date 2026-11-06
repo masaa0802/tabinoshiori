@@ -16,6 +16,8 @@ import { trackPollVote } from "@/lib/blog-analytics";
 type Props = {
   slug: string;
   poll: ReaderPollData;
+  /** microCMS の下書きプレビューのときだけ渡す。下書きの本文でアンケートを確かめるため */
+  draftKey?: string;
 };
 
 type Status = "idle" | "sending" | "voted" | "error";
@@ -50,11 +52,12 @@ function percentages(counts: number[]): number[] {
   return counts.map((value) => Math.round((value / total) * 100));
 }
 
-export default function ReaderPoll({ slug, poll }: Props) {
+export default function ReaderPoll({ slug, poll, draftKey }: Props) {
   const [status, setStatus] = useState<Status>("idle");
   const [chosen, setChosen] = useState<number | null>(null);
   const [counts, setCounts] = useState<number[] | null>(null);
-  const key = storageKey(slug, poll.id);
+  // 下書きで試した投票を、公開後の本番の記事で「投票済み」にしない
+  const key = `${storageKey(slug, poll.id)}${draftKey ? ":draft" : ""}`;
 
   // 投票済みなら結果を取りにいく
   useEffect(() => {
@@ -62,9 +65,9 @@ export default function ReaderPoll({ slug, poll }: Props) {
     if (previous === null) return;
     setChosen(previous);
     setStatus("voted");
-    fetch(`/api/blog/poll?slug=${encodeURIComponent(slug)}&pollId=${encodeURIComponent(poll.id)}`, {
-      cache: "no-store",
-    })
+    const query = new URLSearchParams({ slug, pollId: poll.id });
+    if (draftKey) query.set("draftKey", draftKey);
+    fetch(`/api/blog/poll?${query}`, { cache: "no-store" })
       .then((response) => (response.ok ? response.json() : null))
       .then((data: { counts?: number[] } | null) => {
         if (data?.counts) setCounts(data.counts);
@@ -72,7 +75,7 @@ export default function ReaderPoll({ slug, poll }: Props) {
       .catch(() => {
         // 結果が取れなくても、選んだ選択肢は表示できる
       });
-  }, [key, slug, poll.id, poll.options.length]);
+  }, [key, slug, poll.id, poll.options.length, draftKey]);
 
   const vote = async (option: number) => {
     if (status === "sending" || status === "voted") return;
@@ -82,14 +85,14 @@ export default function ReaderPoll({ slug, poll }: Props) {
       const response = await fetch("/api/blog/poll", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, pollId: poll.id, option }),
+        body: JSON.stringify({ slug, pollId: poll.id, option, draftKey }),
       });
       if (!response.ok) throw new Error(String(response.status));
       const data = (await response.json()) as { counts?: number[] };
       setCounts(data.counts ?? null);
       setStatus("voted");
       saveVote(key, option);
-      trackPollVote({ slug, pollId: poll.id, option });
+      if (!draftKey) trackPollVote({ slug, pollId: poll.id, option });
     } catch {
       setChosen(null);
       setStatus("error");

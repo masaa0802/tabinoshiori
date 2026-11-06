@@ -9,6 +9,7 @@
  *
  * 本番（tabinoshiori.jp）とそれ以外（デプロイプレビューなど）でストアを分けている。
  * プレビューで試しに押した票が本番の結果に混ざらないようにするため。
+ * microCMS の下書きプレビュー（draftKey 付き）は、本番のドメインで開いてもプレビュー側に入れる。
  *
  * Netlify の外（ローカルの npm run dev）では Blobs が使えないので、
  * プロセス内のメモリに保存する（再起動で消える。動作確認用）。
@@ -27,13 +28,15 @@ type BlobStore = ReturnType<typeof getStore>;
 
 const memoryStore = new Map<string, PollRecord>();
 
-function storeNameFor(hostname: string): string {
-  return PRODUCTION_HOSTS.has(hostname) ? "blog-polls" : "blog-polls-preview";
+type StoreTarget = { hostname: string; isDraft: boolean };
+
+function storeNameFor({ hostname, isDraft }: StoreTarget): string {
+  return PRODUCTION_HOSTS.has(hostname) && !isDraft ? "blog-polls" : "blog-polls-preview";
 }
 
-function openStore(hostname: string): BlobStore | null {
+function openStore(target: StoreTarget): BlobStore | null {
   try {
-    return getStore({ name: storeNameFor(hostname), consistency: "strong" });
+    return getStore({ name: storeNameFor(target), consistency: "strong" });
   } catch {
     // Netlify の外では環境情報が無く例外になる
     return null;
@@ -58,13 +61,14 @@ function normalize(record: unknown, optionCount: number): number[] {
 
 export async function readPollCounts(params: {
   hostname: string;
+  isDraft: boolean;
   slug: string;
   pollId: string;
   optionCount: number;
 }): Promise<number[]> {
-  const { hostname, slug, pollId, optionCount } = params;
+  const { hostname, isDraft, slug, pollId, optionCount } = params;
   const key = keyOf(slug, pollId);
-  const store = openStore(hostname);
+  const store = openStore({ hostname, isDraft });
   if (!store) return normalize(memoryStore.get(key), optionCount);
   return normalize(await store.get(key, { type: "json" }), optionCount);
 }
@@ -72,14 +76,15 @@ export async function readPollCounts(params: {
 /** 1票足して、足したあとの票数を返す */
 export async function addPollVote(params: {
   hostname: string;
+  isDraft: boolean;
   slug: string;
   pollId: string;
   optionCount: number;
   option: number;
 }): Promise<number[]> {
-  const { hostname, slug, pollId, optionCount, option } = params;
+  const { hostname, isDraft, slug, pollId, optionCount, option } = params;
   const key = keyOf(slug, pollId);
-  const store = openStore(hostname);
+  const store = openStore({ hostname, isDraft });
 
   if (!store) {
     const counts = normalize(memoryStore.get(key), optionCount);
