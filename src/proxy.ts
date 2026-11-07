@@ -1,6 +1,13 @@
+/**
+ * /admin 配下のログイン確認（Next.js 16 の proxy。旧 middleware）。
+ *
+ * 以前はリポジトリ直下の middleware.ts に置いていたが、src/app を使う構成では
+ * src/ の中に置かないと Next.js に読まれず、確認が一度も動いていなかった。
+ * 各ページ・API でも isAdminSession() で確かめているので、これは入口での二重チェック。
+ */
 import { NextRequest, NextResponse } from 'next/server';
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // /admin/login は認証不要
