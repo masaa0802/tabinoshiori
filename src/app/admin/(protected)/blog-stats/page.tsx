@@ -18,12 +18,6 @@ import { getAllPosts } from "@/lib/microcms/queries";
 
 export const dynamic = "force-dynamic";
 
-const PERIODS = [
-  { days: 7, label: "7日間" },
-  { days: 28, label: "28日間" },
-  { days: 90, label: "90日間" },
-] as const;
-
 const CHANNEL_COLORS: Record<Channel, string> = {
   search: "bg-emerald-500",
   social: "bg-sky-500",
@@ -81,17 +75,11 @@ function ChannelBar({ byChannel, views }: { byChannel: Record<Channel, number>; 
   );
 }
 
-export default async function AdminBlogStatsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ days?: string }>;
-}) {
+export default async function AdminBlogStatsPage() {
   if (!(await isAdminSession())) redirect("/admin/login");
 
-  const requested = Number((await searchParams).days);
-  const days = PERIODS.some((p) => p.days === requested) ? requested : 28;
-
-  const [result, posts] = await Promise.all([getBlogArticleStats(days), getAllPosts()]);
+  // 期間は選ばせず、計測開始からの累計だけを出す（記事が少ないうちは期間を切ると数字が小さすぎて比べられない）
+  const [result, posts] = await Promise.all([getBlogArticleStats(), getAllPosts()]);
   const titles = new Map(posts.map((post) => [post.slug, post.title]));
 
   // GA4 に1ビューもない公開記事も「0」として並べる（まだ読まれていないことが分かるように）
@@ -116,23 +104,10 @@ export default async function AdminBlogStatsPage({
         </Link>
         <h2 className="mt-1 text-xl font-bold text-gray-800">記事ごとのビュー数と流入元</h2>
         <p className="mt-1 text-sm text-gray-500">
-          GA4（本番 tabinoshiori.jp）の数字です。反映まで数時間〜1日かかるため、今日の分は少なめに出ます。
+          GA4（本番 tabinoshiori.jp）の、計測開始からの累計です。反映まで数時間〜1日かかるため、今日の分は少なめに出ます。
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {PERIODS.map((p) => (
-          <Link
-            key={p.days}
-            href={`/admin/blog-stats?days=${p.days}`}
-            className={`rounded-lg px-3 py-1.5 text-sm font-medium ${
-              p.days === days ? "bg-indigo-600 text-white" : "bg-white text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            {p.label}
-          </Link>
-        ))}
-      </div>
 
       {!result.ok && result.reason === "not_configured" && (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
@@ -154,7 +129,7 @@ export default async function AdminBlogStatsPage({
       {result.ok && (
         <>
           <section className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-            <p className="text-xs text-gray-500">記事の合計ビュー（{days}日間）</p>
+            <p className="text-xs text-gray-500">記事の合計ビュー（計測開始からの累計）</p>
             <p className="text-3xl font-bold text-gray-800">{totalViews.toLocaleString()}</p>
             <div className="mt-4">
               <ChannelBar byChannel={totalByChannel} views={totalViews} />
@@ -178,7 +153,7 @@ export default async function AdminBlogStatsPage({
               <span className="text-right">平均滞在</span>
             </div>
             {articles.length === 0 && (
-              <p className="p-6 text-sm text-gray-500">この期間のビューはまだありません。</p>
+              <p className="p-6 text-sm text-gray-500">まだビューはありません。</p>
             )}
             {articles.map((a) => (
               <details key={a.slug} className="group border-b border-gray-100 last:border-0">
@@ -203,7 +178,7 @@ export default async function AdminBlogStatsPage({
                 </summary>
                 <div className="bg-gray-50 px-5 py-3">
                   {a.sources.length === 0 ? (
-                    <p className="text-sm text-gray-500">この期間のビューはありません。</p>
+                    <p className="text-sm text-gray-500">まだビューはありません。</p>
                   ) : (
                     <table className="w-full text-sm">
                       <thead>

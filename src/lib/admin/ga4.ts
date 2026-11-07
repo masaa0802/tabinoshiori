@@ -147,16 +147,22 @@ const BLOG_PATH_FILTER = {
 };
 
 /**
- * 直近 days 日（今日を含む）の記事ごとの数字を返す。ビュー数の多い順。
+ * GA4 のデータが取れる最初の日（API の下限）。計測を始めた日より前を指定しても 0 が返るだけなので、
+ * これを開始日にすると「計測開始からの累計」になる。
+ */
+const ALL_TIME_START = "2015-08-14";
+
+/**
+ * 計測開始から今日までの、記事ごとの累計の数字を返す。ビュー数の多い順。
  * GA4 のページパスは末尾スラッシュやクエリ付きで分かれることがあるので、slug でまとめ直す。
  */
-export async function getBlogArticleStats(days: number): Promise<BlogStatsResult> {
+export async function getBlogArticleStats(): Promise<BlogStatsResult> {
   const config = getConfig();
   if (!config) return { ok: false, reason: "not_configured" };
 
   try {
     const token = await getAccessToken(config.clientEmail, config.privateKey);
-    const dateRanges = [{ startDate: `${days - 1}daysAgo`, endDate: "today" }];
+    const dateRanges = [{ startDate: ALL_TIME_START, endDate: "today" }];
 
     const [totals, bySource] = await Promise.all([
       runReport(config.propertyId, token, {
