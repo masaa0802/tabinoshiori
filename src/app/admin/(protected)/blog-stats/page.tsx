@@ -14,7 +14,7 @@ import {
   type ArticleStats,
   type Channel,
 } from "@/lib/admin/ga4";
-import { getAllPosts } from "@/lib/microcms/queries";
+import { getPublishedPosts } from "@/lib/microcms/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -79,17 +79,17 @@ export default async function AdminBlogStatsPage() {
   if (!(await isAdminSession())) redirect("/admin/login");
 
   // 期間は選ばせず、計測開始からの累計だけを出す（記事が少ないうちは期間を切ると数字が小さすぎて比べられない）
-  const [result, posts] = await Promise.all([getBlogArticleStats(), getAllPosts()]);
+  const [result, posts] = await Promise.all([getBlogArticleStats(), getPublishedPosts()]);
   const titles = new Map(posts.map((post) => [post.slug, post.title]));
 
-  // GA4 に1ビューもない公開記事も「0」として並べる（まだ読まれていないことが分かるように）
+  // いま公開中の記事だけを並べる。下書きプレビューで開いた記事や、公開をやめた・URLを変えた記事は
+  // GA4 には記録が残っていても出さない（合計にも入れない）。1ビューもない公開記事は「0」で並べる
   let articles: ArticleStats[] = [];
   if (result.ok) {
-    const seen = new Set(result.articles.map((a) => a.slug));
-    articles = [
-      ...result.articles,
-      ...posts.filter((p) => !p.isDraft && !seen.has(p.slug)).map((p) => emptyStats(p.slug)),
-    ];
+    const stats = new Map(result.articles.map((a) => [a.slug, a]));
+    articles = posts
+      .map((p) => stats.get(p.slug) ?? emptyStats(p.slug))
+      .sort((a, b) => b.views - a.views);
   }
   const totalViews = articles.reduce((sum, a) => sum + a.views, 0);
   const totalByChannel = Object.fromEntries(
