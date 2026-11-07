@@ -17,7 +17,7 @@ npx tsc --noEmit  # 型チェック
 
 ## ディレクトリの要点
 - `src/app/` ページとAPIルート（`api/graphql`, `api/upload`, `api/proxy` など）
-- `src/app/admin/` 管理画面（`middleware.ts` で `admin_session` Cookie を検証）
+- `src/app/admin/` 管理画面（`src/proxy.ts` と各ページの `isAdminSession()` で `admin_session` Cookie を検証）
 - `src/components/` UIコンポーネント
 - `src/graphql/` クエリ・ミューテーション定義、`src/types/generated/` は自動生成
 - `database/` `hasura-project/` スキーマとメタデータ
