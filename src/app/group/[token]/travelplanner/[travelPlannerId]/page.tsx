@@ -34,6 +34,8 @@ import {
   useIllustrationVariant,
 } from "@/lib/illustrationExperiment";
 import ActivityCardIllustration from "../components/ActivityCardIllustration";
+import HotelBookingLinks from "@/components/HotelBookingLinks";
+import { primaryDestination, shiftDate } from "@/lib/affiliate";
 import { dayNumberOf, todayInTrip } from "../information/documentUtils";
 
 interface GroupData {
@@ -337,6 +339,7 @@ export default function TravelPlanner() {
     start_date: string;
     end_date: string;
     total_budget?: string;
+    location_type?: string;
   };
 
   if (isNewGroup && groupData) {
@@ -364,6 +367,7 @@ export default function TravelPlanner() {
       destination: tripInfo.destination,
       start_date: tripInfo.startDate,
       end_date: tripInfo.endDate,
+      location_type: groupData.tripType,
     };
   } else {
     // For existing groups, use GraphQL data
@@ -486,6 +490,14 @@ export default function TravelPlanner() {
       const timeB = b.time.split(':').map(Number);
       return (timeA[0] * 60 + timeA[1]) - (timeB[0] * 60 + timeB[1]);
     });
+
+  // 選択中の日に宿が無ければ「今夜の宿を探す」を出す（最終日は泊まらないので出さない）
+  const selectedDateStr = shiftDate(travelPlan.start_date, selectedDay - 1);
+  const stayKeyword = primaryDestination(travelPlan.destination);
+  const showHotelGap =
+    selectedDay < tripInfo.days &&
+    Boolean(selectedDateStr && stayKeyword) &&
+    !sortedCurrentDayActivities.some((a) => a.type === "hotel");
 
   // アクティビティタイプに応じたアイコン取得
   const getActivityIcon = (type: string) => {
@@ -1064,6 +1076,28 @@ export default function TravelPlanner() {
 
                     ))}
 
+                    {/* 宿が未登録の夜の予約導線（アフィリエイト未設定なら何も出ない） */}
+                    {showHotelGap && selectedDateStr && (
+                      <div className="flex">
+                        <div className="hidden lg:block w-20"></div>
+                        <div className="relative flex flex-col items-center lg:ml-0 mx-4">
+                          <Hotel className="text-purple-400" size={12} />
+                        </div>
+                        <HotelBookingLinks
+                          placement="day_hotel_gap"
+                          title={`${selectedDay}日目の夜の宿が未登録です`}
+                          description={`${stayKeyword}の宿を ${selectedDateStr.slice(5).replace("-", "/")} から1泊で探せます`}
+                          query={{
+                            keyword: stayKeyword,
+                            checkin: selectedDateStr,
+                            checkout: shiftDate(selectedDateStr, 1),
+                            tripType: travelPlan.location_type,
+                          }}
+                          className="lg:ml-4 ml-3 mr-4 lg:mr-0 flex-1 rounded-lg border border-violet-100 bg-violet-50/50 p-4"
+                        />
+                      </div>
+                    )}
+
                     {/* アクティビティ追加ボタン */}
                     <div className="flex">
                       <div className="hidden lg:block w-20"></div>
@@ -1135,6 +1169,7 @@ export default function TravelPlanner() {
           startEditActivity(a);
         }}
         onDelete={handleDeleteFromDetail}
+        tripType={travelPlan.location_type}
       />
 
       <EditItineraryDatesModal
