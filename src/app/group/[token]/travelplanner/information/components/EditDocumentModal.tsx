@@ -51,6 +51,7 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
   const [title, setTitle] = useState(travelDocument.title);
   const [date, setDate] = useState(travelDocument.date ?? '');
   const [category, setCategory] = useState(travelDocument.category);
+  const [reservationNumber, setReservationNumber] = useState(travelDocument.reservation_number ?? '');
   const [activityId, setActivityId] = useState<number | null>(travelDocument.activity_id ?? null);
   const [existingFiles, setExistingFiles] = useState<DocumentFile[]>(travelDocument.files);
   const [removedFileIds, setRemovedFileIds] = useState<number[]>([]);
@@ -120,8 +121,9 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (totalFileCount === 0) {
-      alert('少なくとも1つのファイルを残してください');
+    // 予約番号だけの記録（予約サイトから戻った時に作るもの）はファイル無しでも良い
+    if (totalFileCount === 0 && !reservationNumber.trim()) {
+      alert('ファイルか予約番号のどちらかを残してください');
       return;
     }
 
@@ -165,7 +167,9 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
 
       const newTitle = title.trim() || travelDocument.title;
       const newDate = date || null;
+      const newReservationNumber = reservationNumber.trim() || null;
       if (
+        newReservationNumber !== (travelDocument.reservation_number ?? null) ||
         category !== travelDocument.category ||
         newTitle !== travelDocument.title ||
         newDate !== (travelDocument.date ?? null) ||
@@ -177,7 +181,7 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
             title: newTitle,
             category,
             date: newDate,
-            reservation_number: travelDocument.reservation_number ?? null,
+            reservation_number: newReservationNumber,
             notes: travelDocument.notes ?? null,
             activity_id: activityId,
           },
@@ -230,6 +234,20 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
               onChange={(e) => setTitle(e.target.value)}
               maxLength={255}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+            />
+          </div>
+
+          {/* 予約番号 */}
+          <div>
+            <label htmlFor="document-edit-reservation" className="block text-xs font-medium text-gray-700 mb-1">予約番号</label>
+            <input
+              id="document-edit-reservation"
+              type="text"
+              value={reservationNumber}
+              onChange={(e) => setReservationNumber(e.target.value)}
+              maxLength={255}
+              autoComplete="off"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             />
           </div>
 

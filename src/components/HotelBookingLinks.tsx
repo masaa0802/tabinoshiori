@@ -7,6 +7,7 @@ import {
   type HotelSearchQuery,
 } from "@/lib/affiliate";
 import { trackEvent } from "@/lib/analytics";
+import { savePendingBooking } from "@/lib/bookingReturn";
 
 interface HotelBookingLinksProps {
   query: HotelSearchQuery;
@@ -16,6 +17,12 @@ interface HotelBookingLinksProps {
   title?: string;
   /** 見出しの下に出す補足 */
   description?: string;
+  /** 渡すと、しおりに戻った時に「予約できましたか？」と聞けるよう記録する */
+  itineraryId?: number;
+  /** 予約の記録を紐づける宿の予定 */
+  activityId?: number | null;
+  /** ボタンを押した後に呼ぶ（導線を閉じるなど） */
+  onLinkClick?: () => void;
 }
 
 /**
@@ -30,6 +37,9 @@ export default function HotelBookingLinks({
   className = "",
   title,
   description,
+  itineraryId,
+  activityId,
+  onLinkClick,
 }: HotelBookingLinksProps) {
   const links = buildHotelSearchLinks(query, placement);
   if (links.length === 0) return null;
@@ -53,6 +63,18 @@ export default function HotelBookingLinks({
                 placement,
                 trip_type: query.tripType,
               });
+              if (itineraryId) {
+                savePendingBooking({
+                  itineraryId,
+                  activityId,
+                  provider: link.provider,
+                  providerLabel: link.label,
+                  keyword: query.keyword,
+                  checkin: query.checkin,
+                  checkout: query.checkout,
+                });
+              }
+              onLinkClick?.();
             }}
             className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-white px-3.5 py-2 text-sm font-medium text-violet-700 hover:bg-violet-50 transition-colors"
           >

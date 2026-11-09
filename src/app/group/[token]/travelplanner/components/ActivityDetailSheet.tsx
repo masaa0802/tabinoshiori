@@ -508,6 +508,8 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
             {activity.type === "hotel" && budgets.length === 0 && linkedDocuments.length === 0 && (
               <HotelBookingLinks
                 placement="activity_sheet"
+                itineraryId={activity.itinerary_id}
+                activityId={activity.id}
                 title="この宿の空室・料金を見る"
                 description={activity.date ? `${formatDate(activity.date)}から1泊で検索します` : undefined}
                 query={{

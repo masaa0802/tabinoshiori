@@ -19,6 +19,7 @@ import {
   Sunrise,
   Globe,
   Clock,
+  X,
 } from "lucide-react";
 import AddActivityModal from "../components/AddActivityModal";
 import EditActivityModal from "../components/EditActivityModal";
@@ -35,7 +36,8 @@ import {
 } from "@/lib/illustrationExperiment";
 import ActivityCardIllustration from "../components/ActivityCardIllustration";
 import HotelBookingLinks from "@/components/HotelBookingLinks";
-import { primaryDestination, shiftDate } from "@/lib/affiliate";
+import { hasAffiliateConfig, nextDate, primaryDestination, shiftDate } from "@/lib/affiliate";
+import BookingReturnPrompt from "../components/BookingReturnPrompt";
 import { dayNumberOf, todayInTrip } from "../information/documentUtils";
 
 interface GroupData {
@@ -128,6 +130,9 @@ export default function TravelPlanner() {
   const [touchStartY, setTouchStartY] = useState<number>(0);
   const [touchCurrentY, setTouchCurrentY] = useState<number>(0);
   const [touchStartTime, setTouchStartTime] = useState<number>(0);
+
+  // 宿を追加した直後に出す予約導線
+  const [justAddedHotel, setJustAddedHotel] = useState<{ id?: number | null; name: string; date?: string } | null>(null);
 
   // 詳細シート
   const [selectedActivityForDetail, setSelectedActivityForDetail] = useState<Activity | null>(null);
@@ -1085,6 +1090,7 @@ export default function TravelPlanner() {
                         </div>
                         <HotelBookingLinks
                           placement="day_hotel_gap"
+                          itineraryId={travelPlan.id}
                           title={`${selectedDay}日目の夜の宿が未登録です`}
                           description={`${stayKeyword}の宿を ${selectedDateStr.slice(5).replace("-", "/")} から1泊で探せます`}
                           query={{
@@ -1137,6 +1143,10 @@ export default function TravelPlanner() {
         endDate={travelPlan.end_date}
         onActivityAdded={(added) => {
           trackIllustrationEvent("activity_add", activityEventParams(added));
+          // 宿を足したのに予約確認のファイルが無ければ、そのまま予約サイトで探せるようにする
+          if (added.type === "hotel" && !added.hasDocuments && hasAffiliateConfig()) {
+            setJustAddedHotel({ id: added.id, name: added.name, date: added.date });
+          }
           console.log('Refetching activities...');
           refetchActivities();
         }}
@@ -1170,6 +1180,44 @@ export default function TravelPlanner() {
         }}
         onDelete={handleDeleteFromDetail}
         tripType={travelPlan.location_type}
+      />
+
+      {/* 宿を追加した直後の予約導線 */}
+      {justAddedHotel && (
+        <div className="fixed inset-x-0 bottom-20 lg:bottom-6 z-40 px-4 flex justify-center pointer-events-none">
+          <div className="pointer-events-auto relative w-full max-w-md rounded-2xl border border-violet-100 bg-white shadow-xl">
+            <button
+              type="button"
+              onClick={() => setJustAddedHotel(null)}
+              className="absolute top-3 right-3 p-1 text-gray-400 hover:text-gray-600"
+              aria-label="閉じる"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <HotelBookingLinks
+              placement="activity_added"
+              onLinkClick={() => setJustAddedHotel(null)}
+              itineraryId={travelPlan.id}
+              activityId={justAddedHotel.id}
+              title="宿を追加しました。予約はお済みですか？"
+              description={`「${justAddedHotel.name}」の空室・料金を${justAddedHotel.date ? " その日から1泊で" : ""}探せます`}
+              query={{
+                keyword: justAddedHotel.name,
+                checkin: justAddedHotel.date,
+                checkout: justAddedHotel.date ? nextDate(justAddedHotel.date) : undefined,
+                tripType: travelPlan.location_type,
+              }}
+              className="p-4 pr-10"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 予約サイトから戻ってきた時の「予約できましたか？」 */}
+      <BookingReturnPrompt
+        itineraryId={travelPlan.id}
+        activityName={(id) => activitiesToProcess.find((a: Activity) => a.id === id)?.name}
+        onRecorded={() => setActiveTab("information")}
       />
 
       <EditItineraryDatesModal

@@ -13,7 +13,7 @@
 
 export type AffiliateProvider = "tripcom" | "jalan" | "yahoo_travel" | "ikyu";
 
-export type AffiliatePlacement = "activity_sheet" | "day_hotel_gap";
+export type AffiliatePlacement = "activity_sheet" | "day_hotel_gap" | "activity_added";
 
 export interface HotelSearchQuery {
   /** 宿名や地名。宿名が分かればそれを、無ければ行き先を入れる */

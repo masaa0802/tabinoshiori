@@ -65,6 +65,7 @@ const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
   };
 
   const handleDownload = () => {
+    if (!currentFile) return;
     const link = document.createElement('a');
     link.href = currentFile.file_url;
     link.download = currentFile.file_name;
@@ -120,9 +121,11 @@ const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                 >
                   {category?.label}
                 </span>
-                <span className="text-xs text-gray-500">
-                  {currentFileIndex + 1} / {travelDocument.files.length}
-                </span>
+                {travelDocument.files.length > 0 && (
+                  <span className="text-xs text-gray-500">
+                    {currentFileIndex + 1} / {travelDocument.files.length}
+                  </span>
+                )}
                 {travelDocument.activity && (
                   <span className="flex items-center gap-1 text-xs text-gray-500 min-w-0">
                     <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -147,7 +150,24 @@ const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
 
         {/* ビューアー */}
         <div className="flex-1 bg-gray-900 flex items-center justify-center relative overflow-hidden">
-          {currentFile.file_type === 'pdf' ? (
+          {!currentFile ? (
+            /* ファイルの無い情報（予約番号だけの記録など） */
+            <div className="w-full max-w-sm mx-4 rounded-2xl bg-white p-6 text-center">
+              {travelDocument.reservation_number ? (
+                <>
+                  <p className="text-xs text-gray-500">予約番号</p>
+                  <p className="mt-1 text-2xl font-bold font-mono tracking-wider text-gray-900 break-all select-all">
+                    {travelDocument.reservation_number}
+                  </p>
+                </>
+              ) : (
+                <p className="text-sm text-gray-500">ファイルはありません</p>
+              )}
+              {travelDocument.notes && (
+                <p className="mt-4 text-sm text-gray-600 whitespace-pre-wrap">{travelDocument.notes}</p>
+              )}
+            </div>
+          ) : currentFile.file_type === 'pdf' ? (
             /* PDFビューアー */
             <iframe
               src={`${currentFile.file_url}#toolbar=1`}
@@ -205,8 +225,16 @@ const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
             </div>
           )}
 
+          {/* 予約番号（ファイルがある時はここに出す） */}
+          {currentFile && travelDocument.reservation_number && (
+            <p className="text-sm text-gray-600">
+              予約番号: <span className="font-mono font-bold text-gray-900 select-all">{travelDocument.reservation_number}</span>
+            </p>
+          )}
+
           {/* アクションボタン */}
           <div className="flex gap-2">
+            {currentFile && (
             <button
               onClick={handleDownload}
               className="flex-1 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white px-4 py-2.5 sm:py-3 rounded-xl font-medium flex items-center justify-center gap-2 text-sm sm:text-base shadow-sm transition-all"
@@ -216,6 +244,7 @@ const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
               </svg>
               ダウンロード
             </button>
+            )}
             <button
               onClick={() => setIsEditOpen(true)}
               className="px-4 py-2.5 sm:py-3 rounded-xl font-medium flex items-center justify-center bg-gray-100 text-gray-500 hover:bg-sky-50 hover:text-sky-600 transition-colors"
