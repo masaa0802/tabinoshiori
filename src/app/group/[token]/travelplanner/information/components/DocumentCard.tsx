@@ -111,6 +111,11 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ document, onUpdate, itinera
 
           {/* ファイル情報 */}
           <div className="flex flex-wrap gap-1 sm:gap-1.5">
+            {document.reservation_number && (
+              <div className="flex items-center gap-1 bg-violet-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs border border-violet-100 text-violet-700">
+                予約番号 <span className="font-mono font-bold truncate max-w-[90px] sm:max-w-[140px]">{document.reservation_number}</span>
+              </div>
+            )}
             {document.files.map((file) => (
               <div
                 key={file.id}

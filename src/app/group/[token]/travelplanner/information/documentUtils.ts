@@ -79,6 +79,9 @@ interface CreateTravelDocumentInput {
   /** 紐づけるアクティビティ。紐づけない時は null か省略 */
   activityId?: number | null;
   files: File[];
+  /** 予約番号。予約の記録から追加する時に使う */
+  reservationNumber?: string | null;
+  notes?: string | null;
 }
 
 /** ファイルをアップロードして情報タブに1件登録する。情報タブの一覧も取り直す */
@@ -87,7 +90,7 @@ export const useCreateTravelDocument = () => {
     refetchQueries: ['GetTravelDocuments'],
   });
 
-  return async ({ itineraryId, title, category, date, activityId, files }: CreateTravelDocumentInput) => {
+  return async ({ itineraryId, title, category, date, activityId, files, reservationNumber, notes }: CreateTravelDocumentInput) => {
     const uploadedFiles = await Promise.all(
       files.map((file) => uploadToCloudinary(file, `travel-planner/${itineraryId}/documents`))
     );
@@ -98,8 +101,8 @@ export const useCreateTravelDocument = () => {
         title: title.trim() || files[0]?.name.replace(/\.[^/.]+$/, '') || category,
         category,
         date: date || null,
-        reservation_number: null,
-        notes: null,
+        reservation_number: reservationNumber?.trim() || null,
+        notes: notes?.trim() || null,
         activity_id: activityId ?? null,
         files: uploadedFiles.map((file, index) => ({
           file_url: file.file_url,

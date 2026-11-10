@@ -13,7 +13,14 @@ interface AddActivityModalProps {
   itinerary_id: number;
   defaultDate?: string;
   /** 追加したアクティビティの名前と種別を渡す（効果測定のイベントに使う） */
-  onActivityAdded?: (activity: { name: string; type: string }) => void;
+  onActivityAdded?: (activity: {
+    name: string;
+    type: string;
+    date?: string;
+    id?: number | null;
+    /** 情報タブにファイルも一緒に保存したか（予約済みの目安） */
+    hasDocuments?: boolean;
+  }) => void;
   startDate?: string;
   endDate?: string;
 }
@@ -227,6 +234,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
       });
 
       // ファイルが選ばれていれば、この予定の名前と日付で情報タブにも保存する
+      const attachedCount = attachFiles.length;
       if (attachFiles.length > 0) {
         setIsAttaching(true);
         try {
@@ -261,7 +269,15 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isOpen, onClose, it
       setAttachTitle("");
       sessionToken.current = null;
 
-      if (onActivityAdded) onActivityAdded({ name: activityName, type });
+      if (onActivityAdded) {
+        onActivityAdded({
+          name: activityName,
+          type,
+          date,
+          id: inserted?.insert_activities?.returning?.[0]?.id ?? null,
+          hasDocuments: attachedCount > 0,
+        });
+      }
       onClose();
     } catch (e) {
       console.error('Error inserting activity:', e);

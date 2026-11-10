@@ -12,6 +12,8 @@ import AddDocumentModal from "../information/components/AddDocumentModal";
 import DocumentViewerModal from "../information/components/DocumentViewerModal";
 import { categoryForActivityType } from "../information/documentUtils";
 import { activityEventParams, trackIllustrationEvent, useIllustrationVariant } from "@/lib/illustrationExperiment";
+import HotelBookingLinks from "@/components/HotelBookingLinks";
+import { nextDate } from "@/lib/affiliate";
 
 interface Activity {
   id: number;
@@ -71,6 +73,8 @@ interface ActivityDetailSheetProps {
   onDelete: (activity: Activity) => void;
   /** 「予算で追加・編集」を押した時。予算タブへ移る */
   onOpenBudget?: () => void;
+  /** 国内（domestic）/ 海外（overseas）。宿の予約リンクの出し分けに使う */
+  tripType?: string;
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
@@ -151,6 +155,7 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
   onEdit,
   onDelete,
   onOpenBudget,
+  tripType,
 }) => {
   const [visible, setVisible] = useState(false);
   const [placeDetails, setPlaceDetails] = useState<PlaceDetails | null>(null);
@@ -497,6 +502,24 @@ const ActivityDetailSheet: React.FC<ActivityDetailSheetProps> = ({
                 </div>
                 <p className="mt-1.5 text-[11px] text-stone-400">Google の現在の営業時間をもとに判定しています。臨時休業などは反映されません。</p>
               </section>
+            )}
+
+            {/* 宿の予約導線。費用もファイルも未登録＝まだ予約していなさそうな宿にだけ出す */}
+            {activity.type === "hotel" && budgets.length === 0 && linkedDocuments.length === 0 && (
+              <HotelBookingLinks
+                placement="activity_sheet"
+                itineraryId={activity.itinerary_id}
+                activityId={activity.id}
+                title="この宿の空室・料金を見る"
+                description={activity.date ? `${formatDate(activity.date)}から1泊で検索します` : undefined}
+                query={{
+                  keyword: activity.name,
+                  checkin: activity.date,
+                  checkout: activity.date ? nextDate(activity.date) : undefined,
+                  tripType,
+                }}
+                className="rounded-xl bg-white px-4 py-3"
+              />
             )}
 
             {/* 費用 */}
