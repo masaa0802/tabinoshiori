@@ -121,12 +121,7 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 予約番号だけの記録（予約サイトから戻った時に作るもの）はファイル無しでも良い
-    if (totalFileCount === 0 && !reservationNumber.trim()) {
-      alert('ファイルか予約番号のどちらかを残してください');
-      return;
-    }
-
+    // 予約サイトから戻った時にワンタップで作る記録など、ファイル無しの情報もある
     setUploading(true);
 
     try {
