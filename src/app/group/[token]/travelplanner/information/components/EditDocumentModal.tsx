@@ -7,6 +7,8 @@ import { CATEGORIES, CategoryIcon } from './InformationContent';
 import { uploadToCloudinary, validateFile, formatFileSize } from '@/lib/cloudinary';
 import { MAX_DOCUMENT_FILES as MAX_FILES, tripDateOptions } from '../documentUtils';
 import ActivitySelect from './ActivitySelect';
+import { canExtract, extractBookingFromFile } from '@/lib/extractBooking';
+import { trackEvent } from '@/lib/analytics';
 
 interface DocumentFile {
   id: number;
@@ -58,6 +60,7 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [readingReservation, setReadingReservation] = useState(false);
 
   const [updateTravelDocument] = useMutation(UPDATE_TRAVEL_DOCUMENT);
   const [insertDocumentFile] = useMutation(INSERT_DOCUMENT_FILE);
@@ -86,6 +89,19 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
     }
 
     setNewFiles(prev => [...prev, ...validFiles]);
+
+    // 予約番号が空なら、追加したスクショ・PDFから読み取って入れる
+    const target = validFiles.find(canExtract);
+    if (target && !reservationNumber.trim()) {
+      setReadingReservation(true);
+      void extractBookingFromFile(target).then((result) => {
+        trackEvent('booking_extract', { context: 'edit_document', result: result?.reservationNumber ? 'ok' : 'none' });
+        if (result?.reservationNumber) {
+          setReservationNumber(prev => prev || result.reservationNumber);
+        }
+        setReadingReservation(false);
+      });
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -244,6 +260,9 @@ const EditDocumentModal: React.FC<EditDocumentModalProps> = ({
               autoComplete="off"
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             />
+            <p className="mt-0.5 text-[10px] text-gray-400">
+              {readingReservation ? '追加したファイルから予約番号を読み取っています…' : '予約確認のスクショを追加すると自動で入ります'}
+            </p>
           </div>
 
           {/* 日付 */}

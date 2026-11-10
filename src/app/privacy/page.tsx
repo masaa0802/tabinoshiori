@@ -165,6 +165,13 @@ const PrivacyPage = () => {
             </section>
 
             <section className="mb-8">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">第9条の2（予約確認の自動読み取り）</h2>
+              <p className="mb-4">
+                本サービスでは、ユーザーが情報タブ等に予約確認の画像・PDFを追加した際、予約番号・宿泊施設名・日付などを自動で入力するため、そのファイルを Anthropic, PBC が提供するAIサービス（Claude API）に送信して内容を読み取ります。読み取りのために送信したファイルを当社のサーバーに別途保存することはありません。読み取った結果は、ユーザーが保存した場合に限り、そのしおりの情報として保存されます。Anthropic におけるデータの取り扱いは同社のプライバシーポリシーに従います。
+              </p>
+            </section>
+
+            <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">第10条（プライバシーポリシーの変更）</h2>
               <p className="mb-4">
                 本ポリシーの内容は、法令その他本ポリシーに別段の定めのある事項を除いて、ユーザーに通知することなく、変更することができるものとします。
