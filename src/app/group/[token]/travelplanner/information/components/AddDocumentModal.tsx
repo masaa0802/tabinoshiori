@@ -5,6 +5,8 @@ import { CATEGORIES, CategoryIcon } from './InformationContent';
 import { validateFile } from '@/lib/cloudinary';
 import { MAX_DOCUMENT_FILES as MAX_FILES, tripDateOptions, useCreateTravelDocument } from '../documentUtils';
 import ActivitySelect from './ActivitySelect';
+import { bookingNotes, canExtract, extractBookingFromFile } from '@/lib/extractBooking';
+import { trackEvent } from '@/lib/analytics';
 
 interface AddDocumentModalProps {
   isOpen: boolean;
@@ -41,6 +43,10 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [reservationNumber, setReservationNumber] = useState('');
+  const [notes, setNotes] = useState('');
+  // スクショ・PDFからの読み取り状態
+  const [extractState, setExtractState] = useState<'idle' | 'reading' | 'done' | 'none'>('idle');
 
   const createTravelDocument = useCreateTravelDocument();
   const dateOptions = tripDateOptions(startDate, endDate);
@@ -65,6 +71,28 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
     }
 
     setFiles(prev => [...prev, ...validFiles]);
+
+    // 最初のファイルが予約確認なら、中身を読み取って空欄を埋める
+    if (files.length === 0 && validFiles[0] && canExtract(validFiles[0])) {
+      void readBooking(validFiles[0]);
+    }
+  };
+
+  const readBooking = async (file: File) => {
+    setExtractState('reading');
+    const result = await extractBookingFromFile(file);
+    trackEvent('booking_extract', { context: 'add_document', result: result ? 'ok' : 'none' });
+    if (!result) {
+      setExtractState('none');
+      return;
+    }
+    // 自分で入力・選択した欄は上書きしない
+    setTitle(prev => (prev.trim() && prev !== defaultTitle ? prev : result.title || prev));
+    setDate(prev => (prev && prev !== defaultDate ? prev : result.date || prev));
+    setCategory(prev => (prev !== defaultCategory ? prev : result.category || prev));
+    setReservationNumber(prev => prev || result.reservationNumber);
+    setNotes(prev => prev || bookingNotes(result));
+    setExtractState('done');
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,7 +131,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
     setUploading(true);
 
     try {
-      await createTravelDocument({ itineraryId, title, category, date: date || null, activityId, files });
+      await createTravelDocument({ itineraryId, title, category, date: date || null, activityId, files, reservationNumber, notes });
       onDocumentAdded();
       resetForm();
     } catch (error) {
@@ -121,6 +149,9 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
     setCategory(defaultCategory);
     setActivityId(defaultActivityId);
     setFiles([]);
+    setReservationNumber('');
+    setNotes('');
+    setExtractState('idle');
   };
 
   if (!isOpen) return null;
@@ -163,6 +194,21 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             />
             <p className="mt-0.5 text-[10px] text-gray-400">未入力の場合はファイル名がタイトルになります</p>
+          </div>
+
+          {/* 予約番号 */}
+          <div>
+            <label htmlFor="document-reservation" className="block text-xs font-medium text-gray-700 mb-1">予約番号</label>
+            <input
+              id="document-reservation"
+              type="text"
+              value={reservationNumber}
+              onChange={(e) => setReservationNumber(e.target.value)}
+              maxLength={255}
+              autoComplete="off"
+              placeholder="予約確認のスクショを入れると自動で入ります"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+            />
           </div>
 
           {/* 日付 */}
@@ -250,6 +296,20 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
                   </p>
                 </label>
               </div>
+            )}
+
+            {/* 読み取りの状態 */}
+            {extractState === 'reading' && (
+              <p className="mt-2 flex items-center gap-1.5 text-xs text-sky-700">
+                <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                予約内容を読み取っています…
+              </p>
+            )}
+            {extractState === 'done' && (
+              <p className="mt-2 text-xs text-emerald-700">✓ 予約内容を読み取って入力しました。違っていたら直してください</p>
             )}
 
             {/* 選択されたファイル一覧 */}

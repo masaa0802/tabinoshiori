@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.7.0",
     "@apollo/client": "^3.13.7",
     "@apollo/server": "^5.5.1",
     "@as-integrations/next": "^4.1.0",
