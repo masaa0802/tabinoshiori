@@ -20,6 +20,7 @@
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
+    "d3-geo": "^3.1.2",
     "graphql": "^16.10.0",
     "lightningcss": "^1.29.3",
     "lucide-react": "^0.477.0",
@@ -30,7 +31,9 @@
     "recharts": "^3.8.1",
     "server-only": "^0.0.1",
     "tailwind-merge": "^3.0.2",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -39,9 +42,12 @@
     "@graphql-codegen/typescript": "^6.1.2",
     "@graphql-codegen/typescript-resolvers": "^6.1.1",
     "@tailwindcss/postcss": "^4",
+    "@types/d3-geo": "^3.1.1",
+    "@types/geojson": "^7946.0.16",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/topojson-client": "^3.1.5",
     "eslint": "^9",
     "eslint-config-next": "15.2.0",
     "tailwindcss": "^4",

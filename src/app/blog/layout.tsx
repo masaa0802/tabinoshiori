@@ -66,6 +66,13 @@ export default function BlogLayout({
               </ul>
             </nav>
 
+            <Link
+              href="/blog/area"
+              className="hidden text-sm font-bold text-ink transition-colors hover:text-shu md:inline"
+            >
+              地図から探す
+            </Link>
+
             {/* ヘッダーのCTAは記事を特定できないため slug を渡さない。
                 記事別の紐付けは記事末尾のCTAで取る */}
             <CtaLink
@@ -93,6 +100,9 @@ export default function BlogLayout({
             <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
               <Link href="/" className="text-ink-soft transition-colors hover:text-shu">
                 {SITE_NAME}について
+              </Link>
+              <Link href="/blog/area" className="text-ink-soft transition-colors hover:text-shu">
+                地図から探す
               </Link>
               <Link href="/blog/feed.xml" className="text-ink-soft transition-colors hover:text-shu">
                 RSS

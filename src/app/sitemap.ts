@@ -1,3 +1,4 @@
+import { buildCountryEntries } from "@/lib/areas";
 import { MetadataRoute } from "next";
 import { getAllCategories, getPublishedPosts } from "@/lib/microcms/queries";
 import { ANXIETY_TAGS } from "@/lib/microcms/tags";
@@ -75,5 +76,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticEntries, ...postEntries, ...categoryEntries, ...tagEntries];
+  // 地図から探す。記事が1本以上ある国・地域のページだけを載せる
+  const areaEntries: MetadataRoute.Sitemap = [
+    { url: `${baseUrl}/blog/area`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.6 },
+    ...buildCountryEntries(posts).flatMap((entry) => [
+      {
+        url: `${baseUrl}/blog/area/${entry.country.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+      },
+      ...entry.regions
+        .filter((item) => item.posts.length > 0)
+        .map((item) => ({
+          url: `${baseUrl}/blog/area/${entry.country.slug}/${item.region.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly" as const,
+          priority: 0.6,
+        })),
+    ]),
+  ];
+
+  return [...staticEntries, ...postEntries, ...categoryEntries, ...tagEntries, ...areaEntries];
 }

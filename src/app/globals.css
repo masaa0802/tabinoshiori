@@ -412,3 +412,119 @@
     transition: none;
   }
 }
+
+/* ---------------------------------------------------------------
+ * 地図から探す（/blog/area）
+ * 背景地図は SVG。くっきりの層とぼかした層で同じクラスを使う。
+ * --------------------------------------------------------------- */
+.area-map-sea {
+  fill: #dfe7e8;
+}
+.area-map-graticule {
+  fill: none;
+  stroke: #c9d5d7;
+  stroke-width: 0.6;
+}
+.area-map-land {
+  fill: #d8ccb6;
+  stroke: var(--color-paper);
+  stroke-width: 0.6;
+}
+.area-map-highlight {
+  fill: #e09a82;
+  stroke: var(--color-shu);
+  stroke-width: 1;
+}
+.area-map-veil {
+  fill: var(--color-paper);
+  opacity: 0.5;
+}
+.area-map-leader {
+  fill: none;
+  stroke: var(--color-shu);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+.area-map-dot {
+  fill: var(--color-shu);
+}
+.area-map-sticker {
+  cursor: pointer;
+}
+.area-map-sticker-shadow {
+  fill: rgba(180, 71, 42, 0.25);
+}
+.area-map-sticker-body {
+  fill: var(--color-paper-card);
+  stroke: var(--color-shu);
+  stroke-width: 2;
+  filter: drop-shadow(0 8px 12px rgba(60, 40, 20, 0.16));
+  transition: fill 0.15s;
+}
+.area-map-sticker-name {
+  font-family: var(--font-blog-mincho), "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-weight: 800;
+  fill: var(--color-ink);
+}
+.area-map-sticker-badge {
+  fill: #fff;
+  stroke: var(--color-shu);
+  stroke-width: 1.5;
+}
+.area-map-sticker-count {
+  font-family: var(--font-blog-gothic), "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-weight: 700;
+  fill: var(--color-shu);
+}
+.area-map-sticker:hover .area-map-sticker-body,
+.area-map-sticker:focus-visible .area-map-sticker-body {
+  fill: var(--color-shu);
+}
+.area-map-sticker:hover .area-map-sticker-name,
+.area-map-sticker:focus-visible .area-map-sticker-name {
+  fill: #fff;
+}
+.area-map-sticker:focus-visible {
+  outline: none;
+}
+.area-map-pin-hit {
+  fill: transparent;
+}
+.area-map-pin-circle {
+  fill: var(--color-paper-card);
+  stroke: var(--color-shu);
+  stroke-width: 2.5;
+}
+.area-map-pin-number {
+  font-family: var(--font-blog-gothic), "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  fill: var(--color-shu);
+}
+.area-map-pin-label {
+  font-family: var(--font-blog-mincho), "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size: 15px;
+  font-weight: 800;
+  fill: var(--color-ink);
+  paint-order: stroke;
+  stroke: var(--color-paper-card);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+.area-map-pin.is-current .area-map-pin-circle {
+  fill: var(--color-shu);
+}
+.area-map-pin.is-current .area-map-pin-number {
+  fill: #fff;
+}
+.area-map-pin.is-muted {
+  opacity: 0.5;
+}
+a:hover > .area-map-pin .area-map-pin-circle,
+a:focus-visible > .area-map-pin .area-map-pin-circle {
+  fill: var(--color-shu);
+}
+a:hover > .area-map-pin .area-map-pin-number,
+a:focus-visible > .area-map-pin .area-map-pin-number {
+  fill: #fff;
+}

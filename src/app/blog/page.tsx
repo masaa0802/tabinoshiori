@@ -10,6 +10,7 @@ import { getAllCategories, getAllPosts, getPickupPosts } from "@/lib/microcms/qu
 import { blogJsonLd, itemListJsonLd, jsonLdScript } from "@/lib/microcms/jsonLd";
 import { ANXIETY_TAGS, anxietyTagsOf } from "@/lib/microcms/tags";
 import { BLOG_DESCRIPTION, BLOG_NAME } from "@/lib/site";
+import { buildCountryEntries } from "@/lib/areas";
 
 // セグメント設定はリテラルで書くこと。定数を import して代入するとビルドが落ちる
 export const revalidate = 3600;
@@ -46,6 +47,8 @@ export default async function BlogTopPage() {
   const rest = posts.filter((post) => !pickupSlugs.has(post.slug));
   // 冒頭に「貼った写真」として出す最新記事（表紙画像があるもの）
   const latest = posts.find((post) => post.coverImage);
+
+  const countryEntries = buildCountryEntries(posts);
 
   const anxietyCounts: Record<string, number> = {};
   for (const post of posts) {
@@ -140,6 +143,42 @@ export default async function BlogTopPage() {
                 </Link>
               ))}
             </div>
+          </nav>
+        )}
+
+        {/* 行き先から探す。国・地域に紐づいた記事が1本でもあれば出す */}
+        {countryEntries.length > 0 && (
+          <nav
+            aria-label="地図から探す"
+            className="relative mt-10 flex flex-col gap-5 rounded-md border border-rule bg-paper-card px-5 py-6 shadow-[0_1px_0_var(--color-rule)] sm:flex-row sm:items-center sm:justify-between sm:px-8"
+          >
+            <span
+              aria-hidden="true"
+              className="absolute -top-3 left-8 h-6 w-20 -rotate-3 bg-[rgba(194,170,120,0.55)]"
+            />
+            <div>
+              <p className="font-hand text-base text-shu">行き先が決まっているなら</p>
+              <p className="mt-0.5 font-mincho text-xl font-extrabold text-ink sm:text-2xl">地図から旅先を探す</p>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {countryEntries.slice(0, 8).map((entry) => (
+                  <li key={entry.country.slug}>
+                    <Link
+                      href={`/blog/area/${entry.country.slug}`}
+                      className="inline-flex items-center gap-1 rounded border border-rule bg-paper px-3 py-1.5 text-sm text-ink-soft transition-colors hover:border-shu hover:text-shu"
+                    >
+                      {entry.country.name}
+                      <span className="text-xs text-ink-muted">{entry.posts.length}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <Link
+              href="/blog/area"
+              className="inline-flex flex-shrink-0 items-center justify-center gap-2 self-start rounded border-[1.5px] border-shu px-6 py-3 font-bold text-shu transition-colors hover:bg-shu hover:text-white sm:self-center"
+            >
+              地図をひらく <span aria-hidden="true">→</span>
+            </Link>
           </nav>
         )}
 
